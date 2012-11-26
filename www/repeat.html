@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
+
+		<!-- iPad/iPhone specific css below, add after your main css >
+		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+		-->
+        <link rel="stylesheet" href="css/iphone.css" type="text/css" />
+
+        <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+            
+        <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+        
+        <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+        
+
+        
+        <script type="text/javascript">
+
+			$(document).ready(function(){
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+			function onDeviceReady() {
+				// Alert -----------------------------------------------------------------------
+				// navigator.notification.alert("repeat.html");
+
+				// GETでJSON取得
+				var get = getQuery();
+				console.log("params: " + JSON.stringify(get.params));
+				
+				var hash = JSON.parse(get.params);
+					
+				var area_name = hash.recipient_pref;
+				var qr_id = hash.qr_id;
+				var order_id = hash.order_id;
+				var item_version = hash.item_version;
+				var latitude = hash.order_latitude;
+				var longitude = hash.order_longitude;
+					
+				window.location.href = 'show_item.html?qr_id=' + String(qr_id) + '&latitude=' + String(latitude) + '&longitude=' + String(longitude);
+
+			}
+
+		</script>
+    
+	</head>
+
+	<body>
+
+	</body>
+</html>
+

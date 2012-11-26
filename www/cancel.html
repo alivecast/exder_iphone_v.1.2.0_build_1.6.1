@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
+
+		<!-- iPad/iPhone specific css below, add after your main css >
+		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+		-->
+        <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+        
+        <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+        
+        <link rel="stylesheet" href="css/iphone.css" type="text/css" />
+        
+        <script type="text/javascript">
+
+			$(document).ready(function(){
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+			// 設定ファイルの読み込み
+			function onDeviceReady() {
+				console.log("Cansel Start");
+				getonOrdering(cancelMain);
+
+				function cancelMain(ordering){
+					// GETでJSON取得
+					var get = getQuery();
+					console.log("Cansel params: " + JSON.stringify(get.params));
+					
+					var hash = JSON.parse(get.params);
+					var qr_id = hash.qr_id;
+					var order_id = hash.order_id;
+					var item_version = hash.item_version;
+					
+					var url = ordering.https+'json/receive_cancel.php';
+					var now = parseInt( new Date() /1000 );
+					var params = {
+						cancel: 'cancel',
+						cancel_time: now,
+						order_id: order_id,
+						qr_id: qr_id,
+						app_ver: ordering.app_ver,
+						app_code: ordering.app_code,
+						url: ordering.url,
+						http: ordering.http,
+						https: ordering.https
+
+					};
+                    console.log("Cansel POST Start");
+					$.ajax({
+						type: "POST",
+						url: url,
+						data:params,
+						success: function(data){
+							if(data && data.cancel_time){
+								var cancel_time = data.cancel_time;
+								console.log("cancel_time: " + cancel_time);
+								// 購入履歴一覧に戻る
+								var message = 'ご購入のキャンセルが完了しました';
+								var title = 'キャンセルしました';
+								var button = 'OK';
+								navigator.notification.alert(message, successCallBack(), title, button);
+							}else{
+                                console.log("Cansel POST DATA ERR");
+								if(data && data.errmsg){
+									var message = data.errmsg;
+									var title   = data.errtitle;
+									var button = 'OK';
+									navigator.notification.alert(message, successCallBack(), title, button);
+								}else{
+									networdERR(successCallBack,'キャンセル出来ませんでした');
+								}
+							}
+
+						},
+						error: function(){
+                           console.log("Cansel POST ERR");
+							networdERR(successCallBack,'キャンセル出来ませんでした');
+//							return false;
+						}
+					});
+				}
+
+
+				// alertCallBack -----------------------------------------------------------------------
+				function alertCallBack() {
+					window.location.href = 'show_order_item.html?order_id=' + order_id + '&qr_id=' + qr_id + '&item_version=' + item_version;
+				}
+				function successCallBack() {
+					window.location.href = 'show_order.html';
+				}
+		}
+
+		</script>
+    
+	</head>
+
+	<body>
+		
+        <div data-role="page" data-add-back-btn="false" data-theme="z">
+		
+		  <div class="cont_itemDetail" data-role="content" id="loading" style="text-align:center;top:50px">
+
+				<h1>Please Waiting...</h1>
+				<div >
+					<img src="images/loading_bar_or.gif" />
+				</div>
+		  </div>
+		
+		  <div data-role="content">
+		    <script src="/public/jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+		    <script src="/public/jquery/jquery.activity-indicator-1.0.0.js"></script>
+<!--
+		  <style type="text/css">
+		  body {
+		    color: #fff;
+		    background: #00406c;
+		  }
+		  .square {
+		    width: 320px;
+		    height: 360px;
+		    color: #999;
+		    background: #fff;
+		    opacity: 0.2;
+		    font-family: Helvetica, Arial, Sans-Serif;
+		  }
+		  </style>
+-->
+		  <div data-role="content">
+		    <div id="busy4" class="square">
+		    </div>
+		  </div>
+		</div>
+		
+		<script>
+		  $(function() {
+		    // $('#busy1').activity();
+		    // $('#busy2').activity({segments: 8, steps: 3, opacity: 0.3, width: 4, space: 0, length: 5, color: '#0b0b0b', speed: 1.5});
+		    // $('#busy3').activity({segments: 8, width:2, space: 0, length: 3, color: '#fff', speed: 1.5});
+		//    $('#busy4').activity({segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5});
+		    $('#busy4').activity({segments: 32, width: 6, space: 3, length: 72, color: '#252525', speed: 1.5,  align: 'center', valign: 'center'});
+		    // $('#busy5').activity({segments: 12, align: 'left', valign: 'top', steps: 3, width:2, space: 1, length: 3, color: '#030303', speed: 1.5});
+		    // $('#busy6').activity({outside: true, align: 'right', segments: 10, steps: 3, width:2, space: 0, length: 3, color: '#000', speed: 1.5});
+		  });
+		</script>
+	</body>
+</html>
+

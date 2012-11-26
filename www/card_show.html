@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
+
+		<!-- iPad/iPhone specific css below, add after your main css >
+		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+		-->
+
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+
+		<script type="text/javascript">
+            $( document ).bind( "mobileinit", function() {
+                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+                $.support.cors = true;
+                $.mobile.allowCrossDomainPages = true;
+            });
+
+			$(document).ready(function(){
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+            function onDeviceReady(){
+                     console.log("START");
+                    if(location.search.length > 1) {
+                        var get = new Object();
+                        var ret = location.search.substr(1).split("&");
+                        for(var i = 0; i < ret.length; i++) {
+                            var r = ret[i].split("=");
+                            get[r[0]] = r[1];
+                        }
+                        console.log("get:"+get['kbn']);
+                    }
+//                onReadyFile();
+					// 設定ファイルの読み込み
+					getonOrdering(getCard);
+            }
+/*
+			function onReadyFile() {
+				// ファイルの読み込み
+                var fname = 'ordering';
+                var text = {};
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, fail);
+                function read(fileSystem) {
+                    fileSystem.root.getFile(fname, {}, function(fileEntry) {
+                        fileEntry.file(function(file) {
+                            var reader = new FileReader();
+                            reader.onloadend = function(evt) {
+                            // ここに読み込み完了後の処理を書く
+console.log("text: " + evt.target.result);
+                                var text = evt.target.result;
+                                var json = JSON.parse(text);
+                                
+                                // // 復号
+                               	// var jsonEnc = JSON.parse(text);
+                                // var iv = jsonEnc.iv;
+                                // var key = jsonEnc.key;
+                                // var enc = jsonEnc.enc;
+                                // var jsonText = decAes(enc, key, iv);
+                                // json = JSON.parse(jsonText);
+                                
+console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
+console.log("正常にテキストを読み込みました。:key "+json.customer_key);
+                                 getCard(json);
+                            };
+                            reader.readAsText(file, "utf-8");
+                            // Data URL として読み込む
+                            // reader.readAsDataURL(file);
+                        }, fail)
+                    }, fail);
+                }
+            }
+*/
+            // ファイルがある場合は、サーバー通信を行い値を取得する。
+            function getCard(params){
+                console.log("Start:"+params);
+                
+                var url = params.https+'json/send_card.php';
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					data:params,
+					success: function(data){
+						// 戻り値の保存
+						// $("#card_company").text(data.card_company);
+						$("#card_number").text(data.card_number);
+						$("#card_validity").text(data.card_validity);
+					},
+
+					error: function(){
+						networdERR(alertCallBack,'通信エラー');
+//						return false;
+					}
+				});
+/*
+				$.post(url, // アクセスするURL
+                    params, // 送信データ
+                    function(data, status, XHR) {// 処理結果
+                    if (status == 'success') {
+                       // 戻り値の保存
+                      // $("#card_company").text(data.card_company);
+                       $("#card_number").text(data.card_number);
+                       $("#card_validity").text(data.card_validity);
+                       
+                    } else {
+                       message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
+                       title = 'サーバーと通信できませんでした';
+                       button = 'OK';
+                       navigator.notification.alert(message, alertCallBack(), title, button);
+                       return false;
+                    }
+                    }
+                );
+                
+                $(document.body).ajaxError(
+                                           function(e,xhr,settings){
+                                           message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
+                                           title = 'サーバーと通信できませんでした';
+                                           button = 'OK';
+                                           navigator.notification.alert(message, alertCallBack(), title, button);
+                                           return false;
+                                           }
+                                           );
+*/
+
+            }
+			// alertCallBack -----------------------------------------------------------------------
+			function alertCallBack() {
+				location.reload(true);
+				// window.location.href = 'barcode.html';
+			}
+		</script>
+
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+
+	</head>
+
+	<body>
+
+		<div data-role="page" data-add-back-btn="false" data-theme="z">
+
+			<div data-role="header" id="header" data-position="fixed">
+				<h1>クレジット情報の確認</h1>
+				<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
+					戻る
+				</a>
+			</div>
+
+			<div class="cont_card_edit" data-role="content">
+				<div data-role="fieldcontain" >
+					<ul class="setup_list" data-role="listview">
+
+						<li class="shop_neme">
+							<p class="txt">
+								登録しているカード番号
+							</p>
+							<span id="card_number"></span>
+							<p class="txt">
+								有効期限
+							</p>
+							<span id="card_validity"></span>
+
+						</li>
+
+						<li class="report">
+							<div class="txt">
+								クレジットカードの再登録はこちら。<br />（安全の為、登録している情報の確認・変更は出来ません。変更を行いたい場合は、再登録をお願い致します）
+							</div>
+							<div class="report_btn">
+								<a class="btn_prev" href="card_new.html" data-role="button" data-ajax="false"> クレジットカードを再登録する </a>
+							</div>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+
+			<!-- nav -->
+			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+				<ul>
+					<li class="tab01">
+						<a href="show_order.html" data-ajax="false">
+							<span>注文履歴</span>
+						</a>
+					</li>
+					<li class="tab02">
+						<a href="barcode.html" data-ajax="false">
+							<span>読み取り</span>
+						</a>
+					</li>
+					<li class="tab03 current">
+						<a href="setting.html" data-ajax="false">
+							<span>設定</span>
+						</a>
+					</li>
+				</ul>
+				<!-- /dr-footer -->
+			</div>
+
+		</div>
+
+	</body>
+</html>
+

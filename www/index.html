@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
+
+		<!-- iPad/iPhone specific css below, add after your main css >
+		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+		-->
+            
+        <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+                    
+        <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+        
+        <link rel="stylesheet" href="css/iphone.css" type="text/css" />
+        
+        <script type="text/javascript">
+			$(document).bind( "mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
+
+			$(document).ready(function(){
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+			function onDeviceReady() {
+				// ネットワークの判定
+				// check_network();
+
+				// URLの取得
+				$.ajax({
+					type: "POST",
+					url: "http://exorder.jp/app/send_init.php",
+					data:"id1=alivecast&id2=sugoi",
+					success: function(rdata){
+						console.log("onDeviceReady::正常にテキストを読み込みました。 url: " + rdata.url);
+						onReadyFile2(rdata);
+					},
+					error: function(){
+						networdERR(alertCallBack,'通信エラー');
+						return false;
+					}
+				});
+			}
+
+			// alertCallBack -----------------------------------------------------------------------
+			function alertCallBack() {
+				$("#loading").css("display","none");
+				$("#top").css("display","block");
+				// window.location.href = 'index.html';
+			}
+
+            // 設定ファイルの接続に成功の場合
+			function onReadyFile2(rdata) {
+				// ファイルの読み込み
+				console.log("Start order_attention");
+				var fname = 'order_attention';
+				getFile(fname,onGetOrderAttentionOK,onGetOrderAttentionNG);
+
+				function onGetOrderAttentionOK(json){
+					console.log("正常にorder_attentionを読み込みました。");
+					if(json.order_attention && (json.order_attention != '' || json.order_attention != null)){
+						jsonObj = {order_attention: 'enable'};
+						setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
+					}
+				}
+
+				function onGetOrderAttentionNG(){
+					console.log("err : order_attention NO");
+					onReadyFile3(rdata);
+				}
+			}
+
+			function onReadyFile3(rdata) {
+				// 設定ファイルの読み込み
+				console.log("Start ordering");
+				var fname = 'ordering';
+				getFile(fname,onGetOrderingOK,onGetOrderingNG);
+
+				function onGetOrderingOK(json){
+					console.log("正常にテキストを読み込みました。 json.url: " + json.url);
+					json['url']   = rdata.url;
+					json['http']  = rdata.http;
+					json['https'] = rdata.https;
+					if(json.app_code){
+						updateOradering(json);
+					}else{
+						initOradering(json);
+					}
+				}
+
+				function onGetOrderingNG(){
+					console.log("err : ordering NO");
+					initOradering(rdata);
+				}
+			}
+
+			function initOradering(data){
+				console.log("insert : ordering");
+				// 設定ファイル新規追加
+				var datalist = {
+					customer_id: "0",
+					app_ver: "0100",
+					app_code: "leica_m3",
+					url: data.url,
+					http: data.http,
+					https: data.https
+				}
+				// ファイル処理
+				var fname = 'ordering';
+				setFile(fname, datalist, goIntro, goIntro);
+
+				function goIntro(){
+					location.href="website_all.html?page=tr.html";
+					return false;
+				}
+
+			}
+
+			function updateOradering(udata){
+				console.log("update : ordering");
+				// 設定ファイル上書き
+				var datalist = udata;
+				datalist['app_ver']  = "0100";
+				datalist['app_code'] = "leica_m3";
+				// ファイル処理
+				var fname = 'ordering';
+				setFile(fname, datalist, goBarcode, goBarcode);
+
+				function goBarcode(){
+					location.href="barcode.html";
+					return false;
+				}
+
+			}
+
+
+		</script>
+    	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+
+	</head>
+
+	<body>
+		<div data-role="page" data-add-back-btn="false">
+
+			<div class="cont_itemDetail" data-role="content" id="loading" style="text-align:center;top:50px">
+				<h1>Please Waiting...</h1>
+				<div>
+					<img src="images/loading_bar_or.gif" />
+				</div>
+			</div>
+            
+			<div class="cont_itemDetail" data-role="content" id="top" style="display:none;">
+				<input type="button" class="btn_next" value="再接続" onclick="location.href='index.html'"/>
+			</div>
+            
+
+		</div>
+	</body>
+</html>
+

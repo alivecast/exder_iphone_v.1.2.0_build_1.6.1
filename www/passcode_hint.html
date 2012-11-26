@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
+
+		<!-- iPad/iPhone specific css below, add after your main css >
+		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+		-->
+
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+
+		<script type='text/javascript' charset="utf-8" src="js/jquery.validate.min.js"></script>
+
+		<script type="text/javascript">
+            $( document ).bind( "mobileinit", function() {
+                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+                $.support.cors = true;
+                $.mobile.allowCrossDomainPages = true;
+            });
+
+			$(document).ready(function(){
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+            function onDeviceReady(){
+                    if(location.search.length > 1) {
+                        var get = new Object();
+                        var ret = location.search.substr(1).split("&");
+                        for(var i = 0; i < ret.length; i++) {
+                            var r = ret[i].split("=");
+                            get[r[0]] = r[1];
+                        }
+                        console.log("get:"+get['kbn']);
+                    }
+//                onReadyFile();
+				// 設定ファイルの読み込み
+				getonOrdering(onReadyFile);
+
+            }
+            
+
+			function onReadyFile(json) {
+				console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
+				console.log("正常にテキストを読み込みました。:key "+json.customer_key);
+				console.log("正常にテキストを読み込みました。:pas "+json.customer_pass);
+
+				$("#customer_id").val(json.customer_id);
+				$("#customer_key").val(json.customer_key);
+				$("#customer_email_1").val(json.customer_email_1);
+				$("#customer_passT").val(json.customer_pass);
+				$("#iv").val(json.iv);
+
+				$("#app_ver").val(json.app_ver);
+				$("#app_code").val(json.app_code);
+				$("#url").val(json.url);
+				$("#http").val(json.http);
+				$("#https").val(json.https);
+
+				getPass(json);
+			}
+
+            // ファイルがある場合は、サーバー通信を行い値を取得する。
+            function getPass(params){
+                console.log("Start:"+params);
+                
+                var url = params.https+'json/send_pass.php';
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					data:params,
+					success: function(data){
+						$("#customer_qes").text(data.customer_qes);
+						$("#customer_ansT").val(data.customer_ans);
+						console.log("正常にsqlを読み込みました。:qes "+data.customer_qes);
+						console.log("正常にsqlを読み込みました。:qns "+data.customer_ans);
+					},
+					error: function(){
+						networdERR(alertCallBack,'情報の取得が出来ませんでした');
+//						return false;
+					}
+				});
+
+          }
+
+			// 新規登録
+			function savePass(){
+				// 設定ファイルの読み込み
+				getonOrdering(savePass2);
+			}
+
+			function savePass2(ordering){
+				console.log("customer_id: "+ $("#customer_key").val());
+
+                var result = $("#form_password").validate().form();				// 入力値
+                if(result == false){
+                	console.log("内容に誤りがあります");
+                }else{
+                    var ansT = $("#customer_ansT").val();
+                    var ans  = $("#customer_ans").val();
+                    
+                    if( ansT == ans ){
+                    	console.log("正常処理"+ordering.https);
+
+						// 送信
+						var url = ordering.https+'json/receive_pass.php';
+						var params = ordering;
+						params['customer_pass'] = $("#customer_pass").val();
+						
+						console.log("通信"+params.customer_pass);
+
+						$.ajax({
+							type: "POST",
+							url: url,
+							data:params,
+							success: function(data){
+
+								console.log("保存　customer_pass: " + data.customer_pass);
+
+								// ファイル登録
+								var datalist = ordering;
+								datalist['customer_pass'] = data.customer_pass;
+								var fname = 'ordering';
+								setFile(fname, datalist, goSetting, goSetting);
+							},
+							error: function(){
+								console.log("保存できませんでした");
+								networdERR(alertCallBack,'保存できませんでした');
+							}
+						});
+                        
+                    }else{
+                    	console.log("回答に誤りがあります");
+
+                        message = '回答に誤りがあります。('+ans+')';
+                        title = 'エラー';
+                        button = 'OK';
+                        navigator.notification.alert(message, alertCallBack(), title, button);
+                    }
+                }
+ 
+			}
+
+			function goSetting() {
+				location.href="setting.html";
+			}
+
+			// alertCallBack -----------------------------------------------------------------------
+			function alertCallBack() {
+				location.reload(true);
+			}
+
+		</script>
+
+<style type='text/css'> 
+    label.error {
+    color: red;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.4;
+    margin-top: 0.5em;
+    width: 100%;
+    float: none;
+}
+ 
+ label.error { display: inline-block; margin-left: 22%; }
+ 
+ label.error { margin-left: 0; display: block; }
+ 
+em { color: red; font-weight: bold; padding-right: .25em; }
+ 
+ 
+  </style>
+
+
+<script type='text/javascript'> 
+$(function(){
+	$.extend($.validator.messages, {
+		required: "必須項目です",
+		number: "数値のみで入力してください",
+		equalTo: 'もう一度同じ値を入力して下さい。',
+		email: "メールアドレスを入力してください"
+	});
+
+	$('#form_password').validate({
+		// それぞれの項目に適用される検証ルール 
+		rules: { 
+			customer_pass: { 
+				required: true,    // 必須検証 
+				number: true,
+				rangelength: [4, 16]    // 文字列長検証 (2～10文字) 
+			},
+			re_pass: { 
+				equalTo: '[name=customer_pass]'
+			}
+		},
+
+		// 検証エラー時に表示されるエラー メッセージ 
+		messages: { 
+			customer_pass: { 
+				required: '暗証番号は必ず入力してください。',
+				number: '暗証番号は数字で入力してください。', 
+				rangelength: $.format('パスワードは{0}から{1}文字で入力してください。')
+			},
+			re_pass: { 
+				equalTo: '上と同じ暗証番号を入力してください'
+			}
+        },
+
+		// エラーの位置を設定します。
+		// 下記ではラジオボタンとチェックボックスのエラーメッセージを
+		// グループの最後に表示するように調整しています。
+		errorPlacement: function(error, element){
+			if (element.is(':radio, :checkbox')) {
+				error.appendTo(element.parent());
+			} else {
+				error.insertAfter(element);
+			}
+		}
+	});
+});
+</script>
+
+	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+
+	</head>
+
+	<body>
+
+		<div data-role="page" data-add-back-btn="false" data-theme="z">
+
+			<div data-role="header" id="header" data-position="fixed">
+				<h1>暗証番号の再設定</h1>
+				<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
+					戻る
+				</a>
+			</div>
+
+			<div class="cont_passcode_edit" data-role="content">
+				<form method="post" action="" id="form_password" onsubmit="return savePass();">
+					<input type="hidden" id="customer_id" name="customer_id" value=""/>
+					<input type="hidden" id="customer_key" name="customer_key" value=""/>
+                    <input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
+                    <input type="hidden" id="iv" name="iv" value=""/>
+
+					<input type="hidden" id="customer_ansT" name="customer_ansT" value=""/>
+
+					<input type="hidden" id="app_ver" name="app_ver" value=""/>
+					<input type="hidden" id="app_code" name="app_code" value=""/>
+					<input type="hidden" id="url" name="url" value=""/>
+					<input type="hidden" id="http" name="http" value=""/>
+					<input type="hidden" id="https" name="https" value=""/>
+
+					<div data-role="fieldcontain" >
+						<ul class="setup_list" data-role="listview">
+							<li>
+								秘密の質問に答えてください。
+							</li>
+
+							<li class="passcode">
+								<label for="customer_qes" class="fieldLabel">秘密の質問</label>
+								<h3 id="customer_qes"></h3>
+							</li>
+
+							<li class="passcode">
+								<label for="customer_ans" class="fieldLabel">質問の回答</label>
+								<input type="text" id="customer_ans" name="customer_ans" value="" class="required" />
+							</li>
+
+								<li class="passcode">
+									<label for="customer_pass" class="fieldLabel">新しい暗証番号<span class="form_note">(数字4～16桁)</span></label>
+									<input type="password" id="customer_pass" name="customer_pass" class="required"  value="" maxlength=16 placeholder="数字4～16桁" />
+								</li>
+
+								<li class="passcode">
+									<label for="re_pass" class="fieldLabel">確認のため再入力<span class="form_note">(数字4～16桁)</span></label>
+									<input type="password" id="re_pass" name="re_pass" value="" class="required"  maxlength=16 placeholder="上とと同じ値を入力" />
+								</li>
+
+
+								<li class="item_buy_1btn btn_txt_ow">
+									<div>
+<!--
+										<input type="button" value="回答して再設定する" class="btn_next" onclick="savePass();"/>
+-->
+										<input type="submit" value="回答して再設定する" class="btn_next"/>
+									</div>
+								</li>
+
+						</ul>
+					</div>
+				</form>
+			</div>
+
+			<!-- nav -->
+			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+				<ul>
+					<li class="tab01">
+						<a href="show_order.html" data-ajax="false">
+							<span>注文履歴</span>
+						</a>
+					</li>
+					<li class="tab02">
+						<a href="barcode.html" data-ajax="false">
+							<span>読み取り</span>
+						</a>
+					</li>
+					<li class="tab03 current">
+						<a href="setting.html" data-ajax="false">
+							<span>設定</span>
+						</a>
+					</li>
+				</ul>
+				<!-- /dr-footer -->
+			</div>
+
+		</div>
+	</body>
+</html>
+
