@@ -11,10 +11,10 @@
 		0C17F95B1662EF4D00ED997A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2361648AFF1002D2A62 /* Default-568h@2x.png */; };
 		0C17F9611662F03F00ED997A /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F95E1662F03F00ED997A /* Default.png */; };
 		0C17F9621662F03F00ED997A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F95F1662F03F00ED997A /* Default@2x.png */; };
-		0C17F966166302D900ED997A /* logo_320.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F965166302D900ED997A /* logo_320.png */; };
 		0C17F9681663063F00ED997A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F96A1663063F00ED997A /* Default-568h@2x.png */; };
 		0C17F96B166306C100ED997A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2381648AFFE002D2A62 /* Default@2x.png */; };
 		0C17F96C166306D600ED997A /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2341648AFE6002D2A62 /* Default.png */; };
+		0C17F9731663237E00ED997A /* logo_320.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F9721663237E00ED997A /* logo_320.png */; };
 		0CAB13B91648C3A300861CDB /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B31648C26600861CDB /* Icon.png */; };
 		0CAB13BA1648C3A900861CDB /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B71648C2C300861CDB /* icon114.png */; };
 		0CF23526164B8B8100628108 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B51648C2BE00861CDB /* icon57.png */; };
@@ -56,8 +56,8 @@
 		0C046614163E37F200349A2A /* iphone.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = iphone.css; path = www/css/iphone.css; sourceTree = "<group>"; };
 		0C17F95E1662F03F00ED997A /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		0C17F95F1662F03F00ED997A /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		0C17F965166302D900ED997A /* logo_320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_320.png; sourceTree = "<group>"; };
 		0C17F9691663063F00ED997A /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/Default-568h@2x.png"; sourceTree = "<group>"; };
+		0C17F9721663237E00ED997A /* logo_320.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_320.png; sourceTree = "<group>"; };
 		0C1BF2341648AFE6002D2A62 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		0C1BF2361648AFF1002D2A62 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		0C1BF2381648AFFE002D2A62 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -214,10 +214,10 @@
 		48967ADF15084B2800F4D66A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0C17F9721663237E00ED997A /* logo_320.png */,
 				0C17F96A1663063F00ED997A /* Default-568h@2x.png */,
 				0C17F95E1662F03F00ED997A /* Default.png */,
 				0C17F95F1662F03F00ED997A /* Default@2x.png */,
-				0C17F965166302D900ED997A /* logo_320.png */,
 				48967AF015084B2800F4D66A /* icons */,
 				48967AFC15084B2800F4D66A /* Capture.bundle */,
 				53613EBB1662A64E000E2CE5 /* InfoPlist.strings */,
@@ -342,9 +342,9 @@
 				0C17F9681663063F00ED997A /* Default-568h@2x.png in Resources */,
 				0C17F9611662F03F00ED997A /* Default.png in Resources */,
 				0C17F9621662F03F00ED997A /* Default@2x.png in Resources */,
-				0C17F966166302D900ED997A /* logo_320.png in Resources */,
 				0C17F96B166306C100ED997A /* Default@2x.png in Resources */,
 				0C17F96C166306D600ED997A /* Default.png in Resources */,
+				0C17F9731663237E00ED997A /* logo_320.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

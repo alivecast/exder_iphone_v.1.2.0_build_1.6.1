@@ -738,7 +738,7 @@ parentViewController:(UIViewController*)parentViewController
     // UILabel
     
     UILabel *label = [[UILabel alloc] init];
-    label.frame = CGRectMake(0, rootViewHeight - toolbarHeight - 40, 320, 20);
+    label.frame = CGRectMake(0, rootViewHeight - toolbarHeight - 30, 320, 30);
     label.textColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
     //    label.backgroundColor = [UIColor clearColor];
     label.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.4];
@@ -752,7 +752,7 @@ parentViewController:(UIViewController*)parentViewController
     
     UIImageView *imageView = [[UIImageView alloc] init];
     UIImage *image = [UIImage imageNamed:@"logo_320.png"];
-    [imageView setFrame:CGRectMake(0.0, 5, 320, 480)];
+    [imageView setFrame:CGRectMake(0, 0, 320, 480)];
 //    [imageView setContentMode:UIViewContentModeScaleAspectFit];
     [imageView setContentMode:UIViewContentModeTop];
     [imageView setImage:image];
