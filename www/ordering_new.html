@@ -13,7 +13,8 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
-		
+		<link rel="stylesheet" href="css/validate.css" type="text/css" />
+
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
@@ -24,46 +25,37 @@
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 
 		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
-		<script type='text/javascript' charset="utf-8" src="js/jquery.validate.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
-            
+			$( document ).bind( "mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
+
 			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
-            function onDeviceReady(){
+			function onDeviceReady(){
+				$('#loading').css('display', 'none');
 
-                    if(location.search.length > 1) {
-                        var get = new Object();
-                        var ret = location.search.substr(1).split("&");
-                        for(var i = 0; i < ret.length; i++) {
-                            var r = ret[i].split("=");
-                            get[r[0]] = r[1];
-                        }
-                        console.log("get:"+get['kbn']);
-						$("#kbn").val(get['kbn']);
-                        if(get['kbn'] == "buy"){
-                            $("#backb").attr("href","passcode_new.html?kbn=buy");
-                            $("#tab3a").attr("href","order.html");
-                        }
-                    }
-//                    onReadyFile();
-					// 設定ファイルの読み込み
-					getonOrdering(onReadyFile);
-            }
-            
+				if(location.search.length > 1) {
+					var get = new Object();
+					$("#kbn").val(get['kbn']);
+					if(get['kbn'] == "buy"){
+						$("#backb").attr("href","passcode_new.html?kbn=buy");
+						$("#tab3a").attr("href","order.html");
+					}
+				}
+
+				// 設定ファイルの読み込み
+				getonOrdering(onReadyFile);
+			}
+
 
 			function onReadyFile(json) {
-				console.log("::iv::"+json.iv);
-				console.log("customer_id:"+json.customer_id);
-				console.log("customer_key:"+json.customer_key);
-
 				$("#iv").val(json.iv);
 
 				$("#customer_id").val(json.customer_id);
@@ -79,56 +71,7 @@
 
 				getCustomers(json);
 			}
-/*
-			function onReadyFile() {
-				// ファイルの読み込み
-                var fname = 'ordering';
-                var text = {};
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, fail);
-                function read(fileSystem) {
-                    fileSystem.root.getFile(fname, {}, function(fileEntry) {
-                        fileEntry.file(function(file) {
-                            var reader = new FileReader();
-                            reader.onloadend = function(evt) {
-                            // ここに読み込み完了後の処理を書く
-                                console.log("text: " + evt.target.result);
-                                text = evt.target.result;
-                                json = JSON.parse(text);
-                                
-                                // // 復号
-                               	// var jsonEnc = JSON.parse(text);
-                                // var iv = jsonEnc.iv;
-                                // var key = jsonEnc.key;
-                                // var enc = jsonEnc.enc;
-                                // var jsonText = decAes(enc, key, iv);
-                                // json = JSON.parse(jsonText);
-                                
-                                console.log("正常にテキストを読み込みました。");
-                                getCustomers(json);
-                                $("#iv").val(json.iv);
-                                       
-                                       $("#customer_id").val(json.customer_id);
-                                       $("#customer_mail_1").val(json.customer_mail_1);
-                                       $("#customer_key").val(json.customer_key);
-                                       $("#customer_pass").val(json.customer_pass);
 
-                                       $("#app_ver").val(json.app_ver);
-                                       $("#app_code").val(json.app_code);
-                                       $("#url").val(json.url);
-                                       $("#http").val(json.http);
-                                       $("#https").val(json.https);
-console.log("::iv::"+json.iv);
-console.log("customer_id:"+json.customer_id);
-console.log("customer_key:"+json.customer_key);
-                            };
-                            reader.readAsText(file, "utf-8");
-                            // Data URL として読み込む
-                            // reader.readAsDataURL(file);
-                        }, fail)
-                    },fail);
-                }
-            }
-*/
             // ファイルがある場合は、サーバー通信を行い値を取得する。
             function getCustomers(params){
                 console.log("Start:"+params['customer_id']+params['customer_key']);
@@ -157,95 +100,88 @@ console.log("customer_key:"+json.customer_key);
 						$("#customer_mail_3").val(data.customer_mail_3);
 						$("#customer_mail_4").val(data.customer_mail_4);
 
-						if(data.customer_mail_2ck == 1){
-							$("#customer_mail_2ck").attr("checked",true).checkboxradio("refresh");
-						}
-						if(data.customer_mail_3ck == 1){
-							$("#customer_mail_3ck").attr("checked",true).checkboxradio("refresh");
-						}
-						if(data.customer_mail_4ck == 1){
-							$("#customer_mail_4ck").attr("checked",true).checkboxradio("refresh");
-						}
-
-						if(data.address_main_flg == 1){
-							$("#address_main_flg").attr("checked",true).checkboxradio("refresh");
-						}
-
 					},
 					error: function(){
 						networdERR(alertCallBack,'情報を読み込めません');
 //						return false;
 					}
 				});
-/*
-				$.post(url, // アクセスするURL
-                    params, // 送信データ
-                    function(data, status, XHR) {// 処理結果
-                    if (status == 'success') {
-                       // 戻り値の保存
 
-                       
-                       $("#customer_name").val(data.customer_name);
-                       $("input[name='customer_sex']").val([data.customer_sex]).checkboxradio('refresh');
-                       $("#customer_birthday").val(data.customer_birthday);
-                       $("#customer_zipcode").val(data.customer_zipcode);
-                       $("#customer_pref").val(data.customer_pref).selectmenu('refresh');
-                       $("#customer_address1").val(data.customer_address1);
-                       $("#customer_address2").val(data.customer_address2);
-                       $("#customer_phone").val(data.customer_phone);
-                       $("#customer_mail_1").val(data.customer_mail_1);
-                       $("#customer_mail_2").val(data.customer_mail_2);
-                       $("#customer_mail_3").val(data.customer_mail_3);
-                       $("#customer_mail_4").val(data.customer_mail_4);
-                       
-                       if(data.customer_mail_2ck == 1){
-                        $("#customer_mail_2ck").attr("checked",true).checkboxradio("refresh");
-                       }
-                       if(data.customer_mail_3ck == 1){
-                        $("#customer_mail_3ck").attr("checked",true).checkboxradio("refresh");
-                       }
-                       if(data.customer_mail_4ck == 1){
-                        $("#customer_mail_4ck").attr("checked",true).checkboxradio("refresh");
-                       }
-                       
-                       if(data.address_main_flg == 1){
-                        $("#address_main_flg").attr("checked",true).checkboxradio("refresh");
-                       }
-
-                    } else {
-                       message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-                       title = 'サーバーと通信できませんでした';
-                       button = 'OK';
-                       navigator.notification.alert(message, alertCallBack(), title, button);
-                       return false;
-                    }
-                    }
-                );
-
-                $(document.body).ajaxError(
-                                           function(e,xhr,settings){
-                                           message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-                                           title = 'サーバーと通信できませんでした';
-                                           button = 'OK';
-                                           navigator.notification.alert(message, alertCallBack(), title, button);
-                                           return false;
-                                           }
-                                           );
-*/
             }
-            
+
+
+			function checkValidate() {
+				var i = 0;
+				//エラーの初期化
+				$("p.error").parent().removeClass("error");
+				$("p.error").remove();
+				
+				//必須項目のチェック
+				$(":text,textarea").filter(".validate").each(function() {
+					$(this).filter(".required").each(function() {
+						if ($(this).val() == "") {
+							$(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
+						}
+					});
+				});
+				//氏名のチェック
+				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/＾　/) || $("#customer_name").val().match(/＾ /) || $("#customer_name").val().match(/[０-９0-9]/)) {
+					$("#customer_name").parent().append("<p class='error'>氏名を入力してください。</p>");
+				}
+				//郵便番号のチェック
+				if ($("#customer_zipcode").val() == "" || !$("#customer_zipcode").val().match(/^\d{7}$|^\d{3}-\d{4}$/)) {
+					$("#zipcode").parent().append("<p class='error'>半角数字７桁で入力してください。</p>");
+				}
+				//都道府県のチェック
+				$("#customer_pref option:selected").each(function() {
+					if ($(this).val() == '') {
+						if (i <= 0) {
+							$("#customer_pref").parent().append("<p class='error'>都道府県を選択してください</p>");
+							$("#customer_pref").css('background:#FFCCCC;');
+							i++;
+						}
+					}
+				})
+				//電話番号のチェック
+				if ($("#customer_phone").val() == "" || !$("#customer_phone").val().match(/^\d{9,11}$|^\d{2,4}-\d{2,4}-\d{4}$/)) {
+					$("#customer_phone").parent().append("<p class='error'>半角数字11桁までで市外局番から入力してください</p>");
+				}
+				// 性別のチェック
+				if (!$("#user_gender01").attr("checked") && !$("#user_gender02").attr("checked") ) {
+					$("#user_gender_radio").parent().append("<p class='error'>性別を選択してください</p>");
+				}
+				//メールアドレスのチェック
+				if ($('#customer_mail_1').val() == ""){
+					$('#customer_mail_1').parent().append("<p class='error'>メールアドレスを入力してください</p>");
+				} else if (!$('#customer_mail_1').val().match(/^([a-zA-Z0-9])+([a-zA-Z0-9¥._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9¥._-]+)+$/)) {
+					$('#customer_mail_1').parent().append("<p class='error'>メールアドレスの形式が異なります</p>");
+				}
+				if ($('#customer_mail_2').val() != "" && !$('#customer_mail_2').val().match(/^([a-zA-Z0-9])+([a-zA-Z0-9¥._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9¥._-]+)+$/)) {
+					$('#customer_mail_2').parent().append("<p class='error'>メールアドレスの形式が異なります</p>");
+				}
+				if ($('#customer_mail_3').val() != "" && !$('#customer_mail_3').val().match(/^([a-zA-Z0-9])+([a-zA-Z0-9¥._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9¥._-]+)+$/)) {
+					$('#customer_mail_3').parent().append("<p class='error'>メールアドレスの形式が異なります</p>");
+				}
+				if ($('#customer_mail_4').val() != "" && !$('#customer_mail_4').val().match(/^([a-zA-Z0-9])+([a-zA-Z0-9¥._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9¥._-]+)+$/)) {
+					$('#customer_mail_4').parent().append("<p class='error'>メールアドレスの形式が異なります</p>");
+				}
+				//後処理
+				if ($("p.error").size() > 0) {
+					$("p.error").parent().addClass("error");
+					$(".error:first").focus();
+					return false;
+				} else {
+					saveOrdering();
+				}
+			}
 
 			// 新規登録
 			function saveOrdering(){
  
-                var result = $("#form_ordering").validate().form();				// 入力値
-                if(result == false){
-console.log("::form_ordering err::"+result);   
-                 return false;
-                }
-                
-console.log("::saveOrdering::");
-				
+				//loading呼び出し
+				$('#content').css('display', 'none');
+				$('#loading').css('display', 'block');
+
 				// 入力値
 				var ordering = {};
                 ordering['app_ver']   = $("#app_ver").val();
@@ -261,10 +197,8 @@ console.log("::saveOrdering::");
                 
 				ordering['customer_name'] = $("#customer_name").val();
                 
-console.log("customer_name: "+ ordering['customer_name']);
                 
                 ordering['customer_sex'] = $("input[name='customer_sex']").val();
-console.log("customer_sex: "+ ordering['customer_sex']);
                 
 				ordering['customer_birthday'] = $("#customer_birthday").val();
 				ordering['customer_zipcode']  = $("#customer_zipcode").val();
@@ -277,10 +211,19 @@ console.log("customer_sex: "+ ordering['customer_sex']);
 				ordering['customer_mail_3']   = $("#customer_mail_3").val();
 				ordering['customer_mail_4']   = $("#customer_mail_4").val();
                 
-                ordering['customer_mail_2ck'] = $("#customer_mail_2ck:checked").val();
-                ordering['customer_mail_3ck'] = $("#customer_mail_3ck:checked").val();
-                ordering['customer_mail_4ck'] = $("#customer_mail_4ck:checked").val();
-                
+				ordering['customer_mail_2ck'] = "";
+				ordering['customer_mail_3ck'] = "";
+				ordering['customer_mail_4ck'] = "";
+				if (ordering['customer_mail_2'] != "") {
+					ordering['customer_mail_2ck'] = 1;
+				}
+				if (ordering['customer_mail_3'] != "") {
+					ordering['customer_mail_3ck'] = 1;
+				}
+				if (ordering['customer_mail_4'] != "") {
+					ordering['customer_mail_4ck'] = 1;
+				}
+
                 ordering['address_main_flg'] = $("#address_main_flg:checked").val();
 
 				var customer_phone = ordering['customer_phone'];
@@ -309,7 +252,6 @@ console.log("customer_sex: "+ ordering['customer_sex']);
 						var customer_id  = data.customer_id;
 						var customer_key = data.customer_key;
 
-						console.log("customer_id: " + customer_id);
 
 						//json
 						var datalist = {
@@ -342,50 +284,6 @@ console.log("customer_sex: "+ ordering['customer_sex']);
 					}
 				});
 
-/*
-				$.post(url, // アクセスするURL
-					params, // 送信データ
-					function(data, status, XHR) {// 処理結果
-		     	       if (status == 'success') {
-							// 戻り値の保存
-							var customer_id  = data.customer_id;
-                            var customer_key = data.customer_key;
-
-console.log("customer_id: " + customer_id);
-
-							//json
-							var datalist = {
-								customer_id: customer_id,
-                                customer_key: customer_key,
-                                customer_pass: ordering['customer_pass'],
-                                iv: ordering['iv'],
-								customer_mail_1: ordering['customer_mail_1']
-							}
-
-				            // ファイル処理
-				            var fname = 'ordering';
-							setFile(fname, datalist);
-							
-							var kbn = $("#kbn").val();
-							if(kbn == "buy"){
-								location.href="order.html";
-							}else{
-								location.href="setting.html";
-							}
-
-								
-						} else {
-							message = 'お客様情報の登録に失敗しました';
-							title = 'サーバーと通信できませんでした';
-							button = 'OK';
-							navigator.notification.alert(message, alertCallBack(), title, button);
-							return false;
-						}
-					}
-				);
-                return false;
-*/
-
 			}
 			
 			// alertCallBack -----------------------------------------------------------------------
@@ -393,74 +291,39 @@ console.log("customer_id: " + customer_id);
 				// window.location.href = 'barcode.html';
 				location.reload(true);
 			}
-				
-			// 住所取得 -------------------------------------------------------------
-			function onAddress(){
-				AjaxZip3.zip2addr('customer_zipcode','','customer_pref','customer_address1','','customer_address2');
-                $('select').selectmenu('refresh', true);
+
+			// 入力値のリアルタイム取得
+			function zipKeyUp() {
+				var zipcode = $('#customer_zipcode').val();
+				if (zipcode.match(/^\d{3}-?\d{4}$|^\d{7}$/)) {
+					onAddress();
+				}
+				return false;
 			}
+
+			// 住所取得 -------------------------------------------------------------
+			function onAddress() {
+				$("#customer_address1").val("");
+				AjaxZip3.zip2addr('customer_zipcode', '', 'customer_pref', 'customer_address1');
+				$("#customer_address2").focus(function(){$("#customer_pref").selectmenu('refresh', true)});
+				return false;
+			}
+			
+			// 住所
+			$(document).on("touchstart",".touch_address",function(e){
+				// セレクトボックスをリフレッシュ
+				$("#customer_pref").selectmenu('refresh', true);
+			});
+			
+			$(document).on("touchstart", "#onAddress", function(e) {
+				$("#customer_address1").val("");
+				AjaxZip3.zip2addr('customer_zipcode', '', 'customer_pref', 'customer_address1');
+				$("#customer_address2").focus();
+				$("#customer_pref").selectmenu('refresh', true);
+				return false;
+			});
 
 		</script>
-
-<style type='text/css'> 
-    label.error {
-    color: red;
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 1.4;
-    margin-top: 0.5em;
-    width: 100%;
-    float: none;
-}
- 
- label.error { display: inline-block; margin-left: 22%; }
- 
- label.error { margin-left: 0; display: block; }
- 
-em { color: red; font-weight: bold; padding-right: .25em; }
- 
- 
-  </style> 
-<script type='text/javascript'> 
-$(function(){
-	$.extend($.validator.messages, {
-		required: "必須項目です",
-		number: "数値のみで入力してください",
-		equalTo: 'もう一度同じ値を入力して下さい。',
-		email: "メールアドレスを入力してください"
-	});
-
-	$('#form_ordering').validate({
-
-		// それぞれの項目に適用される検証ルール 
-		rules: { 
-			customer_sex: { 
-				required: true    // 必須検証 
-			}
-
-		},
-
-		// 検証エラー時に表示されるエラー メッセージ 
-		messages: { 
-			customer_sex: { 
-				required: '性別を選択してしてください。'
-			}
-
-		},
-
-		// エラーの位置を設定します。
-		// 下記ではラジオボタンとチェックボックスのエラーメッセージを
-		// グループの最後に表示するように調整しています。
-		errorPlacement: function(error, element){
-			if (element.is(':radio, :checkbox')) {
-				error.appendTo(element.parent());
-			} else {
-				error.insertAfter(element);
-			}
-		}
-	});
-});
-</script>
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
@@ -471,54 +334,66 @@ $(function(){
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
 
 			<div data-role="header" id="header" data-position="fixed">
-				<h1>個人情報入力</h1>
-				<!--<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">-->
-				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false">
-					戻る
-				</a>
+				<h1>利用者情報入力</h1>
+				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false"> 戻る </a>
 			</div>
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
+				</div>
+			</div>
+			<!-- content -->
+			<div id="content" data-role="content">
 
-			<div data-role="content">
-
-				<form id="form_ordering" method="post" action="" onsubmit="return saveOrdering();">
+				<!--<form id="form_ordering" method="post" action="" onsubmit="return saveOrdering();">-->
+				<div id="form_ordering">
 					<input type="hidden" name="id" value=""/>
 
 					<div data-role="fieldcontain">
 
 						<ul class="setup_list" data-role="listview">
 							<li class="user_name vali">
-								<label for="customer_name" class="fieldLabel">ご利用者の情報</label>
-								<br />
-								<input type="text" id="customer_name" name="customer_name" value="" class="required"  placeholder="ご利用者の氏名" />
-                                <input type="hidden" id="customer_id" name="customer_id" />
-                                <input type="hidden" id="customer_key" name="customer_key" />
-                                <input type="hidden" id="customer_pass" name="customer_pass" />
-                                <input type="hidden" id="iv" name="iv" />
-                                <input type="hidden" id="kbn" name="kbn" />
 
-			                    <input type="hidden" id="app_ver" name="app_ver" value=""/>
-			                    <input type="hidden" id="app_code" name="app_code" value=""/>
+								<label for="customer_name" class="fieldLabel">お名前</label>
+								<input type="text" id="customer_name" name="customer_name" value="" class="validate"  placeholder="ご利用者の氏名" />
+								<input type="hidden" id="customer_id" name="customer_id" />
+								<input type="hidden" id="customer_key" name="customer_key" />
+								<input type="hidden" id="customer_pass" name="customer_pass" />
+								<input type="hidden" id="iv" name="iv" />
+								<input type="hidden" id="kbn" name="kbn" />
+
+								<input type="hidden" id="app_ver" name="app_ver" value=""/>
+								<input type="hidden" id="app_code" name="app_code" value=""/>
 								<input type="hidden" id="url" name="url" value=""/>
 								<input type="hidden" id="http" name="http" value=""/>
 								<input type="hidden" id="https" name="https" value=""/>
+
 							</li>
 
-							<li class="address_zipcode">
-								<label for="customer_zipcode" class="fieldLabel">郵便番号</label>
+							<li class="address_zipcode touch_address">
+								<label for="customer_zipcode" class="fieldLabel">住所</label>
+								<fieldset data-role="controlgroup">
+									<input type="tel" id="customer_zipcode" class="required validate" name="customer_zipcode" maxlength=7 value="" onKeyUp="zipKeyUp();" placeholder="郵便番号（ハイフンなし）" />
+								</fieldset>
+								<p class="fieldLabel txt">*郵便番号を入力すると、住所は自動で取得します</p>
 								<br />
-								<div class="box2">
-									<div class="box2_01">
-										<input type="tel" id="customer_zipcode" name="customer_zipcode" maxlength=7 value="" class="required number" placeholder="例）1234567" onchange="onAddress();"/>
-									</div>
-									<div class="box2_02">
-										<a href="" data-role="button" class="btn_prev" onclick="onAddress();">郵便番号から住所入力</a>
-									</div>
-								</div>
-							</li>
-							<li class="address_pref">
-								<label for="customer_pref">住所</label>
-								<br />
-								<select id="customer_pref" class="required" name="customer_pref">
+								<select id="customer_pref" class="required validate" name="customer_pref">
 									<option value="">都道府県</option>
 									<option value="北海道">北海道</option>
 									<option value="青森県">青森県</option>
@@ -569,103 +444,95 @@ $(function(){
 									<option value="沖縄県">沖縄県</option>
 								</select>
 								<br />
-								<input type="text" id="customer_address1" name="customer_address1" class="required" value=""  placeholder="〇〇市〇〇町" />
+								<input type="text" id="customer_address1" name="customer_address1" class="required validate" value=""  placeholder="〇〇市〇〇町" />
 								<br />
-								<input type="text" id="customer_address2" name="customer_address2" class="required" value=""  placeholder="１-２-３　〇〇マンション101" />
+								<input type="text" id="customer_address2" name="customer_address2" class="" value=""  placeholder="１-２-３　〇〇マンション101" />
 							</li>
 
 							<li class="address_phone">
-								<label for="customer_phone" class="fieldLabel">電話番号</label>
-								<br />
-								<input type="tel" id="customer_phone" name="customer_phone" maxlength=11 class="required number" value="" placeholder="例）0123456789(ハイフンなし)" />
-							</li>
-                            
-							<li class="address_main_check">
 								<fieldset data-role="controlgroup">
-									<input type="checkbox" id="address_main_flg" value='1' />
-									<label for="address_main_flg">ここに届ける</label>
+									<label for="customer_phone" class="fieldLabel">電話番号</label>
+									<input type="tel" id="customer_phone" name="customer_phone" maxlength=11 class="required validate" value="" placeholder="例）0123456789(ハイフンなし)" />
 								</fieldset>
 							</li>
 
-							<li class="user_gender">
-								<fieldset data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
-									<legend>
-										性別
-									</legend>
-									<input type="radio" id="user_gender01" class="required" name="customer_sex" value="man" />
+							<li id="address_main_check" class="address_main_check">
+								<fieldset data-role="controlgroup">
+									<input type="checkbox" id="address_main_flg" value='1' checked="checked"/>
+									<label for="address_main_flg">この住所を通常のお届先にする</label>
+								</fieldset>
+							</li>
+
+							<li class="user_gender" id="user_gender">
+								<fieldset  id="user_gender_radio" data-role="controlgroup" data-type="horizontal" data-role="fieldcontain">
+									<legend>性別</legend>
+									<input type="radio" id="user_gender01" class="customer_sex validate" name="customer_sex" value="man" />
 									<label for="user_gender01">男性</label>
-									<input type="radio" id="user_gender02" class="required" name="customer_sex" value="woman" />
+									<input type="radio" id="user_gender02" class="customer_sex validate" name="customer_sex" value="woman" />
 									<label for="user_gender02">女性</label>
 								</fieldset>
 							</li>
-                            
+
 							<li class="user_birth">
-								<label for="birth_day" class="fieldLabel">生年月日</label>
-								<br />
+								<label for="customer_birthday" class="fieldLabel">生年月日</label>
 								<input type="date" id="customer_birthday" name="customer_birthday" class="" value="1980-01-01" placeholder="生年月日 1980/01/01" />
 							</li>
-                            
-                            <li class="address_phone">
-								<div class="tl">
-									メールアドレスの登録
-								</div>
+
+							<li class="address_phone">
+								<!--<div class="tl">メールアドレスの登録</div>-->
+								<label for="customer_mail_1" class="fieldLabel">メールアドレス</label>
 								<div class="txt">
-									メインでやり取り使われるメールアドレスをご登録ください。このアドレスに注文情報やお問合せのへ返答が送信されます。
+									*メインでやり取り使われるメールアドレスをご登録ください。このアドレスに注文情報やお問合せのへ返答が送信されます。
 								</div>
-								<input type="email" id="customer_mail_1" name="customer_mail_1" value="" class="required email" placeholder="【必須】例）sample1@exorder.jp" />
+								<input type="email" id="customer_mail_1" name="customer_mail_1" value="" class="email1 validate" placeholder="【必須】例）sample1@exorder.jp" />
 
 							</li>
 
 							<li class="address_phone">
-								<div class="tl">
-									メールアドレスの追加
-								</div>
+								<!--<div class="tl">メールアドレスの追加</div>-->
+								<label for="customer_mail_2" class="fieldLabel">メールアドレスの追加</label>
 								<div class="txt">
-									上記以外で3つまでご登録いただけます。上記以外のメールアドレスにも注文情報などを送りたい場合は、こちらにメールアドレスを登録し、チェックをいれてください。
+									*上記以外で3つまでご登録いただけます。他のメールアドレスにも注文情報などを送りたい場合は、こちらに登録してください。
 								</div>
 
-								<input type="email" id="customer_mail_2" name="customer_mail_2" value="" class="email" placeholder="【任意】例）sample2@speed-order.jp" />
-								<label for="customer_mail_2ck"><input type="checkbox" value=1 id="customer_mail_2ck" />このアドレスにも送る</label>
+								<input type="email" id="customer_mail_2" name="customer_mail_2" value="" class="email validate" placeholder="【任意】例）sample2@exorder.jp" />
+								<input type="hidden" value="" id="customer_mail_2ck" />
 								<br/>
-								<input type="email" id="customer_mail_3" name="customer_mail_3" value="" class="email" placeholder="【任意】例）sample3@speed-order.jp" />
-								<label for="customer_mail_3ck"><input type="checkbox" value=1 id="customer_mail_3ck" />このアドレスにも送る</label>
+								<input type="email" id="customer_mail_3" name="customer_mail_3" value="" class="email validate" placeholder="【任意】例）sample3@exorder.jp" />
+								<input type="hidden" value="" id="customer_mail_3ck" />
 								<br/>
-								<input type="email" id="customer_mail_4" name="customer_mail_4" value="" class="email" placeholder="【任意】例）sample4@speed-order.jp" />
-								<label for="customer_mail_4ck"><input type="checkbox" value=1 id="customer_mail_4ck" />このアドレスにも送る</label>
+								<input type="email" id="customer_mail_4" name="customer_mail_4" value="" class="email validate" placeholder="【任意】例）sample4@exorder.jp" />
+								<input type="hidden" value="" id="customer_mail_4ck" />
 							</li>
-                            
+
 							<li class="item_buy_1btn btn_txt_ow">
 								<div>
-<!--
-									<input class="btn_next" type="button" value="登録する" onclick="saveOrdering();"/>
--->
-									<input class="btn_next" type="submit" value="登録する"/>
+
+									<a class="btn_next"  data-role="button" onclick="checkValidate();">登録する</a>
+
+									<!--<input class="btn_next" type="submit" value="登録する"/>-->
 								</div>
 							</li>
 
 						</ul>
 					</div>
-				</form>
-				
+				</div>
 			</div>
 
 			<!-- nav -->
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			<!--
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			-->
+			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false">
-							<span>注文履歴</span>
-						</a>
+						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false">
-							<span>読み取り</span>
-						</a>
+						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03 current">
-						<a id="tab3a" href="setting.html" data-ajax="false">
-							<span>設定</span>
-						</a>
+						<a id="tab3a" href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
 				<!-- /dr-footer -->
@@ -673,5 +540,5 @@ $(function(){
 		</div>
 
 	</body>
-</html>
 
+</html>

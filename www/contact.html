@@ -13,6 +13,7 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/validate.css" type="text/css" />
 	
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 
@@ -22,7 +23,7 @@
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
 		
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-		<script type='text/javascript' charset="utf-8" src="js/jquery.validate.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 		
 		<script type="text/javascript">
             $( document ).bind( "mobileinit", function() {
@@ -41,15 +42,16 @@
 			}
 
 			function onReadFile(ordering){
+				$('#loading').css('display', 'none');
 				
 				if(ordering.customer_mail_1){
 					$("#mail1").css("display","none");
 					$("#customer_mail").val(ordering.customer_mail_1);
+				}else{
+					$("#mail1").css("display", "block");
+					$("#Tyuui").css("display", "block");
 				}
-				
-				console.log("正常にテキストを読み込みましたよ。:cid "+ordering.customer_id);
-				console.log("正常にテキストを読み込みましたよ。:key "+ordering.customer_key);
-				console.log("正常にテキストを読み込みましたよ。:mail "+ordering.customer_mail_1);
+
 				$("#customer_id").val(ordering.customer_id);
 				$("#customer_key").val(ordering.customer_key);
 
@@ -58,6 +60,37 @@
 				$("#url").val(ordering.url);
 				$("#http").val(ordering.http);
 				$("#https").val(ordering.https);
+				
+				var get = getQuery();                
+                if(get && get.qr_id){
+	                // 販売者・商品 情報：qr_id, item_version
+	                $("#qr_id").val(get.qr_id);
+                }
+				
+			}
+
+			function checkValidate() {
+				var i = 0;
+				//エラーの初期化
+				$("p.error").parent().removeClass("error");
+				$("p.error").remove();
+				
+				//必須項目のチェック
+				$(":text,textarea").filter(".validate").each(function() {
+					$(this).filter(".required").each(function() {
+						if ($(this).val() == "") {
+							$(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
+						}
+					});
+				});
+				//後処理
+				if ($("p.error").size() > 0) {
+					$("p.error").parent().addClass("error");
+					$(".error:first").focus();
+					return false;
+				} else {
+					onClickButton();
+				}
 			}
 
 			function onClickButton(){
@@ -116,6 +149,7 @@
 						var title = '送信完了';
 						var button = 'OK';
 						navigator.notification.alert(message, alertCallBack(), title, button);
+						alertCallBack();
 					},
 					error: function(){
 						networdERR(alertCallBack,'お問合せ出来ませんでした。');
@@ -125,47 +159,19 @@
 			}
 
 			// alertCallBack -----------------------------------------------------------------------
-			function alertCallBack() {
-				window.history.back();
+			function alertCallBack() {			
+				var qr_id = $("#qr_id").val();                
+                if(qr_id){
+	                // 販売者・商品 情報：qr_id, item_version
+	                location.href = "show_item.html?qr_id="+qr_id;
+                }else{
+					location.href = "setting.html";
+                }
 				return false;
 			}
 
 	</script>
 
-	<style type='text/css'> 
-	    label.error {
-	    color: red;
-	    font-size: 16px;
-	    font-weight: normal;
-	    line-height: 1.4;
-	    margin-top: 0.5em;
-	    width: 100%;
-	    float: none;
-	}
-	 
-	 label.error { display: inline-block; margin-left: 22%; }
-	 
-	 label.error { margin-left: 0; display: block; }
-	 
-	em { color: red; font-weight: bold; padding-right: .25em; }
-	 
-	 
-	  </style> 
-	<script type='text/javascript'> 
-	$(function(){
-		$.extend($.validator.messages, {
-			required: "必須項目です",
-			number: "数値のみで入力してください",
-			equalTo: 'もう一度同じ値を入力して下さい。',
-			email: "メールアドレスを入力してください"
-		});
-	
-		$('#contact_form').validate({
-	
-		});
-	});
-	</script>
-            
 	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 		
 	</head>
@@ -176,20 +182,46 @@
 
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>お問い合わせ</h1>
-				<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">戻る</a>
+				<a id="backb" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false" onclick="alertCallBack();">戻る</a>
 			</div>
 
-			<div class="cont_contact" data-role="content">
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
+				</div>
+			</div>
+
+			<!-- content -->
+			<div id="content" class="cont_contact" data-role="content">
 
 				<div class="contact_detail">
 					<div class="txt">
-						商品や送料など、販売者へのお問い合わせはこちらから行えます。<br />
-                        <span sytle="color:red;">また、お名前や電話番号などの個人情報は店舗側には公開されません。<br />
-                        必要な場合は、「お問い合わせ内容」にご記入ください。</span>
+						商品や送料など、販売者へのお問い合わせはこちらから行えます。
+						<br />
+						<span sytle="color:red;" id="Tyuui" style="display:none;">また、お名前や電話番号などの個人情報は店舗側には公開されません。
+							<br />
+							必要な場合は、「お問い合わせ内容」にご記入ください。</span>
 					</div>
 				</div>
 
-				<form method="POST" action="" id="contact_form"  onsubmit="return onClickButton();">
+				<!--<form method="POST" action="" id="contact_form">-->
+				<div id="contact_form">
 					<div data-role="fieldcontain" >
 						<input type="hidden" name="customer_id" id="customer_id" />
 						<input type="hidden" name="customer_key" id="customer_key" />
@@ -199,12 +231,14 @@
 						<input type="hidden" id="url" name="url" value=""/>
 						<input type="hidden" id="http" name="http" value=""/>
 						<input type="hidden" id="https" name="https" value=""/>
+						
+						<input type="hidden" id="qr_id" name="qr_id" value=""/>
 
-						<ul class="contact_list" data-role="listview" id="mail1">
+						<ul class="contact_list" data-role="listview" id="mail1" style="display:none;">
 							<li>
 								<label for="customer_mail" class="fieldLabel">メールアドレス</label>
 								<br />
-								<input type="email" id="customer_mail" name="customer_mail" value="" class="required email" placeholder="【必須】例）sample1@exorder.jp" />
+								<input type="email" id="customer_mail" name="customer_mail" value="" class="required inputOn email" placeholder="【必須】例）sample1@exorder.jp" />
 							</li>
 						</ul>
 
@@ -212,39 +246,30 @@
 							<li>
 								<label for="contact_text" class="fieldLabel">お問い合わせ内容</label>
 								<br />
-								<textarea id="contact_text" cols="20" rows="5" class="required" name="contact_text"></textarea>
+								<textarea id="contact_text" cols="20" rows="5" class="required validate" name="contact_text"></textarea>
 							</li>
 						</ul>
 
 						<div class="check_btn btn_txt_ow">
-<!--
-							<input class="btn_next" type="button" value="送信する" onclick="onClickButton();" />
--->
-							<input class="btn_next" type="submit" value="送信する"/>
+							<a class="btn_next"  data-role="button" onclick="checkValidate();">送信する</a>
 						</div>
 
 					</div>
-				</form>
+				</div>
 
 			</div>
 
 			<!-- nav -->
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			<div class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false">
-							<span>注文履歴</span>
-						</a>
+						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false">
-							<span>読み取り</span>
-						</a>
+						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03">
-						<a href="setting.html" data-ajax="false">
-							<span>設定</span>
-						</a>
+						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
 				<!-- /dr-footer -->
@@ -254,4 +279,3 @@
 
 	</body>
 </html>
-

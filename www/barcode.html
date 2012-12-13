@@ -35,18 +35,21 @@
 				        // オーディオ再生
 				        audio.play();
 				        // アラート
-				        var message = 'QRコード読み取りを中止しました';
-						var title = 'キャンセル';
-						var button = 'OK';
-						navigator.notification.alert(
-							message, 
-							function(){
-								// move
-				        		window.location.href = "setting.html";
-							}, 
-							title,
-							button
-						 );
+				        
+				        //var message = 'QRコード読み取りを中止しました';
+						//var title = 'キャンセル';
+						//var button = 'OK';
+						//navigator.notification.alert(
+						//	message, 
+						//	function(){
+						//		// move
+				        //		window.location.href = "setting.html";
+						//	}, 
+						//	title,
+						//	button
+						// );
+						
+				        window.location.href = "setting.html";
 				        
                     // 読み取り
 					} else {
@@ -113,6 +116,7 @@
 					navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError);
 				} else {
 					console.log('Could not navigator::geolocation');
+					onGeoError();
 				}
 				function onGeoError(error) {
 					console.log('位置情報の取得に失敗しました');

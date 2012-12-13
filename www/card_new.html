@@ -13,6 +13,7 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/validate.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 
@@ -23,7 +24,7 @@
 
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 
-		<script type='text/javascript' charset="utf-8" src="js/jquery.validate.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
             $( document ).bind( "mobileinit", function() {
@@ -33,6 +34,7 @@
             });
 
 			$(document).ready(function(){
+				$('#loading').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
@@ -72,65 +74,65 @@
 				$("#https").val(json.https);
 			}
 
-/*
-			function onReadyFile() {
-				// ファイルの読み込み
-                var fname = 'ordering';
-//test               delFile(fname);
-                var text = {};
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, fail);
-                function read(fileSystem) {
-                    fileSystem.root.getFile(fname, {}, function(fileEntry) {
-                        fileEntry.file(function(file) {
-                            var reader = new FileReader();
-                            reader.onloadend = function(evt) {
-                            // ここに読み込み完了後の処理を書く
-                                console.log("text: " + evt.target.result);
-                                var text = evt.target.result;
-                                var json = JSON.parse(text);
-                                
-                                // // 復号
-                               	// var jsonEnc = JSON.parse(text);
-                                // var iv = jsonEnc.iv;
-                                // var key = jsonEnc.key;
-                                // var enc = jsonEnc.enc;
-                                // var jsonText = decAes(enc, key, iv);
-                                // json = JSON.parse(jsonText);
-                                
-                                       $("#customer_id").val(json.customer_id);
-                                       $("#customer_mail_1").val(json.customer_mail_1);
-                                       $("#customer_key").val(json.customer_key);
-                                       $("#customer_pass").val(json.customer_pass);
-                                       $("#iv").val(json.iv);
-
-								$("#app_ver").val(json.app_ver);
-								$("#app_code").val(json.app_code);
-								$("#url").val(json.url);
-								$("#http").val(json.http);
-								$("#https").val(json.https);
-
-                                console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
-                                console.log("正常にテキストを読み込みました。:key "+json.customer_key);
-                                       
-                                                           
-                            };
-                            reader.readAsText(file, "utf-8");
-                            // Data URL として読み込む
-                            // reader.readAsDataURL(file);
-                        }, fail)
-                    }, fail);
-                }
-            }
-*/
+			
+			function checkValidate() {
+				var i = 0;
+				//エラーの初期化
+				$("p.error").parent().removeClass("error");
+				$("p.error").remove();
+				
+				//カード会社のチェック
+				$("#card_company option:selected").each(function() {
+					if ($(this).val() == '') {
+						if (i <= 0) {
+							$("#card_company").parent().append("<p class='error'>カード会社を選択してください</p>");
+							$("#card_company").css('background:#FFCCCC;');
+							i++;
+						}
+					}
+				})
+				//お届け先件名のチェック
+				$("#address_name_sel option:selected").each(function() {
+					if ($(this).val() == '' && $('#address_name').val() == "") {
+						if (i <= 0) {
+							$("#address_name_sel").parent().append("<p class='error'>お届け先の件名を選択、または入力してください</p>");
+							$("#address_name_sel").css('background:#FFCCCC;');
+							i++;
+						}
+					}
+				})
+				//カード名義人のチェック
+				if ($("#card_holder").val() == "" || $("#card_holder").val().match(/＾　/) || $("#card_holder").val().match(/＾ /) || !$("#card_holder").val().match(/^[a-zA-Z\s]+$/)) {
+					$("#card_holder").parent().append("<p class='error'>カード名義を入力してください。</p>");
+				}
+				//カード番号のチェック
+				if ($("#card_number").val() == "" || !$("#card_number").val().match(/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13}|35[0-9]{14})$/)) {
+					$("#card_number").parent().append("<p class='error'>カード番号を正しく入力してください。</p>");
+				}
+				//有効期限のチェック
+				if ($("#card_validity").val() == "") {
+					$("#card_validity").parent().append("<p class='error'>カード有効期限を入力してください</p>");
+				}
+				//セキュリティコードのチェック
+				if ($("#card_security_code").val() == "" || !$("#card_security_code").val().match(/^\d{3,5}$/)) {
+					$("#card_security_code").parent().append("<p class='error'>半角数字で入力してください</p>");
+				}
+				//後処理
+				if ($("p.error").size() > 0) {
+					$("p.error").parent().addClass("error");
+					$(".error:first").focus();
+					return false;
+				} else {
+					saveCard();
+				}
+			}
 
 			// 新規登録
 			function saveCard(){
-                var result = $("#form_card").validate().form();				// 入力値
-                if(result == false){
-                    console.log("内容にあやまりあり");
-                    location.reload(true);
-                }
-                
+
+				$('#content').css('display', 'none');
+				$('#loading').css('display', 'block');
+
 				var ordering = {};
 
 				ordering['app_ver']  = $("#app_ver").val();
@@ -147,10 +149,6 @@
                 ordering['card_validity'] = $("#card_validity").val();
 				ordering['card_holder'] = $("#card_holder").val();
 				ordering['card_security_code'] = $("#card_security_code").val();
-
-console.log("customer_id: "+ ordering['customer_id']);
-console.log("card_company: "+ ordering['card_company']);
-console.log("card_validity: "+ ordering['card_validity']);
 
 				// 送信
 				var url = ordering['https']+'json/receive_card.php';
@@ -176,43 +174,6 @@ console.log("card_validity: "+ ordering['card_validity']);
 //						return false;
 					}
 				});
-/*
-				$.post(url, // アクセスするURL
-					params, // 送信データ
-					function(data, status, XHR) {// 処理結果
-		     	       if (status == 'success') {
-							// 戻り値の保存
-console.log("customer_id: " + data.customer_id);
-
-                       var kbn = $("#kbn").val();
-                       if(kbn == "buy"){
-                            location.href="order.html";
-                        }else{
-                            location.href="setting.html";
-                        }
-
-						} else {
-							message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-							title = 'サーバーと通信できませんでした';
-							button = 'OK';
-							navigator.notification.alert(message, alertCallBack(), title, button);
-							return false;
-						}
-					}
-				);
-                
-                $(document.body).ajaxError(
-                                           function(e,xhr,settings){
-                                           message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-                                           title = 'サーバーと通信できませんでした';
-                                           button = 'OK';
-                                           navigator.notification.alert(message, alertCallBack(), title, button);
-                                           return false;
-                                           }
-                                           );
-                
-                return false;
-*/
 			}
 			
 			// alertCallBack -----------------------------------------------------------------------
@@ -222,66 +183,6 @@ console.log("customer_id: " + data.customer_id);
 			}
 
 		</script>
-
-<style type='text/css'> 
-    label.error {
-    color: red;
-    font-size: 16px;
-    font-weight: normal;
-    line-height: 1.4;
-    margin-top: 0.5em;
-    width: 100%;
-    float: none;
-}
- 
- label.error { display: inline-block; margin-left: 22%; }
- 
- label.error { margin-left: 0; display: block; }
- 
-em { color: red; font-weight: bold; padding-right: .25em; }
- 
- 
-  </style> 
-
-
- <script type='text/javascript'> 
-$(function(){
-	$.extend($.validator.messages, {
-		required: "必須項目です",
-		number: "数値のみで入力してください"
-	});
-
-	$('#form_card').validate({
-		// それぞれの項目に適用される検証ルール 
-		rules: { 
-			card_number: { 
-				required: true,    // 必須検証 
-				number: true,
-				rangelength: [15, 16]    // 文字列長検証 (2～10文字) 
-			},
-			card_security_code: { 
-				required: true,    // 必須検証 
-				number: true,
-				rangelength: [3, 4]    // 文字列長検証 (2～10文字) 
-			}
-		},
-
-		// 検証エラー時に表示されるエラー メッセージ 
-		messages: { 
-			card_number: { 
-				required: 'カード番号を入力してください。',
-				number: 'カード番号は数字のみで入力してください。', 
-				rangelength: $.format('カード番号は{0}または{1}文字で入力してください。')
-			},
-			card_security_code: { 
-				required: 'セキュリティコードを入力してください。',
-				number: 'セキュリティコードは数字のみで入力してください。', 
-				rangelength: $.format('セキュリティコードは{0}または{1}文字で入力してください。')
-			}
-        }
-	});
-});
-</script>
 
 	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
@@ -293,12 +194,33 @@ $(function(){
 
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>クレジットカードの入力</h1>
-					<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false">
-						戻る
-					</a>
+				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false"> 戻る </a>
 			</div>
 
-			<div class="cont_card_edit" data-role="content">
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
+				</div>
+			</div>
+
+			<!-- content -->
+			<div id="content" class="cont_card_edit" data-role="content">
 
 				<div class="page_description">
 					<h1>クレジットカード</h1>
@@ -321,13 +243,13 @@ $(function(){
 					</dl>
 				</div>
 
-				<form method="post" action="" id="form_card"  onsubmit="return saveCard();">
+				<div id="form_card">
 					<input type="hidden" id="customer_id" name="customer_id" value=""/>
-                    <input type="hidden" id="customer_key" name="customer_key" />
-                    <input type="hidden" id="customer_pass" name="customer_pass" />
-                    <input type="hidden" id="iv" name="iv" />
+					<input type="hidden" id="customer_key" name="customer_key" />
+					<input type="hidden" id="customer_pass" name="customer_pass" />
+					<input type="hidden" id="iv" name="iv" />
 
-                    <input type="hidden" id="kbn" name="kbn" />
+					<input type="hidden" id="kbn" name="kbn" />
 
 					<input type="hidden" id="app_ver" name="app_ver" value=""/>
 					<input type="hidden" id="app_code" name="app_code" value=""/>
@@ -340,7 +262,7 @@ $(function(){
 
 							<li class="card_num">
 								<label for="card_company" class="fieldLabel">クレジットカード会社</label>
-								<select id="card_company" name="card_company" class="required">
+								<select id="card_company" name="card_company" class="required validate">
 									<option value="">カード会社を選択</option>
 									<option value="visa">VISA</option>
 									<option value="master">MASTER</option>
@@ -357,60 +279,53 @@ $(function(){
 									<br/>
 									・ 姓・名の間に半角スペースを入力してください。
 								</p>
-								<input type="text" id="card_holder" name="card_holder" value="" class="required" placeholder="例）TARO KAIMONO" />
+								<input type="text" id="card_holder" name="card_holder" value="" class="required validate" placeholder="例）TARO KAIMONO" />
 							</li>
 
 							<li class="card_num">
 								<label for="card_number" class="fieldLabel">クレジットカード番号</label>
-								<input type="tel" id="card_number" name="card_number" value="" maxlength=16 class="required number" placeholder="例）数値16桁。15桁の場合、頭に0を埋めてください。" />
+								<input type="tel" id="card_number" name="card_number" value="" maxlength=16 class="required validate" placeholder="例）数値16桁。または15桁" />
 							</li>
 
 							<li class="card_limit">
 								<label for="card_validity" class="fieldLabel">有効期限(年月)</label>
-								<input style="width:100px;" type="month" id="card_validity" name="card_validity"  />
+								<input style="width:100px;" type="month" id="card_validity" name="card_validity" value="" placeholder="例）2016-10" />
 							</li>
 
 							<li class="card_sCode">
 								<label for="card_security_code" class="fieldLabel">セキュリティコード</label>
 								<div class="box2">
 									<div class="box2_01">
-										<input style="width:100px;" type="password" id="card_security_code" name="card_security_code" value="" maxlength=4 class="required number" placeholder="例）123" />
+										<input style="width:100px;" type="password" autocomplete="off" id="card_security_code" name="card_security_code" value="" maxlength=4 class="required validate" placeholder="例）123" />
 									</div>
 								</div>
 							</li>
 							<li>
-								<a href="website.html?page=scd.html&title=セキュリテリコードとは？" data-ajax="false"> セキュリティコードとは？ </a>
+								<a href="website.html?page=scd.html" data-ajax="false"> セキュリティコードとは？ </a>
 							</li>
 
 							<li class="item_buy_1btn btn_txt_ow">
-<!--
-								<input type="button" class="btn_next" value="登録する" onclick="saveCard()";/>
--->
-								<input type="submit" class="btn_next" value="登録する"/>
+								<div>
+								<a class="btn_next" data-role="button" onclick="checkValidate();">登録する</a>
+								</div>
 							</li>
 
 						</ul>
 					</div>
-				</form>
+				</div>
 			</div>
 
 			<!-- nav -->
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false">
-							<span>注文履歴</span>
-						</a>
+						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false">
-							<span>読み取り</span>
-						</a>
+						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03 current">
-						<a id="tab3a" href="setting.html" data-ajax="false">
-							<span>設定</span>
-						</a>
+						<a id="tab3a" href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
 				<!-- /dr-footer -->
@@ -420,4 +335,3 @@ $(function(){
 
 	</body>
 </html>
-

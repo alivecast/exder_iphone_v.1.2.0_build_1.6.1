@@ -24,7 +24,8 @@
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 
 		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
-		<script type='text/javascript' charset="utf-8" src="js/jquery.validate.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+
 		<script type="text/javascript">
             $( document ).bind( "mobileinit", function() {
                 // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -48,52 +49,6 @@
                     }
                 onReadyFile();
 			}
-
-/*
-			function onReadyFile() {
-				// ファイルの読み込み
-console.log("start Setting");
-				var fname = 'order';
-                var fname = 'order';
-                var text = {};
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, noItem);
-                function read(fileSystem) {
-                    fileSystem.root.getFile(fname, {}, function(fileEntry) {
-                        fileEntry.file(function(file) {
-                            var reader = new FileReader();
-                            reader.onloadend = function(evt) {
-                            // ここに読み込み完了後の処理を書く
-                                console.log("text: " + evt.target.result);
-                                text = evt.target.result;
-                                json = JSON.parse(text);
-                                
-                                // // 復号
-                               	// var jsonEnc = JSON.parse(text);
-                                // var iv = jsonEnc.iv;
-                                // var key = jsonEnc.key;
-                                // var enc = jsonEnc.enc;
-                                // var jsonText = decAes(enc, key, iv);
-                                // json = JSON.parse(jsonText);
-                                
-                                console.log("正常にorderテキストを読み込みました。");
-                                if(json.qr_id.length > 1) {
-                                console.log("order:"+json.qr_id);
-                          	      $("#order").css("display","block");
-                          	      $("#itemName").attr("href","show_item.html?qr_id="+json.qr_id);
-                          	      // $("#itemName").text(json.item_name);
-                                }
-                            	onReadyFile2();
-                            };
-                            reader.readAsText(file, "utf-8");
-                        }, noItem)
-                    }, noItem);
-                }
-            }
-            function noItem(error){
-console.log("start Setting err");
-            	onReadyFile2();
-            }
-*/
 
 			function onReadyFile() {
 				// ファイルの読み込み
@@ -133,50 +88,6 @@ console.log("start Setting err");
 				onReadyFile2();
 			}
 
-/*
-			function onReadyFile2() {
-				// ファイルの読み込み
-				console.log("start");
-
-				var fname = 'ordering';
-                var text = {};
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, onView);
-                function read(fileSystem) {
-                    fileSystem.root.getFile(fname, {}, function(fileEntry) {
-                        fileEntry.file(function(file) {
-                            var reader = new FileReader();
-                            reader.onloadend = function(evt) {
-                            // ここに読み込み完了後の処理を書く
-                                console.log("text: " + evt.target.result);
-                                text = evt.target.result;
-                                json = JSON.parse(text);
-                                
-                                // // 復号
-                               	// var jsonEnc = JSON.parse(text);
-                                // var iv = jsonEnc.iv;
-                                // var key = jsonEnc.key;
-                                // var enc = jsonEnc.enc;
-                                // var jsonText = decAes(enc, key, iv);
-                                // json = JSON.parse(jsonText);
-                                
-                                console.log("正常にテキストを読み込みました。");
-                                getCustomers(json);
-                            };
-                            reader.readAsText(file, "utf-8");
-                            // Data URL として読み込む
-                            // reader.readAsDataURL(file);
-                        }, onView)
-                    }, onView);
-                }
-
-            }
-            
-            function onView(error){
-                $("#loading").css("display","none");
-                $("#content_all").css("display","block");
-            }
-*/
-
 			function onReadyFile2() {
 				// orderingファイルを読み込み、設定ファイルを引数としてgetCustomers関数に渡す
 				console.log("Start ordering");
@@ -201,6 +112,8 @@ console.log("customer_ck:"+data.customer_ck);
 console.log("address_ck:"+data.address_ck);
 console.log("card_ck:"+data.card_ck);
 console.log("password_ck:"+data.password_ck);
+                       
+                       	$('#loading').css('display', 'none');
                        
                        // 個人情報の設定
                        if(data.password_ck == 1){
@@ -261,149 +174,14 @@ console.log("password_ck:"+data.password_ck);
 					}
 				});
 
-/*
-				$.post(url, // アクセスするURL
-                    params, // 送信データ
-                    function(data, status, XHR) {// 処理結果
-                    if (status == 'success') {
 
-console.log("customer_id:"+params.customer_id);
-console.log("password_ck:"+data.password_ck);
-console.log("customer_ck:"+data.customer_ck);
-console.log("address_ck:"+data.address_ck);
-console.log("card_ck:"+data.card_ck);
-console.log("password_ck:"+data.password_ck);
-                       
-                       // 個人情報の設定
-                       if(data.password_ck == 1){
-                            $("#ico4").css("display","block");
-                            $("#href4").attr("href","passcode_edit.html");
-                            $('#ordering_ok').css("display","block");
-                            $('#ordering_ng').css("display","none");
-                       }else{
-                            $('#ordering_ok').css("display","none");
-                            $('#ordering_ng').css("display","block");
-                       }
-                       
-						if(data.customer_ck == 1){
-                            $("#ico1").css("display","block");
-                            $('#address_ok').css("display","block");
-                            $('#address_ng').css("display","none");
-                        }else{
-                            $('#address_ok').css("display","none");
-                            $('#address_ng').css("display","block");
-						}
-
-						if(data.address_ck == 1){
-                            $("#ico2").css("display","block");
-                            $('#card_ok').css("display","block");
-                            $('#card_ng').css("display","none");
-						}else{
-                            $('#card_ok').css("display","none");
-                            $('#card_ng').css("display","block");
-                        }
-
-						if(data.card_ck == 1){
-                            $("#ico3").css("display","block");
-							$("#href3").attr("href","card_show.html");
-						}
-
-
-                       if(data.setup_ok == 1){
-                            $("#setup_ok").css("display","block");
-                            $("#setup_no").css("display","none");
-                       }else{
-                            $("#setup_ok").css("display","none");
-                            $("#setup_no").css("display","block");
-                       }
-                       
-                       $("#loading").css("display","none");
-                       $("#content_all").css("display","block");
-
-						if(data.password_ck == 1){
-							if(data.customer_ck == 1 || data.card_ck == 1){
-								ckPassTime();
-							}
-						}
-
-                       
-                    } else {
-                       message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-                       title = 'サーバーと通信できませんでした';
-                       button = 'OK';
-                       navigator.notification.alert(message, alertCallBack(), title, button);
-                       return false;
-                    }
-                    }
-                );
-                
-                $(document.body).ajaxError(
-                                           function(e,xhr,settings){
-                                           $("#content_all").css("display","none");
-                                           message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-                                           title = 'サーバーと通信できませんでした';
-                                           button = 'OK';
-                                           navigator.notification.alert(message, alertCallBack(), title, button);
-                                           return false;
-                                           }
-                );
-*/
             }
-            
+
             function alertCallBack(){
             	
             }
-/*
-			function ckPassTime() {
-				// ファイルの読み込み
-                var fname = 'passtime';
-                var text = {};
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, fail);
-                function read(fileSystem) {
-                    fileSystem.root.getFile(fname, {}, function(fileEntry) {
-                        fileEntry.file(function(file) {
-                            var reader = new FileReader();
-                            reader.onloadend = function(evt) {
-                            // ここに読み込み完了後の処理を書く
-                                console.log("text: " + evt.target.result);
-                                text = evt.target.result;
-                                json = JSON.parse(text);
-                                
-                                // // 復号
-                               	// var jsonEnc = JSON.parse(text);
-                                // var iv = jsonEnc.iv;
-                                // var key = jsonEnc.key;
-                                // var enc = jsonEnc.enc;
-                                // var jsonText = decAes(enc, key, iv);
-                                // json = JSON.parse(jsonText);
-                                
-                                console.log("正常にテキストを読み込みました。:passtime "+json.pass_time);
 
-								var cktime   = json.pass_time+(60*60);
-								var nowtime  = parseInt( new Date() /1000 );
-								if(cktime < nowtime){
-									location.href="passcode_input.html";
-                                }else{
-                                    // 暗証番号をもとめるリミット
-                                    var psstime = {};
-                                    psstime['pass_time'] = parseInt( new Date() /1000 );
-                                    var fname2 = 'passtime';
-                                    console.log("fname2: " + fname2);
-                                    setFile(fname2, psstime);
-                                }
-                            };
-                            reader.readAsText(file, "utf-8");
-                            // Data URL として読み込む
-                            // reader.readAsDataURL(file);
-                        }, goErr)
-                    }, goErr);
-                }
-            }
 
-			function goErr(error) {
-				location.href="passcode_input.html";
-			}
-*/
 			// 暗証番号をもとめる
 			function ckPassTime() {
 				// ファイルの読み込み
@@ -419,12 +197,14 @@ console.log("password_ck:"+data.password_ck);
 				if(cktime < nowtime){
 					location.href="passcode_input.html";
 				}else{
-					// 暗証番号をもとめるリミット
-					var psstime = {};
-					psstime['pass_time'] = parseInt( new Date() /1000 );
-					var fname2 = 'passtime';
-					console.log("fname2: " + fname2);
-					setFile(fname2, psstime);
+					if(json.pass_time < nowtime){
+						// 暗証番号をもとめるリミット
+						var psstime = {};
+						psstime['pass_time'] = parseInt( new Date() /1000 );
+						var fname2 = 'passtime';
+						console.log("fname2: " + fname2);
+						setFile(fname2, psstime);
+					}
 				}
 			}
 
@@ -436,35 +216,40 @@ console.log("password_ck:"+data.password_ck);
 	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
-
-	<body>
-
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
 
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>設定</h1>
-<!--
-				<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
-					戻る
-				</a>
- -->
-                <a href="website.html?page=tr.html" class="ui-btn-right" data-icon="info" data-ajax="false">使い方</a>
+                <a href="website.html" class="ui-btn-right" data-icon="info" data-ajax="false">使い方</a>
 			</div>
 
-            <div class="cont_itemDetail" data-role="content" id="loading" style="text-align:center;top:50px">
-                <h1>Please Waiting...</h1>
-                <div >
-                    <img src="images/loading_bar_or.gif" />
-                </div>
-            </div>
+            <!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
+				</div>
+			</div>
             
 			<div data-role="content" id="content_all" style="display:none;">
 
                 <div id="order" style="display:none">
 				<div class="setup_no">
-					<div class="tl">
-						未購入の商品があります。
-					</div>
+					<div id="purchased_item" class="tl" >未購入の商品があります。</div>
 				</div>
 				<ul data-role="listview">
 					<li style="background-color:#ccc;">
@@ -472,7 +257,6 @@ console.log("password_ck:"+data.password_ck);
 					</li>
 				</ul>
                 </div>
-
 
 				<div class="setup_no" id="setup_no" style="display:block">
 					<div class="tl">
@@ -501,11 +285,12 @@ console.log("password_ck:"+data.password_ck);
 					<li id="ordering_ok" style="display:none;">
 						<a data-ajax="false" href="#" onclick="location.href='ordering_new.html'"> 
 							<span class="ico_check"><img id="ico1" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;"/></span>
-							<span class="tl"> 個人設定（利用者情報） </span> 
+							<span class="tl"> 利用者情報 </span> 
 						</a>
 					</li>
 					<li id="ordering_ng">
-							<span class="tl"> 個人設定（利用者情報） </span> 
+							<span class="ico_check"></span>
+							<span class="tl">　利用者情報 </span> 
 					</li>
 
 					<li id="address_ok" style="display:none;">
@@ -515,6 +300,7 @@ console.log("password_ck:"+data.password_ck);
 						</a>
 					</li>
 					<li id="address_ng">
+							<span class="ico_check"></span>
 							<span class="tl"> お届け先 </span> 
 					</li>
 
@@ -526,6 +312,7 @@ console.log("password_ck:"+data.password_ck);
 						</a>
 					</li>
 					<li id="card_ng">
+							<span class="ico_check"></span>
 							<span class="tl"> クレジットカード </span> 
 					</li>
 
@@ -533,30 +320,22 @@ console.log("password_ck:"+data.password_ck);
 
 			</div>
 
-			<!-- nav -->
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			<!-- タブバー -->
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber"　>
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false">
-							<span>注文履歴</span>
-						</a>
+						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false">
-							<span>読み取り</span>
-						</a>
+						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03 current">
-						<a href="setting.html" data-ajax="false">
-							<span>設定</span>
-						</a>
+						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
-				<!-- /dr-footer -->
-			</div>
+			</div><!-- /dr-footer -->
 
 		</div>
 
 	</body>
 </html>
-

@@ -11,20 +11,18 @@
 		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
 		-->
 
-            <link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
-            <link rel="stylesheet" href="css/iphone.css" type="text/css" />
-            
-            <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-            
-            <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
-            <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-            
-            <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-            
-            <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+        <link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/validate.css" type="text/css" />
+
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 
 		<script type="text/javascript">
-            
+
 			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
@@ -38,14 +36,8 @@
                         var r = ret[i].split("=");
                         get[r[0]] = r[1];
                     }
-                    if(get['page']){
-                	    console.log("page:"+get['page']);
-                	    var filename = "http://exorder.jp/app/phonegap/"+get['page'];
-                    }else{
-                    	var filename = "http://exorder.jp/app/phonegap/tr.html";
-                    }
-                }else{
-                	var filename = "http://exorder.jp/app/phonegap/tr.html";
+                    console.log("qr_id:"+get['qr_id']);
+                    var filename = "http://exorder.jp/products/?page=shipping&qr_id="+get['qr_id'];
                 }
 				
 				// html取得
@@ -65,11 +57,10 @@
 				}
 				
 			}
-
 		</script>
         
         <script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-
+		
 	</head>
 
 	<body>
@@ -77,7 +68,7 @@
 		<div data-role="page" data-add-back-btn="false">
             
 			<div data-role="header" id="header" data-position="fixed">
-				<h1 id="title">使い方</h1>
+				<h1 id="title">送料</h1>
 				<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
 					戻る
 				</a>
@@ -88,7 +79,7 @@
             </div>
             
 			<!-- nav -->
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
 				<ul>
 					<li class="tab01">
 						<a href="show_order.html" data-ajax="false">

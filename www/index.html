@@ -10,15 +10,17 @@
 		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
 		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
 		-->
-            
+
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		            
         <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-                    
+        <script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-        
-        <link rel="stylesheet" href="css/iphone.css" type="text/css" />
+
         
         <script type="text/javascript">
 			$(document).bind( "mobileinit", function() {
@@ -27,11 +29,17 @@
 				$.mobile.allowCrossDomainPages = true;
 			});
 
-			$(document).ready(function(){
+			$(document).ready(function(){				
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
+				// TEST
+				//var fname = 'ordering';
+				//delFile(fname);
+				//var fname = 'order';
+				//delFile(fname);
+				
 				// ネットワークの判定
 				// check_network();
 
@@ -45,8 +53,7 @@
 						onReadyFile2(rdata);
 					},
 					error: function(){
-						networdERR(alertCallBack,'通信エラー');
-						return false;
+						onReadyFile2();
 					}
 				});
 			}
@@ -87,9 +94,18 @@
 
 				function onGetOrderingOK(json){
 					console.log("正常にテキストを読み込みました。 json.url: " + json.url);
-					json['url']   = rdata.url;
-					json['http']  = rdata.http;
-					json['https'] = rdata.https;
+					if(rdata && rdata.url){
+						json['url']   = rdata.url;
+						json['http']  = rdata.http;
+						json['https'] = rdata.https;
+					}else{
+						if(json.url){
+						// OK
+						}else{
+							networdERR(alertCallBack,'通信エラー');
+							return false;
+						}
+					}
 					if(json.app_code){
 						updateOradering(json);
 					}else{
@@ -149,21 +165,44 @@
 	</head>
 
 	<body>
-		<div data-role="page" data-add-back-btn="false">
+		<div data-role="page" data-add-back-btn="false" data-theme="z">
 
-			<div class="cont_itemDetail" data-role="content" id="loading" style="text-align:center;top:50px">
-				<h1>Please Waiting...</h1>
-				<div>
-					<img src="images/loading_bar_or.gif" />
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
 				</div>
 			</div>
-            
-			<div class="cont_itemDetail" data-role="content" id="top" style="display:none;">
-				<input type="button" class="btn_next" value="再接続" onclick="location.href='index.html'"/>
+
+
+			<!-- reconnection -->
+			<div class="reconnection" data-role="content" id="top" style="display:none;">
+				<div class="reconnection_box">
+					<p>ただいま通信が繋がりにくくなっております。しばらくお待ちしてから、接続しなおしてください。</p>
+					<div class="btn_outer">
+						<a class="btn_next" href="index.html" data-role="button" data-ajax="false">再接続する</a>
+						<!-- /btn_outer -->
+					</div>
+					<!-- /reconnection_box -->
+				</div>
+				<!-- /dr-content -->
 			</div>
-            
 
 		</div>
 	</body>
 </html>
-

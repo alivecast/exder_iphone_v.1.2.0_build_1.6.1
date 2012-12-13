@@ -112,6 +112,7 @@ function currency(str) {
 	return num;
 }
 
+
 // fnが関数ならそのまま返し、文字列なら関数名にして返す
 function $FN(fn) {
     return (typeof fn == 'function') ? fn : Function('x', 'return ' + fn);
@@ -202,17 +203,15 @@ function getFile(fname,okfn,errfn) {
 				reader.onloadend = function(evt) {
 					// ここに読み込み完了後の処理を書く
 					text = evt.target.result;
-                    console.log("getFile::正常にファイルを読み込みました。");
-					// var json = JSON.parse(text);
-                    // callback = $FN(okfn);
-					// return callback(json);
-                           
-                    // 複号化
                     if(text){
+                    	console.log("getFile::正常にファイルを読み込みました。");
                         var encText = text;
                         var obj = decAesObj(encText);
                         callback = $FN(okfn);
                         return callback(obj);
+                    }else{
+                    	console.log("getFile::正常にファイルを読み込みましたが、データがありません。");
+                        noFile();
                     }
 
 				};
@@ -421,13 +420,19 @@ function decAesObj(encText) {
     } else {
         var enc = JSON.parse(decBase64(encText));
     }
-    var key = enc.key;
-    var iv = enc.iv;
-    var enc = enc.enc;
-    var objText = CryptoJS.AES.decrypt(enc, key, { iv: iv });
-    objText = objText.toString(CryptoJS.enc.Utf8);
-    console.log("objText: " + objText);
-    var obj = JSON.parse(objText);
+    if(enc.key || enc.enc){
+    	console.log('Key ari');
+    	var key = enc.key;
+	    var iv = enc.iv;
+	    var enc = enc.enc;
+	    var objText = CryptoJS.AES.decrypt(enc, key, { iv: iv });
+		objText = objText.toString(CryptoJS.enc.Utf8);
+		var obj = JSON.parse(objText);
+    }else{
+    	console.log('Key nashi');
+    	var obj = enc;
+    }
+    console.log("objText: " + obj);
     return obj;
 }
 
@@ -444,3 +449,22 @@ function randPassWord(length) {
     return pass;
 }
 
+function getLocalStorage(fname) {
+	var value = window.localStorage.getItem(fname);
+	return value;
+}
+
+function setLocalStorage(fname, value) {
+	window.localStorage.removeItem(fname);
+	window.localStorage.setItem(fname, value);
+}
+
+// 桁区切りを戻す
+function setPrice(price) {
+	// 桁区切り
+	var str = String(price);
+	var num = new String(str).replace(/,/g, "");
+	while (num != ( num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
+	num += '円';
+	return num;
+}

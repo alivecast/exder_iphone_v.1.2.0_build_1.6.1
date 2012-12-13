@@ -16,6 +16,7 @@
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
@@ -36,8 +37,7 @@
 			});
 
 			function onDeviceReady() {
-				// Alert -----------------------------------------------------------------------
-				// navigator.notification.alert("show_qrcode.html");
+				$('#loading').css('display', 'none');
 				
 				// GETでJSON取得
 				var get = getQuery();
@@ -92,13 +92,34 @@
 			
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>商品を紹介する</h1>
-				<a data-rel="back" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
+				<a data-rel="back" href="show_order_item.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
 					戻る
 				</a>
 			</div>
 			
-			<div class="cont_itemDetail" data-role="content">
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
+				</div>
+			</div>
 
+			<div id="content" class="cont_itemDetail" data-role="content">
 
 				<ul class="item_summary" data-role="listview">
 
@@ -110,36 +131,10 @@
 						<div style="text-align:center;" id="qrcode" ></div>
 					</li>
 
-					<li class="item_img_price">
-						<div class="box2">
-							<div class="box2_01 item_img">
-								<div class="inner" id="item_image">
-								</div>
-							</div>
-
-							<div class="box2_02 item_price">
-								<dl class="price">
-									<dt>
-										価格
-									</dt>
-									<dd id="price"></dd>
-								</dl>
-								<!--
-								<dl class="shippingCost">
-									<dt>
-										送料
-									</dt>
-									<dd id="order_carriage"></dd>
-								</dl>
-								-->
-							</div>
-						</div>
-					</li>
-
 				</ul>
 
 			</div>
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
 				<ul>
 					<li class="tab01 current"><a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a></li>
 					<li class="tab02"><a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a></li>

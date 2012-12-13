@@ -22,7 +22,7 @@
             <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
 
             <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-            <script type="text/javascript" charset="utf-8" src="js/jCarousel.min.js"></script>
+
 
 		<script type="text/javascript">
 			$(document).ready(function(){
@@ -38,12 +38,7 @@
                         var r = ret[i].split("=");
                         get[r[0]] = r[1];
                     }
-                    console.log("page:"+get['page']);
-//                    console.log("title:"+get['title']);
-//
-//                    if(get['title']){
-//                        $("#title").text(get['title']);
-//                    }
+
                     var filename = "http://exorder.jp/app/phonegap/"+get['page'];
                 }
 				

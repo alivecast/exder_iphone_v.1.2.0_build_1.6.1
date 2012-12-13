@@ -10,14 +10,17 @@
 		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
 		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
 		-->
+		
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		
         <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+		<script src="js/jquery.activity-indicator-1.0.0.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
         
         <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-        
-        <link rel="stylesheet" href="css/iphone.css" type="text/css" />
         
         <script type="text/javascript">
 
@@ -104,53 +107,34 @@
 	</head>
 
 	<body>
-		
-        <div data-role="page" data-add-back-btn="false" data-theme="z">
-		
-		  <div class="cont_itemDetail" data-role="content" id="loading" style="text-align:center;top:50px">
-
-				<h1>Please Waiting...</h1>
-				<div >
-					<img src="images/loading_bar_or.gif" />
+		<div data-role="page" data-add-back-btn="false" data-theme="z">
+			<div data-role="header" id="header" data-position="fixed">
+				<h1></h1>
+			</div>
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>
+						しばらくおまちください
+					</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
 				</div>
-		  </div>
-		
-		  <div data-role="content">
-		    <script src="/public/jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
-		    <script src="/public/jquery/jquery.activity-indicator-1.0.0.js"></script>
-<!--
-		  <style type="text/css">
-		  body {
-		    color: #fff;
-		    background: #00406c;
-		  }
-		  .square {
-		    width: 320px;
-		    height: 360px;
-		    color: #999;
-		    background: #fff;
-		    opacity: 0.2;
-		    font-family: Helvetica, Arial, Sans-Serif;
-		  }
-		  </style>
--->
-		  <div data-role="content">
-		    <div id="busy4" class="square">
-		    </div>
-		  </div>
+			</div>
 		</div>
-		
-		<script>
-		  $(function() {
-		    // $('#busy1').activity();
-		    // $('#busy2').activity({segments: 8, steps: 3, opacity: 0.3, width: 4, space: 0, length: 5, color: '#0b0b0b', speed: 1.5});
-		    // $('#busy3').activity({segments: 8, width:2, space: 0, length: 3, color: '#fff', speed: 1.5});
-		//    $('#busy4').activity({segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5});
-		    $('#busy4').activity({segments: 32, width: 6, space: 3, length: 72, color: '#252525', speed: 1.5,  align: 'center', valign: 'center'});
-		    // $('#busy5').activity({segments: 12, align: 'left', valign: 'top', steps: 3, width:2, space: 1, length: 3, color: '#030303', speed: 1.5});
-		    // $('#busy6').activity({outside: true, align: 'right', segments: 10, steps: 3, width:2, space: 0, length: 3, color: '#000', speed: 1.5});
-		  });
-		</script>
 	</body>
 </html>
 

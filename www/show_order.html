@@ -15,7 +15,8 @@
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+		
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
 
@@ -27,9 +28,9 @@
 		
 					
             $( document ).bind( "mobileinit", function() {
-                               // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                               $.support.cors = true;
-                               $.mobile.allowCrossDomainPages = true;
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
             });
 		
 			$(document).ready(function(){
@@ -79,85 +80,14 @@
 			}
 
 
-/*
-			function onDeviceReady() {
-
-				// Alert -----------------------------------------------------------------------
-				// navigator.notification.alert("show_order.html");
-				//------------------------------------------------------------------------------
-
-				// 更新日時
-				var final_update = getDateTime(new Date() / 1000);
-				var update = '更新日時：<span>' + final_update + '</span>';
-				$("#update_time").html(update);
-
-				// 注文一覧
-				fname = 'ordering';
-				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, fail);
-				function read(fileSystem) {
-					fileSystem.root.getFile(fname, {}, function(fileEntry) {
-						fileEntry.file(function(file) {
-							var reader = new FileReader();
-							reader.onloadend = function(evt) {
-								// ここに読み込み完了後の処理を書く
-								jsonText = evt.target.result;
-								json = JSON.parse(jsonText);
-								
-								// // 復号
-                               	// var jsonEnc = JSON.parse(text);
-                                // var iv = jsonEnc.iv;
-                                // var key = jsonEnc.key;
-                                // var enc = jsonEnc.enc;
-                                // var jsonText = decAes(enc, key, iv);
-                                // json = JSON.parse(jsonText);
-								
-								url = json.http+'json/get_order_index.php';
-								hash = {
-									customer_id: json.customer_id,
-									customer_key: json.customer_key,
-									app_ver: json.app_ver,
-									app_code: json.app_code,
-									url: json.url,
-									http: json.http,
-									https: json.https
-								};
-
-								$.ajax({
-									type: "POST",
-									url: url,
-									data:hash,
-									success: function(data){
-										// loading追加処理
-										$('#loading').css('display', 'none');
-										$('#content').css('display', 'block');
-										// 購入一覧表示
-										console.log('ORDER_INDEX: ' + JSON.stringify(data));
-										show_order_index(data);
-									},
-									error: function(data) {
-										message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-										title = 'サーバーと通信できませんでした';
-										button = 'OK';
-										navigator.notification.alert(message, errorPostCallBack(), title, button);
-									}
-								});
-							};
-							reader.readAsText(file, "utf-8");
-						}, fail)
-					}, fail);
-				}
-
-			}
-*/
-
 			// alertCallBack -----------------------------------------------------------------------
 				function errorPostCallBack() {
 					window.location.href = 'setting.html';
 				}
 			
-			function alertCallBack() {
-				window.location.href = 'setting.html';
-			}
+				function alertCallBack() {
+					window.location.href = 'setting.html';
+				}
 			
 				// 注文一覧HTML
 				function show_order_index(orders) {
@@ -167,52 +97,103 @@
 					var order_indexs = '';
 					if (length > 0) {
 						console.log('length: ' + length);
-					// console.log('orders: ' + JSON.stringify(orders));
+						var order_id_taihi = '';
+						
 						for (var i = 0; i < length; i++) {
-						// console.log('order: ' + JSON.stringify(orders[i]));
-							var order_id = orders[i].order_id;
-							var qr_id = orders[i].qr_id;
+							var order_id     = orders[i].order_id;
+							var qr_id        = orders[i].qr_id;
 							var item_version = orders[i].item_version;
-							var order_index = '';
-							order_index += '<dl class="orderInfoApp_list">';
-							order_index += '<dt><span id="order_time" class="date">' + getDateTime(orders[i].order_create_time) + '</span>注文</dt>';
-							order_index += '<dd><ul data-role="listview"><li>';
-							order_index += '<a href="show_order_item.html?order_id=' + order_id + '&qr_id=' + qr_id + '&item_version=' + item_version + '" target="_blank">';
-							// キャンセル可能時間表示
-							if (orders[i].item_cancel_flg == 'disable' && parseInt(new Date() / 1000) <= (parseInt(orders[i].order_create_time)) + parseInt(orders[i].cancel_ok_time)) {
-								order_index += '<div class="order_cancel">';
-								order_index += 'キャンセル <span>' + getDateTime(parseInt(orders[i].order_create_time) + parseInt(orders[i].cancel_ok_time)) + ' まで受付</span>';
-								order_index += '</div>';
-								// キャンセルしました
+							
+							var orderJyokyo = '';
+							
+							if (orders[i].item_cancel_flg == 'disable' && parseInt(new Date() / 1000) <= (parseInt(orders[i].order_time)) + parseInt(orders[i].cancel_ok_time)) {
+								orderJyokyo = '1';
+								
+							// キャンセルしました
 							} else if (orders[i].item_cancel_flg == 'enable') {
+								orderJyokyo = '2';
+								
+							// 注文確定
+							} else if (orders[i].order_sts == '配送準備中') {
+								orderJyokyo = '3';
+								
+							// 発送済み
+							} else if (orders[i].order_sts == "配送済み") {
+								orderJyokyo = '4';
+							}
+							
+							var order_index = '';
+							
+							// 注文番号・注文時間
+							if(order_id != order_id_taihi){
+								order_index += '<dt><span id="order_time" class="date">';
+								
+								// 注文番号
+								if (orderJyokyo == '1'){
+									// キャンセル可能時間は注文番号は表示しない
+								}else if(orderJyokyo == '2') {
+									// キャンセル時も注文番号は表示しない。
+									if(orders[i].matome_count > 0){
+										// ただし「まとめ注文で、１商品でも注文が確定」していれば、表示する
+										order_index += 'No.' + order_id + '　';
+									}
+								}else{
+									order_index += 'No.' + order_id + '　';
+								}
+								// 注文時間
+								order_index += getDateTime(orders[i].order_time) + '</span>注文</dt>';
+								
+								order_id_taihi = order_id;
+							}
+														
+							order_index += '<dd><ul data-role="listview" class="listview"><li>';
+							order_index += '<a href="show_order_item.html?order_id=' + order_id + '&qr_id=' + qr_id + '&item_version=' + item_version + '" target="_blank">';
+
+							// キャンセル可能時間表示
+							if (orderJyokyo == '1') {
+								order_index += '<div class="order_cancel">';
+								order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_ok_time)) + ' までキャンセル可能</span>';
+								order_index += '</div>';
+								
+							// キャンセルしました
+							} else if (orderJyokyo == '2') {
 								order_index += '<div class="order_defined">';
 								order_index += 'キャンセルしました <span>' + getDateTime(parseInt(orders[i].item_cancel_time)) + '</span>';
 								order_index += '</div>';
+								
 							// 注文確定
-							} else if (orders[i].order_sts == '配送準備中') {
-								order_index += '<div class="order_defined">';
+							} else if (orderJyokyo == '3') {
+								order_index += '<div class="shipment_notification">';
 								order_index += '配送準備中 <span>' + getDateTime(orders[i].order_update_time) + '</span>';
 								order_index += '</div>';
-								// 発送済み
-							} else if (orders[i].order_sts == "配送済み") {
+								
+							// 発送済み
+							} else if (orderJyokyo == '4') {
 								order_index += '<div class="shipment_notification">';
 								order_index += '商品配送済 <span>' + getDateTime(orders[i].order_update_time) + '</span>';
 								order_index += '</div>';
 							}
+
 							// 商品写真
 							order_index += '<div class="box2"><div class="box2_01 item_img"><div class="inner">';
 							order_index += '<img src="' + orders[i].item_image + '" width="60" height="60" />';
 							// 商品名
 							order_index += '</div></div><div class="box2_02 item_name">';
 							order_index += '<h1 class="name">' + orders[i].item_name + '</h1>';
+							order_index += '<div class="delivery"><span class="icon">お届け先</span><span>' + orders[i].recipient_subject + '</span></div>';
+							order_index += '<div class="total_price"><span class="icon">購入金額</span><span>' + setPrice(orders[i].total_price) + '</span>';
+							order_index += '<span class="icon">数量</span><span>' + orders[i].item_quantity + '</span></div>';
 							order_index += '</div></div>';
+							
 							// // 販売者からのお知らせ
-							// if (orders[i].massage_shop && orders[i].massage_shop != '') {
-								// order_index += '<div class="message_shop"><div class="tl">販売者からのお知らせ</div><div class="txt">';
-								// order_index += orders[i].message_shop;
-								// order_index += '</div></div> ';
-							// }
-							order_index += '</a></li></ul></dd></dl>';
+							if (orders[i].massage_shop && orders[i].massage_shop != '') {
+								order_index += '<div class="message_shop"><div class="tl">販売者からのお知らせ</div><div class="txt">';
+								order_index += orders[i].message_shop;
+								order_index += '</div></div> ';
+							}
+							
+							order_index += '</a></li></ul></dd>';
+							
 							// 注文情報を結合
 							order_indexs += order_index;
 						}
@@ -221,10 +202,11 @@
 						order_indexs = '只今、ご購入履歴はありません。';
 					}
 
-					$("#order_indexs").html(order_indexs);
+					$("#orderInfoApp_list").html(order_indexs);
 					console.log('to_show_order_item: ' + order_indexs);
+
+					$('.listview').listview();
 				}
-			// }
 
 		</script>
 		
@@ -235,17 +217,30 @@
 	<body>
 
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
-			
+
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>購入履歴</h1>
-                <a href="website.html?page=tr.html" class="ui-btn-right" data-icon="info" data-direction="reverse" data-ajax="false">
-                    使い方</a>
+				<a href="website.html" class="ui-btn-right" data-icon="info" data-direction="reverse" data-ajax="false"> 使い方</a>
 			</div>
 			<!-- loading -->
-			<div class="cont_itemDetail" data-role="content" id="loading" style="text-align:center;top:50px">
-				<h1>Please Waiting...</h1>
-				<div >
-					<img src="images/loading_bar_or.gif" />
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
 				</div>
 			</div>
 			<!-- content -->
@@ -253,10 +248,10 @@
 				<!-- 更新日時 -->
 				<div id="update_time" class="update_time"></div>
 				<!-- 注文一覧 -->
-				<div id="order_indexs"></div>
+				<dl class="orderInfoApp_list" id="orderInfoApp_list"></dl>
 			</div>
 
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
 				<ul>
 					<li class="tab01 current">
 						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
@@ -273,4 +268,3 @@
 
 	</body>
 </html>
-

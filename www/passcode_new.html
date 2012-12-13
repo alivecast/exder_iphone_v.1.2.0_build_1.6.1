@@ -13,6 +13,7 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/validate.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 
@@ -21,7 +22,7 @@
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
 
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-		<script type='text/javascript' charset="utf-8" src="js/jquery.validate.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
 			$(document).bind("mobileinit", function() {
@@ -35,6 +36,9 @@
 			});
 
 			function onDeviceReady() {
+				
+				$('#loading').css('display', 'none');
+							
 				if (location.search.length > 1) {
 					var get = new Object();
 					var ret = location.search.substr(1).split("&");
@@ -55,11 +59,6 @@
 			}
 
 			function onReadyFile(json) {
-				console.log("正常にテキストを読み込みました。passcode_new:cid " + json.customer_id);
-				console.log("正常にテキストを読み込みました。passcode_new:key " + json.customer_key);
-				console.log("正常にテキストを読み込みました。passcode_new:customer_email_1 " + json.customer_email_1);
-				console.log("正常にテキストを読み込みました。passcode_new:iv " + json.iv);
-
 				$("#customer_key").val(json.customer_key);
 				$("#iv").val(json.iv);
 
@@ -69,73 +68,53 @@
 				$("#http").val(json.http);
 				$("#https").val(json.https);
 			}
-
-/*
-			function onReadyFile() {
-				// ファイルの読み込み
-				var fname = 'ordering';
-				var text = {};
-				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, read, fail);
-				function read(fileSystem) {
-					fileSystem.root.getFile(fname, {}, function(fileEntry) {
-						fileEntry.file(function(file) {
-							var reader = new FileReader();
-							reader.onloadend = function(evt) {
-								// ここに読み込み完了後の処理を書く
-								console.log("text: " + evt.target.result);
-								text = evt.target.result;
-								json = JSON.parse(text);
-
-								// 復号
-								// var datalist = JSON.parse(text);
-								// var iv = datalist.iv;
-								// var key = datalist.key;
-								// var enc = datalist.data.enc;
-								// var jsonText = decAes(enc, key, iv);
-								// json = JSON.parse(jsonText).data;
-								// $("#iv").val(iv);
-								// $("#customer_key").val(key);
-
-								$("#customer_key").val(json.customer_key);
-								$("#iv").val(json.iv);
-								// $("#customer_id").val(json.customer_id);
-								// $("#customer_email_1").val(json.customer_email_1);
-
-								$("#app_ver").val(json.app_ver);
-								$("#app_code").val(json.app_code);
-								$("#url").val(json.url);
-								$("#http").val(json.http);
-								$("#https").val(json.https);
-
-								console.log("正常にテキストを読み込みました。passcode_new:cid " + json.customer_id);
-								console.log("正常にテキストを読み込みました。passcode_new:key " + json.customer_key);
-								console.log("正常にテキストを読み込みました。passcode_new:customer_email_1 " + json.customer_email_1);
-								console.log("正常にテキストを読み込みました。passcode_new:iv " + json.iv);
-
-							};
-							reader.readAsText(file, "utf-8");
-							// Data URL として読み込む
-							// reader.readAsDataURL(file);
-						}, fail)
-					}, fail);
+			
+			function checkValidate() {
+				var i = 0;
+				//エラーの初期化
+				$("p.error").parent().removeClass("error");
+				$("p.error").remove();
+				
+				//暗証番号のチェック
+				if ($("#customer_pass").val() == "" || !$("#customer_pass").val().match(/^[0-9]{4,16}/)) {
+					$("#customer_pass").parent().append("<p class='error'>半角数字４〜16桁で暗証番号を入力してください。</p>");
 				}
-
+				//カード番号のチェック
+				if ($("#re_pass").val() != $("#customer_pass").val() || $("#re_pass").val() == "") {
+					$("#re_pass").parent().append("<p class='error'>暗証番号と同じ番号を入力してください。</p>");
+				}
+				//ヒントのチェック
+				if ($("#customer_qes").val() == "") {
+					$("#customer_qes").parent().append("<p class='error'>秘密の質問を入力してください</p>");
+				}
+				//答えのチェック
+				if ($("#customer_ans").val() == "") {
+					$("#customer_ans").parent().append("<p class='error'>秘密の質問の答えを入力してください</p>");
+				}
+				
+				//後処理
+				if ($("p.error").size() > 0) {
+					$("p.error").parent().addClass("error");
+					$(".error:first").focus();
+					return false;
+				} else {
+					savePass();
+				}
 			}
-*/
+
 			// 新規登録
 			function savePass() {
+				
+				//loading呼び出し
+				$('#content').css('display', 'none');
+				$('#loading').css('display', 'block');
+				
 				// 設定ファイルの読み込み
 				getonOrdering(savePass2);
 			}
 
 			// 新規登録
 			function savePass2(ordering) {
-				var result = $("#form_password").validate().form();
-				// 入力値
-				if (result == false) {
-					console.log("customer_id: " + $("#customer_key").val());
-					location.reload(true);
-				}
 
 				// 送信
 				var url = ordering.https+'json/receive_pass.php';
@@ -173,87 +152,23 @@
 					}
 				});
 
-/*
-				$.post(url, // アクセスするURL
-				params, // 送信データ
-				function(data, status, XHR) {// 処理結果
-					if (status == 'success') {
-						// 戻り値の保存
-						console.log("customer_id: " + data.customer_id);
-						console.log("customer_pass: " + data.customer_pass);
-						// ファイル登録
-
-						//json
-						var datalist = {
-							customer_pass : data.customer_pass,
-							customer_id : data.customer_id,
-							customer_key : data.customer_key,
-							customer_email_1 : ordering.customer_email_1,
-							iv : ordering.iv
-						}
-
-						// 暗号化
-						// var passEncText = JSON.stringify(encAes(datalist.customer_pass));
-						// var idEncText = JSON.stringify(encAes(datalist.customer_id));
-						// var email_1EncText = JSON.stringify(encAes(datalist.customer_email_1));
-						// var data = {
-							// customer_pass : passEncText,
-							// customer_id : idEncText,
-							// customer_email_1 : email_1EncText
-						// }
-						// datalist = {
-							// data : data,
-							// customer_key : data.customer_key,
-							// iv : ordering.iv
-						// }
-
-						// ファイル登録
-						var fname = 'ordering';
-						setFile(fname, datalist);
-
-						// 暗証番号をもとめるリミット
-						var psstime = {};
-						psstime['pass_time'] = parseInt(new Date() / 1000);
-						var fname2 = 'passtime';
-						console.log("fname2: " + fname2);
-						setFile(fname2, psstime);
-
-						var kbn = $("#kbn").val();
-						if (kbn == "buy") {
-							location.href = "order.html";
-						} else if (kbn == "cont") {
-							location.href = "ordering_new.html?kbn=cont";
-						} else {
-							location.href = "setting.html";
-						}
-
-					} else {
-						message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-						title = 'サーバーと通信できませんでした';
-						button = 'OK';
-						navigator.notification.alert(message, alertCallBack(), title, button);
-						return false;
-					}
-					console.log("status: " + status);
-				});
-
-				$(document.body).ajaxError(function(e, xhr, settings) {
-					message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
-					title = 'サーバーと通信できませんでした';
-					button = 'OK';
-					navigator.notification.alert(message, alertCallBack(), title, button);
-					return false;
-				});
-
-				return false;
-*/
 			}
 
 			function passtimeSet() {
 				// 暗証番号をもとめるリミット
 				console.log("fname2: " + fname2);
 				var psstime = {};
-				psstime['pass_time'] = parseInt(new Date() / 1000);
+
+				// 暗証番号あり・なしフラグのセット
+				var passFlip = $('#passFlip').val();
+				if(passFlip == 'false'){
+					// 暗証番号確認なし：設定時間を未来にする
+					psstime['pass_time'] = parseInt(new Date(2035,11,31,23,59,59) / 1000);
+				} else {
+					// 暗証番号確認あり：設定時間＝今　（設定時間の１時間後、暗証番号が確認されます）
+					psstime['pass_time'] = parseInt(new Date() / 1000);
+				}
+
 				var fname2 = 'passtime';
 				setFile(fname2, psstime, goHref, goHref);
 			}
@@ -276,86 +191,6 @@
 			}
 
 		</script>
-
-		<style type='text/css'>
-			label.error {
-				color: red;
-				font-size: 16px;
-				font-weight: normal;
-				line-height: 1.4;
-				margin-top: 0.5em;
-				width: 100%;
-				float: none;
-			}
-
-			label.error {
-				display: inline-block;
-				margin-left: 22%;
-			}
-
-			label.error {
-				margin-left: 0;
-				display: block;
-			}
-
-			em {
-				color: red;
-				font-weight: bold;
-				padding-right: .25em;
-			}
-
-		</style>
-
-		<script type='text/javascript'>
-			$(function() {
-				$.extend($.validator.messages, {
-					required : "必須項目です",
-					number : "数値のみで入力してください",
-					equalTo : 'もう一度同じ値を入力して下さい。',
-					email : "メールアドレスを入力してください"
-				});
-
-				$('#form_password').validate({
-					// それぞれの項目に適用される検証ルール
-					rules : {
-						customer_pass : {
-							required : true, // 必須検証
-							number : true,
-							rangelength : [4, 16] // 文字列長検証 (2～10文字)
-						},
-						re_pass : {
-							equalTo : '[name=customer_pass]'
-						}
-
-					},
-
-					// 検証エラー時に表示されるエラー メッセージ
-					messages : {
-						customer_pass : {
-							required : '暗証番号は必ず入力してください。',
-							number : '暗証番号は数字で入力してください。',
-							rangelength : $.format('パスワードは{0}から{1}文字で入力してください。')
-						},
-						re_pass : {
-							equalTo : '上と同じ暗証番号を入力してください'
-						}
-
-					},
-
-					// エラーの位置を設定します。
-					// 下記ではラジオボタンとチェックボックスのエラーメッセージを
-					// グループの最後に表示するように調整しています。
-					errorPlacement : function(error, element) {
-						if (element.is(':radio, :checkbox')) {
-							error.appendTo(element.parent());
-						} else {
-							error.insertAfter(element);
-						}
-					}
-				});
-			});
-		</script>
-
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
@@ -363,13 +198,33 @@
 	<body>
 
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
-
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>暗証番号の設定</h1>
 				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false"> 戻る </a>
 			</div>
-
-			<div class="cont_passcode_edit" data-role="content">
+			<!-- loading -->
+			<div class="loading" data-role="content" id="loading">
+				<div class="loading_box">
+					<p>しばらくおまちください</p>
+					<div id="loadingImg" class="square"></div>
+					<script>
+						$(function() {
+							$('#loadingImg').activity({
+								segments : 12,
+								width : 6,
+								space : 3,
+								length : 20,
+								color : '#FFFFFF',
+								speed : 1.5,
+								align : 'center',
+								valign : 'center'
+							});
+						});
+					</script>
+				</div>
+			</div>
+			<!-- content -->
+			<div id="content" class="cont_passcode_edit" data-role="content">
 
 				<div class="page_description">
 					<div class="txt">
@@ -377,14 +232,13 @@
 					</div>
 					<br/>
 					<div class="txt" style="color: red;">
-						※ セキュリティにより、登録されたパスワードは、ご本人にも確認ができなくなります。
+						※ パスワードは忘れないようにしてください。
 						<br />
-						<br/>
-						※ 秘密の質問を設定することで、パスワードを忘れた場合でも再登録できるようになります。
+						安全の為、登録されたパスワードは、ご本人様でも確認ができなくなります。
 					</div>
 				</div>
-
-				<form method="post" action="" id="form_password" onsubmit="return savePass();">
+				<!--<form method="post" action="passcode_new.html" id="form_password">-->
+				<div id="form_password">
 					<input type="hidden" id="customer_id" name="customer_id" value=""/>
 					<input type="hidden" id="customer_key" name="customer_key" value=""/>
 					<input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
@@ -402,43 +256,52 @@
 
 							<li class="passcode">
 								<label for="customer_pass" class="fieldLabel">暗証番号<span class="form_note">(数字4～16桁)</span></label>
-								<input type="password" id="customer_pass" name="customer_pass" class="required" value="" maxlength=16 placeholder="数字4～16桁" />
-							</li>
-
-							<li class="passcode">
-								<label for="re_pass" class="fieldLabel">確認のため再入力<span class="form_note">(数字4～16桁)</span></label>
-								<input type="password" id="re_pass" name="re_pass" class="password_confirm required" value="" maxlength=16 placeholder="上とと同じ値を入力" />
+								<input type="password" autocomplete="off" id="customer_pass" name="customer_pass" class="required inputOn validate" value="" maxlength=16 placeholder="数字4～16桁" />
+								
+								<label for="re_pass" class="fieldLabel">確認のため、上と同じ値を再入力</label>
+								<input type="password" autocomplete="off" id="re_pass" name="re_pass" class="password_confirm required inputOn validate" value="" maxlength=16 placeholder="上と同じ値を入力" />
 							</li>
 
 							<li>
-								パスワードを忘れた場合にそなえ、秘密の質問・回答を設定してください。
+								万が一パスワードを忘れた場合にそなえ、秘密の質問・回答を設定してください。
 							</li>
 
 							<li class="passcode">
 								<label for="customer_qes" class="fieldLabel">秘密の質問<span class="form_note">(自分だけにわかる質問)</span></label>
-								<input type="text" id="customer_qes" name="customer_qes" class="required" value="" placeholder="例）ペットの名前は？" />
-							</li>
-
-							<li class="passcode">
+								<input type="text" id="customer_qes" name="customer_qes" class="required inputOn validate" value="" placeholder="例）ペットの名前は？" />
+								
 								<label for="customer_ans" class="fieldLabel">質問の回答</label>
-								<input type="text" id="customer_ans" name="customer_ans" class="required" value="" placeholder="例）ポチ" />
+								<input type="text" id="customer_ans" name="customer_ans" class="required inputOn validate" value="" placeholder="例）ポチ" />
+							</li>
+							
+							<li class="pflip">
+								<label for="passFlip">購入時の暗証番号確認</label>
+								<select name="passFlip" id="passFlip" data-role="slider">
+									<option value="false">オフ</option>
+									<option value="true" selected="selected">オン</option>
+								</select>
+								<div class="txt" style="color: red;">
+									<br />※ ご購入や設定変更の際に暗証番号を確認いたします。
+									(ご確認後１時間以上経つと、再確認が必要となります）<br />
+									安全の為、上記はONにされることをおすすめ致します。
+								</div>
 							</li>
 
 							<li class="item_buy_1btn btn_txt_ow">
 								<div>
-									<input type="submit" value="登録する" class="btn_next"/>
-<!--
-									<input type="button" class="btn_next" value="登録する" onclick="savePass();"/>
--->
+									<a class="btn_next"  data-role="button" onclick="checkValidate();">登録する</a>
 								</div>
 							</li>
 						</ul>
 					</div>
-				</form>
+				</div>
 			</div>
 
 			<!-- nav -->
-			<div class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+<!--
+				<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
+-->
+				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
 						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
@@ -456,4 +319,3 @@
 		</div>
 	</body>
 </html>
-

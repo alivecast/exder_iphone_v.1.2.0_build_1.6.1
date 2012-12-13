@@ -394,12 +394,18 @@ h1 {
 	-webkit-border-bottom-left-radius: 	7px;
 	border-bottom-left-radius: 			7px;
 }
+
 .ui-btn-corner-all {
 	-moz-border-radius: 				7px;
 	-webkit-border-radius: 				7px;
 	border-radius: 						7px;
 }
 
+.pflip .ui-btn-corner-all {
+	-moz-border-radius: 				20px;
+	-webkit-border-radius: 				20px;
+	border-radius: 						20px;
+}
 /* ---------- Custom fixes ------------- */
 
 .ui-btn-left[data-rel="back"] .ui-btn-inner,
@@ -465,7 +471,9 @@ div.itemValue {
 }
 
 .ui-content {
+	/*
     min-height: 480px;
+	*/
 	/*
 	background-color:#F0F1F3;
 	*/
@@ -976,6 +984,19 @@ button.btn_next {
 	font-size:12px;
 }
 
+/* 送料一覧へのリンク */
+.box2 .box2_02 a.shippingCost_link {
+	position:relative;
+	display:block;
+	margin-left:0;
+}
+
+.shippingCost_link .ui-icon-arrow-r {
+	right:0;
+	margin-top: -9px;
+	position: absolute;
+	top: 50%;
+}
 
 /* ---/ 販売状況ico /--- */
 
@@ -1260,7 +1281,7 @@ button.btn_next {
 
 
 
-/* ---/　
+/* ---/　購入履歴
 ----------------------------------*/
 .orderInfoApp_list {
 }
@@ -1292,6 +1313,10 @@ button.btn_next {
 .orderInfoApp_list dd {
 }
 
+.orderInfoApp_list dd span{
+	font-size: 11px;
+}
+
 .orderInfoApp_list dd .box2_01 {
 	width:70px;
 }
@@ -1302,12 +1327,63 @@ button.btn_next {
 	overflow:hidden;
 }
 
-
+/* 商品名 */
 .orderInfoApp_list dd .name {
 	overflow:visible;
 	white-space:normal;
 	text-overflow:clip;
+	
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	
+	// margin-bottom:5px;
+	margin-bottom:1px;
 }
+
+/* お届け先 */
+.orderInfoApp_list dd .delivery {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	
+	// margin-bottom:5px;
+	margin-bottom:2px;
+}
+
+.orderInfoApp_list dd .icon {
+	background-color:#C1CEBF;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-ms-border-radius: 6px;
+	border-radius: 6px;
+	padding:3px;	
+	margin-right:5px;
+	color:#333;
+}
+
+/* 価格 */
+.orderInfoApp_list dd .total_price {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	
+	// margin-bottom:5px;
+	margin-bottom:2px;
+	
+	/*
+	text-align:right;
+	*/
+}
+
+.orderInfoApp_list dd .total_price span {
+	color:#FF3300;
+}
+
+.orderInfoApp_list dd .total_price span.icon {
+	color:#333;
+}
+
 
 
 /* ---/ 販売者からのお知らせ /--- */
@@ -1326,6 +1402,7 @@ button.btn_next {
 	border-radius: 3px;
 
 }
+
 
 
 
@@ -1757,6 +1834,131 @@ input#customer_mail {
 	z-index:3;
 }
 
+/* ------------------------------------------/
+　ローディング
+------------------------------------------ */
+.loading {
+	padding-top:20px;
+	text-align:center;
+}
+
+.loading_box {
+	width: 70%;
+	height: 160px;
+	margin:0 auto;
+	background: rgba(0,0,0,0.2);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-ms-border-radius: 6px;
+	border-radius: 6px;
+	
+	padding:0 20px;
+}
+
+.loading p {
+	text-shadow: none;
+	padding-top:20px;
+	margin-bottom:10px;
+}
+
+.square {
+	width: 70%;
+	height: 100px;
+	margin:0 auto;
+	
+	padding:0 20px;
+	
+}
 
 
+/* ------------------------------------------/
+　再接続
+------------------------------------------ */
+.reconnection {
+	padding-top:20px;
+}
 
+.reconnection_box {
+	width: 70%;
+	height: 160px;
+	margin:0 auto;
+	background: rgba(0,0,0,0.2);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-ms-border-radius: 6px;
+	border-radius: 6px;
+	
+	padding:0 20px;
+}
+
+.reconnection_box p {
+	text-shadow: none;
+	padding-top:20px;
+	margin-bottom:10px;
+}
+
+.reconnection_box a.btn_next {
+	color:#FFF;
+	text-shadow:1px 1px 0 #DA7B18;
+	height:44px;
+	width:100%;
+	display:block;
+}
+
+
+.reconnection_box a.btn_next:hover {
+	color:#FFF;
+}
+
+
+/* 暗証番号の設定画面　select　ON/OFFの色設定 */
+
+.passFlip .ui-slider-switch {
+	width:14em
+}
+
+.ui-btn-active {
+	border: 1px solid #2373A5;
+	background: #5393C5;
+	font-weight: bold;
+	color: white;
+	cursor: pointer;
+	text-shadow: 0 1px 1px #3373A5;
+	text-decoration: none;
+	background-image: -webkit-gradient(linear,left top,left bottom,from( #5393C5 ),to( #6FACD5 ));
+	background-image: -webkit-linear-gradient( #5393C5,#6FACD5 );
+	background-image: -moz-linear-gradient( #5393C5,#6FACD5 );
+	background-image: -ms-linear-gradient( #5393C5,#6FACD5 );
+	background-image: -o-linear-gradient( #5393C5,#6FACD5 );
+	background-image: linear-gradient( #5393C5,#6FACD5 );
+	font-family: Helvetica,Arial,sans-serif;
+}
+
+.ui-btn-down-z {
+	border: 1px solid #BBB;
+	background: #D6D6D6;
+	font-weight: bold;
+	color: #222;
+	text-shadow: 0 1px 0 white;
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#D0D0D0),to(#DFDFDF));
+	background-image: -webkit-linear-gradient(#D0D0D0,#DFDFDF);
+	background-image: -moz-linear-gradient(#D0D0D0,#DFDFDF);
+	background-image: -ms-linear-gradient(#D0D0D0,#DFDFDF);
+	background-image: -o-linear-gradient(#D0D0D0,#DFDFDF);
+	background-image: linear-gradient(#D0D0D0,#DFDFDF);
+}
+
+.passFlip .ui-btn-up-a,
+.passFlip .ui-btn-hover-a {
+	border: 1px solid #BBB;
+	background: #DFDFDF;
+	font-weight: bold;
+	color: #222;
+	text-shadow: 0 1px 0 white;
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#F6F6F6),to(#E0E0E0));
+	background-image: -webkit-linear-gradient(#F9F9F9,#E0E0E0);
+	background-image: -moz-linear-gradient(#F6F6F6,#E0E0E0);
+	background-image: -ms-linear-gradient(#F6F6F6,#E0E0E0);
+	background-image: -o-linear-gradient(#F6F6F6,#E0E0E0);
+	background-image: linear-gradient(#F6F6F6,#E0E0E0);
+}
