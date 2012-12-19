@@ -314,12 +314,22 @@ function networdERR(callfn,title) {
 	message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
 	button = 'OK';
 	callback = $FN(callfn);
-
 	if(title){
 	}else{
 		title = '通信エラー';
 	}
+	navigator.notification.alert(message, callback, title, button);
+}
 
+// 購入時の通信エラーメッセージ文
+function networdBuyERR(callfn,title) {
+	message = '通信が込み合っているか通信環境が良くないため、しばらく時間をおいて再度購入を行ってください。';
+	button = 'OK';
+	callback = $FN(callfn);
+	if(title){
+	}else{
+		title = '通信エラー';
+	}
 	navigator.notification.alert(message, callback, title, button);
 }
 
