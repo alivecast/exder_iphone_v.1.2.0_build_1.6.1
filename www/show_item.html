@@ -225,26 +225,31 @@
 						item_stock_sts = '<p class="ico ico_backOrder">販売準備中</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
+						$('.buyView').css('display', 'none');
 						
 					} else if (params.item_stock_sts == 'backstock') {
 						item_stock_sts = '<p class="ico ico_backOrder">入荷待ち</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
+						$('.buyView').css('display', 'none');
 						
 					} else if (params.item_stock_sts == 'discontinued') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売期間終了</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
+						$('.buyView').css('display', 'none');
 						
 					} else if (params.item_stock_sts == 'nostock' || parseInt(params.item_stock_sts) < 1 || parseInt(params.item_stock_sts) < parseInt(params.item_min_sales)) {
 						item_stock_sts = '<p class="ico ico_backOrder">在庫切れ</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
+						$('.buyView').css('display', 'none');
 						
 					} else if (params.item_is_stop_flg == 'disable') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売中止</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
+						$('.buyView').css('display', 'none');
 					
 					} else if (parseInt(params.item_stock_sts) < 3 && parseInt(params.item_stock_sts) > 0) {
 						item_stock_sts = '<p class="ico ico_onlyRemaining">残りわずか</p>';
@@ -482,14 +487,14 @@
 						</li>
 						<!--<% if @item_info_app.is_sales_flg == 'enable' %><% if @is_pref_flg == 'enable' %>	-->
 						<!-- 合計金額 -->
-						<li id="total_price" class="total_price">
+						<li id="total_price" class="total_price buyView">
 							<div class="item_buy_price">
 								<span>ご購入合計金額：</span>
 								<span id="total"></span>
 							</div>
 						</li>
 						<!-- 数量-->
-						<li class="item_quantity_buy" id="item_quantity_buy">
+						<li class="item_quantity_buy buyView" id="item_quantity_buy">
 							<div class="box2">
 								<div class="box2_01 item_quantity">
 									<div class="inner">
