@@ -231,8 +231,8 @@
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
 						
-					} else if (params.item_stock_sts == 'discontinued' || params.item_is_stop_flg == 'disable') {
-						item_stock_sts = '<p class="ico ico_discontinued">販売中止</p>';
+					} else if (params.item_stock_sts == 'discontinued') {
+						item_stock_sts = '<p class="ico ico_discontinued">販売期間終了</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
 						
@@ -241,6 +241,11 @@
 						$('#item_buy_3').css('display', 'none');
 						$('#notSalesMsg').css('display', 'block');
 						
+					} else if (params.item_is_stop_flg == 'disable') {
+						item_stock_sts = '<p class="ico ico_discontinued">販売中止</p>';
+						$('#item_buy_3').css('display', 'none');
+						$('#notSalesMsg').css('display', 'block');
+					
 					} else if (parseInt(params.item_stock_sts) < 3 && parseInt(params.item_stock_sts) > 0) {
 						item_stock_sts = '<p class="ico ico_onlyRemaining">残りわずか</p>';
 					}

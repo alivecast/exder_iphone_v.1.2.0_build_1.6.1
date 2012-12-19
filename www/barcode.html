@@ -28,21 +28,19 @@
 					// キャンセル
 					if (result.cancelled) {
 						console.log('barcode::cancel');
-//						scannerSuccess(result.text);
-						
-                        var src = 'mp3/cancel.mp3';
-				        audio = new Media(src, null, null);
-				        // オーディオ再生
-				        audio.play();
-				        // アラート
+
+						// // オーディオ再生
+                        // var src = 'mp3/cancel.mp3';
+				        // audio = new Media(src, null, null);
+				        // audio.play();
 				        
+				        // アラート
 				        //var message = 'QRコード読み取りを中止しました';
 						//var title = 'キャンセル';
 						//var button = 'OK';
 						//navigator.notification.alert(
 						//	message, 
 						//	function(){
-						//		// move
 				        //		window.location.href = "setting.html";
 						//	}, 
 						//	title,

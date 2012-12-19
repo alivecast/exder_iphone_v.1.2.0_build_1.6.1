@@ -115,7 +115,7 @@
 				}
 				//セキュリティコードのチェック
 				if ($("#card_security_code").val() == "" || !$("#card_security_code").val().match(/^\d{3,5}$/)) {
-					$("#card_security_code").parent().append("<p class='error'>半角数字で入力してください</p>");
+					$("#card_security_code").parent().append("<p class='error'>3～4桁の半角数字で入力してください</p>");
 				}
 				//後処理
 				if ($("p.error").size() > 0) {
@@ -284,6 +284,9 @@
 
 							<li class="card_num">
 								<label for="card_number" class="fieldLabel">クレジットカード番号</label>
+								<p style="color:red;">
+									・ 半角数字のみで入力してください。（スペースは不要です）
+								</p>
 								<input type="tel" id="card_number" name="card_number" value="" maxlength=16 class="required validate" placeholder="例）数値16桁。または15桁" />
 							</li>
 

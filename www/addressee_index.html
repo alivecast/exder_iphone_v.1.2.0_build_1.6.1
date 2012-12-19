@@ -38,6 +38,10 @@
 			});
 
 			function onDeviceReady() {
+				
+				// 121219 ogawa お届け先の件数チェック前
+				$('#addb').css("display", "block");
+				
 				$('#loading').css('display', 'none');
 				if(location.search.length > 1) {
 					var get = new Object();
@@ -201,6 +205,8 @@ console.log("data.address_ck1:"+data.address_ck1);
                                 $("#adr_ck10").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
                             }
                             $("#adr10").css("display","block");
+                            // 121219 ogawa お届け先の件数チェック
+							$('#addb').css("display", "none");
                        }
 					},
 					error: function(data) {

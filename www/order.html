@@ -194,7 +194,7 @@
 			},
 			error: function(data) {
 				console.log("-- 通信エラー--");
-				errMsg();
+				errBuyMsg();
 			}
 		});
 	
@@ -257,6 +257,11 @@
 	
 	function errMsg() {
 		networdERR(alertCallBack,'注文出来ませんでした');
+		location.href = 'setting.html';
+	}
+	
+	function errBuyMsg() {
+		networdBuyERR(alertCallBack,'注文出来ませんでした');
 		location.href = 'setting.html';
 	}
 	
