@@ -469,6 +469,10 @@ function setLocalStorage(fname, value) {
 	window.localStorage.setItem(fname, value);
 }
 
+function remLocalStorage(fname) {
+	window.localStorage.removeItem(fname);
+}
+
 // 桁区切りを戻す
 function setPrice(price) {
 	// 桁区切り
@@ -477,4 +481,15 @@ function setPrice(price) {
 	while (num != ( num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
 	num += '円';
 	return num;
+}
+
+function popup(type, title, message) {
+	new $pop(message, {
+		type : type,
+		title : title,
+		width: 220,
+		height: 120,
+		close:false,
+		modal: true
+	});
 }

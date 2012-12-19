@@ -14,6 +14,7 @@
 		<!--<link rel="stylesheet" href="css/jqmobile-patch.css" type="text/css" />-->
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/popupwindow.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
@@ -22,6 +23,7 @@
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/popupwindow.js"></script>
 
 		<script type="text/javascript">
 		
@@ -39,9 +41,6 @@
 				
 				$('#loading').css('display', 'block');
 				$('#content').css('display', 'none');
-
-				// 購入不可メッセージ
-				$('#notSalesMsg').css('display', 'none');
 
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
@@ -219,37 +218,44 @@
 
 					// 在庫状況
 					item_stock_sts = '';
+					// 購入不可メッセージ
+					$('#notSalesMsg').css('display', 'none');
 					// params.item_stock_sts = 'discontinued'; // test
 					// if (params['item_is_activate_flg'] == 'enable' || params['item_is_ready_flg'] == 'enable'){ // test
 					if (params['item_is_activate_flg'] == 'disable' || params['item_is_ready_flg'] == 'disable') {
 						item_stock_sts = '<p class="ico ico_backOrder">販売準備中</p>';
 						$('#item_buy_3').css('display', 'none');
-						$('#notSalesMsg').css('display', 'block');
+					//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
+						popup('warning', '販売準備中商品', '現在、ご購入いただけません。');
 						
 					} else if (params.item_stock_sts == 'backstock') {
 						item_stock_sts = '<p class="ico ico_backOrder">入荷待ち</p>';
 						$('#item_buy_3').css('display', 'none');
-						$('#notSalesMsg').css('display', 'block');
+					//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
+						popup('warning', '入荷待ち商品', '現在、ご購入いただけません。');
 						
 					} else if (params.item_stock_sts == 'discontinued') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売期間終了</p>';
 						$('#item_buy_3').css('display', 'none');
-						$('#notSalesMsg').css('display', 'block');
+					//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
+						popup('warning', '販売期間終了商品', '現在、ご購入いただけません。');
 						
 					} else if (params.item_stock_sts == 'nostock' || parseInt(params.item_stock_sts) < 1 || parseInt(params.item_stock_sts) < parseInt(params.item_min_sales)) {
 						item_stock_sts = '<p class="ico ico_backOrder">在庫切れ</p>';
 						$('#item_buy_3').css('display', 'none');
-						$('#notSalesMsg').css('display', 'block');
+					//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
+						popup('warning', '在庫切れ商品', '現在、ご購入いただけません。');
 						
 					} else if (params.item_is_stop_flg == 'disable') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売中止</p>';
 						$('#item_buy_3').css('display', 'none');
-						$('#notSalesMsg').css('display', 'block');
+					//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
+						popup('warning', '販売中止商品', '現在、ご購入いただけません。');
 					
 					} else if (parseInt(params.item_stock_sts) < 3 && parseInt(params.item_stock_sts) > 0) {
 						item_stock_sts = '<p class="ico ico_onlyRemaining">残りわずか</p>';
