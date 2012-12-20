@@ -196,26 +196,27 @@
                     content = this.getTextContent( content );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
                     //$( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwYes"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
-                    $( '#pwbody' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
+                    $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     //$( '#pwYES' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'information':
                     content = this.getTextContent( content, 'information' );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
                     //$( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwYes"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
-                    $( '#pwbody' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
+                    $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'warning':
                     content = this.getTextContent( content, 'warning' );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
                     //$( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwYes"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
-                    $( '#pwbody' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
+                    // $( '#pwbody' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
+                    $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'caution':
                     content = this.getTextContent( content, 'caution' );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
                     $( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwYes"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
-                    $( '#pwYES' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
+                    $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'image':
                     content = this.getImage( content );

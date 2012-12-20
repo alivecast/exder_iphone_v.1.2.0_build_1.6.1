@@ -23,29 +23,6 @@ function decJson(json) {
 	// obj.params = value
 }
 
-//// AES128 encode CBC ------------------------------------------------------------
-//function encAes(str) {
-//	var key = CryptoJS.enc.Hex.parse(randPass(32));
-//	var iv = CryptoJS.enc.Hex.parse(randPass(32));
-//	var encrypted = CryptoJS.AES.encrypt(str, key, {
-//		iv : iv
-//	});
-//	var enc = {};
-//	enc['key'] = encrypted.key;
-//	enc['iv'] = encrypted.iv;
-//	enc['enc'] = encrypted;
-//	return enc;
-//}
-//
-//// AES128 decode CBC -------------------------------------------------------------
-//function decAes(str, key, iv) {
-//	var decrypted = CryptoJS.AES.decrypt(str, key, {
-//		iv : iv
-//	});
-//	var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
-//	return plaintext;
-//}
-
 // ランダム文字列 -------------------------------------------------------------
 function randPass(length) {
 	length = length || '';
