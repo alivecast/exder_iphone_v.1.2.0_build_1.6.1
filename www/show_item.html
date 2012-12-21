@@ -354,31 +354,53 @@
 					$("#loading").css("display", "none");
 					$("#content").css("display", "block");
 					
-					$('.item_summary').listview();
+					setLocalStorage('show_item_params', JSON.stringify(params));
+					
+					// 保存した数量変化の値をセット
+					getFile("backAmount", ChPriceOK,ChPriceNG);
+					function ChPriceOK(hash){
+						// alert('getFile::backAmount ' + JSON.stringify(hash));
+						var total = currency(String(hash.total)) + '円(税込)';
+						$('#order_amount').val(String(hash.selectedValue));
+						$('#total').text(total);
+						$('#order_carriage').html(hash.carriage);
+						$('.item_summary').listview();
+						
+						$('#order_amount').val(String(hash.selectedValue)).selectmenu('refresh', true);
+					}
+					function ChPriceNG(){
+						$('.item_summary').listview();
+					}
+					// $('.item_summary').listview();
 
 				}
 
 			} // onDeviceReady
 
 			function changePrice() {
-				var tototo2 = $('#order_amount option:selected').attr('rel') + '円(税込)';
+			//	delFile('backAmount'); - barcode.htmlへ
+				var paramsText = getLocalStorage('show_item_params');
+				var params = JSON.parse(paramsText);
+				var tototo2 = currency(String(parseInt($('#order_amount option:selected').attr('rel'))+ parseInt(params.order_carriage))) + '円(税込)';
+				var total = parseInt($('#order_amount option:selected').attr('rel'));
 				$("#total").text(tototo2);
 				// 送料無料の反映
-				var amount = parseInt(document.getElementById('#order_amount').value);
-				var total = parseInt(document.getElementById('#total').value);
-				var neoCarriage = carriage;
-				if (total >= params.non_carriage_price) {
-					neoCarriage = 0;
-					var str = String(neoCarriage);
-					var num = new String(str).replace(/,/g, "");
-					while (num != ( num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
-					if ( num = '0') {
-						num = '無料';
-					} else {
-						num + '円';
-					}
-					document.getElementById('#carriage').innerHTML = String(num);
+				var htmlCarriage = '';
+				if (parseInt(total) >= parseInt(params.non_carriage_price)) {
+					htmlCarriage = '<span id="carriage">送料無料</span>';
+				} else {
+					htmlCarriage = '<span id="carriage">' + String(params.order_carriage) + '</span>';
 				}
+				$('#order_carriage').html(htmlCarriage);
+				// 変化した値を保存
+				var chPrice = {
+					amount: parseInt($('#order_amount option:selected').attr('rel')),
+					total: parseInt($('#order_amount option:selected').attr('rel')),
+					tototo2: parseInt($('#order_amount option:selected').attr('rel'))+ parseInt(params.order_carriage),
+					carriage: htmlCarriage,
+					selectedValue: $('#order_amount').val(),
+				};
+				setFile("backAmount", chPrice);
 			}
 
 			// 注文へ
@@ -404,6 +426,8 @@
 
 				fname = 'order';
 				setFile(fname, params, goOrder, goOrder);
+				// ファイル削除
+				delFile("backAmount");
 
 				function goOrder(){
 					console.log('order::params2 :' + JSON.stringify(params));

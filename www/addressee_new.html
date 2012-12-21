@@ -151,8 +151,12 @@
 					$("#customer_name").parent().append("<p class='error'>氏名を入力してください。</p>");
 				}
 				//郵便番号のチェック
-				if ($("#customer_zipcode").val() == "" || $("#customer_zipcode").val().match(/^　|^ /) || !$("#customer_zipcode").val().match(/^\d{7}$|^\d{3}[-]\d{4}$/)) {
-					$("#zipcode").parent().append("<p class='error'>半角数字７桁で入力してください。</p>");
+				if ($("#customer_zipcode").val() == "" || $("#customer_zipcode").val().match(/^　|^ /) || !$("#customer_zipcode").val().match(/^\d{7}$|^\d{3}-\d{4}$/)) {
+					$("#customer_zipcode").parent().append("<p class='error'>半角数字７桁で入力してください。</p>");
+				}
+				// 市区町村のチェック
+				if ($("#customer_address1").val() == "" || $("#customer_address1").val().match(/^　|^ /) || !$("#customer_address1").val().match(/[^\x01-\x7E]/) || $("#customer_address1").val().match(/^[0-9]+$|^[０-９]+$/) || $("#customer_address1").val().match(/^[!-/:-@[-`{-~]/)) {
+					$("#customer_address1").parent().append("<p class='error'>住所を入力してください</p>");
 				}
 				//都道府県のチェック
 				$("#customer_pref option:selected").each(function() {

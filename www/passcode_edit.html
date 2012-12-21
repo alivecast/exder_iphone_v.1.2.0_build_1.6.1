@@ -56,14 +56,21 @@
             }
 
 			function onReadyFile(json) {
+				
+//alert('json: ' + JSON.stringify(json));
+				
 				console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
 				console.log("正常にテキストを読み込みました。:key "+json.customer_key);
 				console.log("正常にテキストを読み込みました。:pas "+json.customer_pass);
+				
+				//alert('json: ' + JSON.stringify(json));
 
 				$("#customer_id").val(json.customer_id);
 				$("#customer_key").val(json.customer_key);
 				$("#customer_email_1").val(json.customer_email_1);
 				$("#customer_passT").val(json.customer_pass);
+				$("#customer_ansT").val(json.customer_ans);
+				
 				$("#iv").val(json.iv);
 
 				$("#app_ver").val(json.app_ver);
@@ -79,7 +86,7 @@
 				$("p.error").parent().removeClass("error");
 				$("p.error").remove();
 				//暗証番号のチェック
-				if ($("#old_pass").val() == "" || !$("#customer_pass").val().match(/^[0-9]{4,16}/)) {
+				if ($("#old_pass").val() == "" || !$("#customer_pass").val().match(/^[0-9]+$/)) {
 					$("#old_pass").parent().append("<p class='error'>現在の暗証番号を入力してください</p>");
 				}
 				//暗証番号のチェック
@@ -112,6 +119,10 @@
 			}
 
 			function savePass2(ordering){
+				
+				//alert('customer_passT: ' + $("#customer_passT").val());
+				//alert('old_pass: ' + $("#old_pass").val());
+				
                     var passT = $("#customer_passT").val();
                     var pass  = $("#old_pass").val();
                     
@@ -137,6 +148,7 @@
 								//json
 								var datalist = ordering;
 								datalist['customer_pass'] = data.customer_pass;
+								datalist['customer_ans'] = $("#customer_ansT").val();
 
 								// ファイル登録
 								var fname = 'ordering';
@@ -233,6 +245,7 @@
 						<input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
 						<input type="hidden" id="iv" name="iv" value=""/>
 						<input type="hidden" id="customer_passT" name="customer_passT" value=""/>
+						<input type="hidden" id="customer_ansT" name="customer_ansT" value=""/>
 
 						<input type="hidden" id="app_ver" name="app_ver" value=""/>
 						<input type="hidden" id="app_code" name="app_code" value=""/>

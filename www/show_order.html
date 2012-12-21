@@ -152,7 +152,8 @@
 							// キャンセル可能時間表示
 							if (orderJyokyo == '1') {
 								order_index += '<div class="order_cancel">';
-								order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_ok_time)) + ' までキャンセル可能</span>';
+							//	order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_ok_time)) + ' までキャンセル可能</span>';
+								order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_kanou_time)) + ' までキャンセル可能</span>';
 								order_index += '</div>';
 								
 							// キャンセルしました

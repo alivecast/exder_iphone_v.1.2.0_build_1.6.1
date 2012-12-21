@@ -232,6 +232,7 @@ function getonOrdering(callfn) {
 	getFile(fname,getonOrderingOK,getonOrderingNG);
 
 	function getonOrderingOK(json){
+		//alert('getonOrdering: ' + JSON.stringify(json));
 		console.log("OK : ordering");
 		getonMSG(json,callfn);
 	}
@@ -326,7 +327,7 @@ function reachableCallback(reachability) {
     states[NetworkStatus.REACHABLE_VIA_CARRIER_DATA_NETWORK] = 'データ接続';
     states[NetworkStatus.REACHABLE_VIA_WIFI_NETWORK]         = 'WiFi接続';
 
-    alert('接続の形式: ' + states[networkState]);
+    console.log('接続の形式: ' + states[networkState]);
 }
 
 // 郵便番号の取得 //////////////////////////////////////////////////////////////////////

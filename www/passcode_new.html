@@ -76,7 +76,7 @@
 				$("p.error").remove();
 				
 				//暗証番号のチェック
-				if ($("#customer_pass").val() == "" || !$("#customer_pass").val().match(/^[0-9]{4,16}/)) {
+				if ($("#customer_pass").val() == "" || !$("#customer_pass").val().match(/^[0-9]{4,16}$/)) {
 					$("#customer_pass").parent().append("<p class='error'>半角数字４〜16桁で暗証番号を入力してください。</p>");
 				}
 				//カード番号のチェック
@@ -84,12 +84,12 @@
 					$("#re_pass").parent().append("<p class='error'>暗証番号と同じ番号を入力してください。</p>");
 				}
 				//ヒントのチェック
-				if ($("#customer_qes").val() == "") {
-					$("#customer_qes").parent().append("<p class='error'>秘密の質問を入力してください</p>");
+				if ($("#customer_qes").val() == "" || $("#customer_qes").val().match(/^　|^ /) || $("#customer_qes").val().match(/[!-/:-@[-`{-~]/)) {
+					$("#customer_qes").parent().append("<p class='error'>秘密の質問を入力してください<br/>（半角記号は使えません）</p>");
 				}
 				//答えのチェック
-				if ($("#customer_ans").val() == "") {
-					$("#customer_ans").parent().append("<p class='error'>秘密の質問の答えを入力してください</p>");
+				if ($("#customer_ans").val() == "" || $("#customer_ans").val().match(/^　|^ /) || $("#customer_ans").val().match(/[!-/:-@[-`{-~]/)) {
+					$("#customer_ans").parent().append("<p class='error'>質問の答えを入力してください<br/>（半角記号は使えません）</p>");
 				}
 				
 				//後処理

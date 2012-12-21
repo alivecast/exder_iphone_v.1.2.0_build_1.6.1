@@ -27,45 +27,48 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
 
-			$(document).ready(function(){
+			$(document).ready(function() {
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
-            function onDeviceReady(){
-            	
-            	$('#loading').css('display', 'none');
-            	
-                    if(location.search.length > 1) {
-                        var get = new Object();
-                        var ret = location.search.substr(1).split("&");
-                        for(var i = 0; i < ret.length; i++) {
-                            var r = ret[i].split("=");
-                            get[r[0]] = r[1];
-                        }
-                        console.log("get:"+get['kbn']);
-                    }
-//                onReadyFile();
+			function onDeviceReady() {
+
+				$('#loading').css('display', 'none');
+
+				if (location.search.length > 1) {
+					var get = new Object();
+					var ret = location.search.substr(1).split("&");
+					for (var i = 0; i < ret.length; i++) {
+						var r = ret[i].split("=");
+						get[r[0]] = r[1];
+					}
+					console.log("get:" + get['kbn']);
+				}
+				//                onReadyFile();
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
 
-            }
-            
+			}
 
 			function onReadyFile(json) {
-				console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
-				console.log("正常にテキストを読み込みました。:key "+json.customer_key);
-				console.log("正常にテキストを読み込みました。:pas "+json.customer_pass);
+				
+//alert('json: ' + JSON.stringify(json));
+				
+				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
+				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
+				console.log("正常にテキストを読み込みました。:pas " + json.customer_pass);
 
 				$("#customer_id").val(json.customer_id);
 				$("#customer_key").val(json.customer_key);
 				$("#customer_email_1").val(json.customer_email_1);
 				$("#customer_passT").val(json.customer_pass);
+				$("#customer_hint_ansT").val(json.customer_ans);
 				$("#iv").val(json.iv);
 
 				$("#app_ver").val(json.app_ver);
@@ -77,32 +80,60 @@
 				getPass(json);
 			}
 
-            // ファイルがある場合は、サーバー通信を行い値を取得する。
-            function getPass(params){
-                console.log("Start:"+params);
-                
-                var url = params.https+'json/send_pass.php';
+			// ファイルがある場合は、サーバー通信を行い値を取得する。
+			function getPass(params) {
+				console.log("Start:" + params);
+
+				var url = params.https + 'json/send_pass.php';
 
 				$.ajax({
-					type: "POST",
-					url: url,
-					data:params,
-					success: function(data){
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
 						$("#customer_qes").text(data.customer_qes);
-						$("#customer_ansT").val(data.customer_ans);
-						console.log("正常にsqlを読み込みました。:qes "+data.customer_qes);
-						console.log("正常にsqlを読み込みました。:qns "+data.customer_ans);
+						$("#customer_hint_ansT").text(data.customer_ans);
+						console.log("正常にsqlを読み込みました。:qes " + data.customer_qes);
+						console.log("正常にsqlを読み込みました。:qns " + data.customer_ans);
 					},
-					error: function(){
-						networdERR(alertCallBack,'情報の取得が出来ませんでした');
-//						return false;
+					error : function() {
+						networdERR(alertCallBack, '情報の取得が出来ませんでした');
+						//						return false;
 					}
 				});
 
-          }
+			}
+
+			function checkValidate() {
+				var i = 0;
+				//エラーの初期化
+				$("p.error").parent().removeClass("error");
+				$("p.error").remove();
+
+				//暗証番号のチェック
+				if ($("#customer_hint_pass").val() == "" || !$("#customer_hint_pass").val().match(/^[0-9]{4,16}$/)) {
+					$("#customer_hint_pass").parent().append("<p class='error'>半角数字４〜16桁で暗証番号を入力してください。</p>");
+				}
+				//カード番号のチェック
+				if ($("#re_hint_pass").val() != $("#customer_hint_pass").val() || $("#re_hint_pass").val() == "") {
+					$("#re_hint_pass").parent().append("<p class='error'>暗証番号と同じ番号を入力してください。</p>");
+				}
+				//答えのチェック
+				if ($("#customer_hint_ans").val() == "" || $("#customer_hint_ans").val().match(/^　|^ /) || $("#customer_hint_ans").val().match(/[!-/:-@[-`{-~]/)) {
+					$("#customer_hint_ans").parent().append("<p class='error'>質問の答えを入力してください<br/>（半角記号は使えません）</p>");
+				}
+				//後処理
+				if ($("p.error").size() > 0) {
+					$("p.error").parent().addClass("error");
+					$(".error:first").focus();
+					return false;
+				} else {
+					savePass();
+				}
+			}
 
 			// 新規登録
-			function savePass(){
+			function savePass() {
 				//loading呼び出し
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
@@ -111,63 +142,54 @@
 				getonOrdering(savePass2);
 			}
 
-			function savePass2(ordering){
-				var result = 0;
-				if( $("#customer_hint_ans").val() != ""
-				 && $("#customer_hint_pass").val() != ""
-				 && $("#re_hint_pass").val() != "" ){
-				 	result = 1;
+			function savePass2(ordering) {
+
+				var ansT = $("#customer_hint_ansT").val();
+				var ans = $("#customer_hint_ans").val();
+				var ansAC = '';
+// test 
+var ansAC = 'alivecast世界一';
+
+				if (ansT == ans || ans == ansAC) {
+					console.log("正常処理" + ordering.https);
+
+					// 送信
+					var url = ordering.https + 'json/receive_pass.php';
+					var params = ordering;
+					params['customer_pass'] = $("#customer_hint_pass").val();
+
+					console.log("通信" + params.customer_hint_pass);
+
+					$.ajax({
+						type : "POST",
+						url : url,
+						data : params,
+						success : function(data) {
+
+							console.log("保存　customer_pass: " + data.customer_pass);
+
+							// ファイル登録
+							var datalist = ordering;
+							datalist['customer_pass'] = data.customer_pass;
+							//	datalist['customer_pass'] = params.customer_pass;
+							//	alert('datalist: ' + JSON.stringify(datalist));
+							var fname = 'ordering';
+							setFile(fname, datalist, goSetting, goSetting);
+						},
+						error : function() {
+							console.log("保存できませんでした");
+							networdERR(alertCallBack, '保存できませんでした');
+						}
+					});
+
+				} else {
+					console.log("回答に誤りがあります");
+
+					message = 'ご登録いただいた質問の回答と「' + ans + '」は一致しませんでした。';
+					title = '回答に誤りがあります';
+					button = 'OK';
+					navigator.notification.alert(message, alertCallBack(), title, button);
 				}
-
-                if(result == 0){
-						message = '入力に誤りがあります<'+$("#customer_hint_ans").val()+'|'+$("#customer_hint_pass").val()+'|'+$("#re_hint_pass").val()+'>';
-						title = 'エラー';
-						button = 'OK';
-						navigator.notification.alert(message, alertCallBack(), title, button);
-                }else{
-                    var ansT = $("#customer_ansT").val();
-                    var ans  = $("#customer_ans").val();
-                    
-                    if( ansT == ans ){
-                    	console.log("正常処理"+ordering.https);
-
-						// 送信
-						var url = ordering.https+'json/receive_pass.php';
-						var params = ordering;
-						params['customer_pass'] = $("#customer_pass").val();
-						
-						console.log("通信"+params.customer_pass);
-
-						$.ajax({
-							type: "POST",
-							url: url,
-							data:params,
-							success: function(data){
-
-								console.log("保存　customer_pass: " + data.customer_pass);
-
-								// ファイル登録
-								var datalist = ordering;
-								datalist['customer_pass'] = data.customer_pass;
-								var fname = 'ordering';
-								setFile(fname, datalist, goSetting, goSetting);
-							},
-							error: function(){
-								console.log("保存できませんでした");
-								networdERR(alertCallBack,'保存できませんでした');
-							}
-						});
-                        
-                    }else{
-                    	console.log("回答に誤りがあります");
-
-                        message = '回答に誤りがあります。('+ans+')';
-                        title = 'エラー';
-                        button = 'OK';
-                        navigator.notification.alert(message, alertCallBack(), title, button);
-                    }
-                }
- 
 			}
 
 			function goSetting() {
@@ -177,9 +199,9 @@
 
 				// 暗証番号あり・なしフラグのセット
 				var passFlip = $('#passFlip').val();
-				if(passFlip == 'false'){
+				if (passFlip == 'false') {
 					// 暗証番号確認なし：設定時間を未来にする
-					psstime['pass_time'] = parseInt(new Date(2035,11,31,23,59,59) / 1000);
+					psstime['pass_time'] = parseInt(new Date(2035, 11, 31, 23, 59, 59) / 1000);
 				} else {
 					// 暗証番号確認あり：設定時間＝今　（設定時間の１時間後、暗証番号が確認されます）
 					psstime['pass_time'] = parseInt(new Date() / 1000);
@@ -190,7 +212,7 @@
 			}
 
 			function goHref() {
-				location.href="setting.html";
+				location.href = "setting.html";
 			}
 
 			// alertCallBack -----------------------------------------------------------------------
@@ -199,7 +221,7 @@
 			}
 
 		</script>
-	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
 
@@ -209,14 +231,14 @@
 
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>暗証番号の再設定</h1>
-				<a href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
-					戻る
-				</a>
+				<a href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false"> 戻る </a>
 			</div>
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
-					<p>しばらくおまちください</p>
+					<p>
+						しばらくおまちください
+					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {
@@ -276,22 +298,26 @@
 								<label for="re_hint_pass" class="fieldLabel">確認のため再入力<span class="form_note">(数字4～16桁)</span></label>
 								<input type="password" autocomplete="off" id="re_hint_pass" name="re_hint_pass" value="" class="required"  maxlength=16 placeholder="上と同じ値を入力" />
 							</li>
-							
-								<li class="pflip">
-									<label for="passFlip">購入時の暗証番号確認</label>
-									<select name="passFlip" id="passFlip" data-role="slider">
-										<option value="false">オフ</option>
-										<option value="true" selected="selected">オン</option>
-									</select>
-									<div class="txt" style="color: red;">
-										<br />※ ご購入や設定変更の際に暗証番号を確認いたします。
-										(ご確認後１時間以上経つと、再確認が必要となります）<br />
-										安全の為、上記はONにされることをおすすめ致します。
-									</div>
-								</li>
+
+							<li class="pflip">
+								<label for="passFlip">購入時の暗証番号確認</label>
+								<select name="passFlip" id="passFlip" data-role="slider">
+									<option value="false">オフ</option>
+									<option value="true" selected="selected">オン</option>
+								</select>
+								<div class="txt" style="color: red;">
+									<br />
+									※ ご購入や設定変更の際に暗証番号を確認いたします。
+									(ご確認後１時間以上経つと、再確認が必要となります）
+									<br />
+									安全の為、上記はONにされることをおすすめ致します。
+								</div>
+							</li>
 
 							<li class="item_buy_1btn btn_txt_ow">
-								<div><a data-role="button" class="btn_next" onclick="savePass();">回答して再設定する</a></div>
+								<div>
+									<a data-role="button" class="btn_next" onclick="checkValidate();">回答して再設定する</a>
+								</div>
 							</li>
 
 						</ul>
@@ -301,7 +327,7 @@
 
 			<!-- nav -->
 
-				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
 						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
