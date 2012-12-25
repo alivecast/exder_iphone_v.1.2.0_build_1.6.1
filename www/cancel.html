@@ -25,6 +25,11 @@
         <script type="text/javascript">
 
 			$(document).ready(function(){
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
@@ -88,7 +93,8 @@
                            console.log("Cansel POST ERR");
 							networdERR(successCallBack,'キャンセル出来ませんでした');
 //							return false;
-						}
+						},
+						timeout: 5000
 					});
 				}
 

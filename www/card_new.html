@@ -74,13 +74,13 @@
 				$("#https").val(json.https);
 			}
 
-			
+
 			function checkValidate() {
 				var i = 0;
 				//エラーの初期化
 				$("p.error").parent().removeClass("error");
 				$("p.error").remove();
-				
+
 				//カード会社のチェック
 				$("#card_company option:selected").each(function() {
 					if ($(this).val() == '') {
@@ -110,9 +110,24 @@
 					$("#card_number").parent().append("<p class='error'>カード番号を正しく入力してください。</p>");
 				}
 				//有効期限のチェック
-				if ($("#card_validity").val() == "") {
+				if (!$("#card_validity").val() == "") {
+					var vDate = String($('#card_validity').val());
+					var vYear = vDate.substring(0, 4);
+					var vMonth = vDate.substring(5, 8);
+					var date = new Date(vYear, vMonth, 0);
+					var vDay = date.getDate();
+					var validityDate = vYear + '-' + vMonth + '-' + vDay + ' 23:59:59';
+					var validityTime = Date.parse(validityDate.replace(/-/g, '/')) / 1000;
+					var today = new Date();
+					var nowDate = String(today.getFullYear()) + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()) + ' 23:59:59';
+					var nowTime = Date.parse(nowDate.replace(/-/g, '/')) / 1000;
+					if (validityTime < nowTime) {
+						$("#card_validity").parent().append("<p class='error'>カード有効期限が過ぎています</p>");
+					}
+				} else {
 					$("#card_validity").parent().append("<p class='error'>カード有効期限を入力してください</p>");
 				}
+
 				//セキュリティコードのチェック
 				if ($("#card_security_code").val() == "" || !$("#card_security_code").val().match(/^\d{3,5}$/)) {
 					$("#card_security_code").parent().append("<p class='error'>3～4桁の半角数字で入力してください</p>");
@@ -175,7 +190,7 @@
 					}
 				});
 			}
-			
+
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
 				// window.location.href = 'barcode.html';
@@ -285,7 +300,7 @@
 							<li class="card_num">
 								<label for="card_number" class="fieldLabel">クレジットカード番号</label>
 								<p style="color:red;">
-									・ 半角数字のみで入力してください。（スペースは不要です）
+									・ 半角数字のみで入力してください。<br />（スペースは不要です）
 								</p>
 								<input type="tel" id="card_number" name="card_number" value="" maxlength=16 class="required validate" placeholder="例）数値16桁。または15桁" />
 							</li>

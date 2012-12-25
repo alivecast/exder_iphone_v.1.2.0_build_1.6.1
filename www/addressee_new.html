@@ -35,7 +35,6 @@
 			});
 
 			function onDeviceReady(){
-				$('#loading').css('display', 'none');
 				// 設定ファイルを読み込む
 				getonOrdering(onReadyFile);
 			}
@@ -118,7 +117,8 @@
 						message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
 						title = 'サーバーと通信できませんでした';
 						button = 'OK';
-						navigator.notification.alert(message, alertCallBack(), title, button);					}
+						navigator.notification.alert(message, alertCallBack(), title, button);
+					}
 				});
             }
 
@@ -147,7 +147,7 @@
 					}
 				})
 				//氏名のチェック
-				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/^　|^ /) || $("#customer_name").val().match(/[０-９0-9]|[!-/:-@[-`{-~]/)) {
+				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/^　|^ /) || $("#customer_name").val().match(/[０-９0-9]|[!-/:-@[-`{-~]/) || !$("#customer_name").val().match(/^\w{1,30}$|^\W{1,30}$/) {
 					$("#customer_name").parent().append("<p class='error'>氏名を入力してください。</p>");
 				}
 				//郵便番号のチェック
@@ -169,7 +169,7 @@
 					}
 				})
 				//電話番号のチェック
-				if ($("#customer_phone").val() == "" || !$("#customer_phone").val().match(/^\d{9,11}$|^\d{2,4}-\d{2,4}[-]\d{4}$/)) {
+				if ($("#customer_phone").val() == "" || !$("#customer_phone").val().match(/^\d{9,11}$|^\d{2,4}-\d{2,4}[-]\d{4}$/) || $("#customer_phone").val().match(/^0{2,4}-|^\d{2,4}-0{3,4}-|^0000/)) {
 					$("#customer_phone").parent().append("<p class='error'>半角数字11桁までで市外局番から入力してください</p>");
 				}
 				//後処理
@@ -307,7 +307,7 @@
 			</div>
 
 			<!-- loading -->
-			<div class="loading" data-role="content" id="loading">
+			<div class="loading" data-role="content" id="loading" style="display: none;">
 				<div class="loading_box">
 					<p>しばらくおまちください</p>
 					<div id="loadingImg" class="square"></div>

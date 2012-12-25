@@ -109,22 +109,22 @@
 				// キャンセル状況
 				var cancel_sts = '';
 				var now = parseInt( new Date() /1000 );
-				if (params['item_cancel_flg'] == 'disable' && now <= (parseInt(params['order_time']) + parseInt(params.cancel_ok_time))) {
+				if (params['item_cancel_flg'] == 'disable' && now <= (parseInt(params.cancel_kanou_time))) {
 					cancel_sts = '<div class="order_cancel">キャンセル <span>';
-					cancel_sts += (getDateTime(parseInt(params['order_time']) + parseInt(params.cancel_ok_time))) + ' まで受付</span></div>';
+					cancel_sts += (getDateTime(parseInt(parseInt(params.cancel_kanou_time)))) + ' まで受付</span></div>';
 				} else if (params['item_cancel_flg'] == 'enable'){
 					cancel_sts += '<div class="order_defined">キャンセルしました <span>';
 					cancel_sts += getDateTime(params['item_cancel_time']) + '</span></div>';
 				} else {
 					cancel_sts += '<div class="order_defined">ご注文が確定しました <br />No.'+params.order_id+'　<span>';
-					cancel_sts += getDateTime(parseInt(params['order_time']) + parseInt(params.cancel_ok_time)) + '</span></div>';
+					cancel_sts += getDateTime(parseInt(parseInt(params.cancel_kanou_time))) + '</span></div>';
 					$('#order_item_report').css("display", "block");
 				}
 				document.getElementById("cancel_sts").innerHTML = cancel_sts;
 			
 				// 削除メニュー
 				var del_order = '';
-				if (params['item_cancel_flg'] == 'enable' || now > (parseInt(params['order_time']) + parseInt(params.cancel_ok_time))) {
+				if (params['item_cancel_flg'] == 'enable' || now > (parseInt(params.cancel_kanou_time))) {
 					del_order = '<a href="#" class="ui-btn-right" data-icon="delete" data-direction="reverse">削除</a>';
 				}
 
@@ -225,7 +225,7 @@
 
 				// キャンセル・再購入
 				var buttons = '';
-				if (params['item_cancel_flg'] == 'disable' && now <= (parseInt(params['order_time']) + parseInt(params.cancel_ok_time))){
+				if (params['item_cancel_flg'] == 'disable' && now <= (parseInt(params.cancel_kanou_time))){
 					// キャンセルボタン表示
 					$("#buy_button").removeClass();
 					$("#buy_button").css("display","none");

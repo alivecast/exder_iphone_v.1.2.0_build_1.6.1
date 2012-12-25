@@ -1965,3 +1965,43 @@ input#customer_mail {
 	background-image: -o-linear-gradient(#F6F6F6,#E0E0E0);
 	background-image: linear-gradient(#F6F6F6,#E0E0E0);
 }
+
+/* ------------------------------------------/
+　再接続
+------------------------------------------ */
+.reconnection {
+	padding-top:20px;
+}
+
+.reconnection_box {
+	width: 70%;
+	height: 160px;
+	margin:0 auto;
+	background: rgba(0,0,0,0.2);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-ms-border-radius: 6px;
+	border-radius: 6px;
+	
+	padding:0 20px;
+}
+
+.reconnection_box p {
+	text-shadow: none;
+	padding-top:20px;
+	margin-bottom:10px;
+}
+
+.reconnection_box a.btn_next {
+	color:#FFF;
+	text-shadow:1px 1px 0 #DA7B18;
+	height:44px;
+	width:100%;
+	display:block;
+}
+
+
+.reconnection_box a.btn_next:hover {
+	color:#FFF;
+}
+

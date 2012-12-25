@@ -214,7 +214,8 @@ console.log("data.address_ck1:"+data.address_ck1);
 						title = 'サーバーと通信できませんでした';
 						button = 'OK';
 						navigator.notification.alert(message, alertCallBack(), title, button);
-					}
+					},
+					timeout: 5000
 				});
             }
 

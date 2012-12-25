@@ -32,11 +32,11 @@
 						console.log('barcode::cancel');
 
 						// test
-						// var result = 'http://exorder.jp/2001010000040000028101';
-						// scannerSuccess(result);
+						var result = 'http://exorder.jp/2001010000040000028101';
+						scannerSuccess(result);
 						
 						// 本番
-						window.location.href = "setting.html";
+						// window.location.href = "setting.html";
 
 					// 読み取り
 					} else {
@@ -65,7 +65,7 @@
 			// Barcode 読み込み成功　-------------------------------------------------------------
 			function scannerSuccess(result) {
 				// test
-				// result = 'http://speed-order.jp/2001010000040000028101';
+				//result = 'http://speed-order.jp/';
 				
 				// 数量変更ファイルの削除
 				delFile('backAmount');

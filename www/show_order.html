@@ -106,7 +106,7 @@
 							
 							var orderJyokyo = '';
 							
-							if (orders[i].item_cancel_flg == 'disable' && parseInt(new Date() / 1000) <= (parseInt(orders[i].order_time)) + parseInt(orders[i].cancel_ok_time)) {
+							if (orders[i].item_cancel_flg == 'disable' && (parseInt(new Date() / 1000) <= parseInt(orders[i].cancel_kanou_time))) {
 								orderJyokyo = '1';
 								
 							// キャンセルしました
@@ -152,14 +152,14 @@
 							// キャンセル可能時間表示
 							if (orderJyokyo == '1') {
 								order_index += '<div class="order_cancel">';
-							//	order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_ok_time)) + ' までキャンセル可能</span>';
-								order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_kanou_time)) + ' までキャンセル可能</span>';
+							//	order_index += '<span>' + getDateTime(parseInt(orders[i].order_time) + parseInt(orders[i].cancel_kanou_time)) + ' までキャンセル可能</span>';
+								order_index += '<span>' + getDateTime(parseInt(orders[i].cancel_kanou_time)) + ' までキャンセル可能</span>';
 								order_index += '</div>';
 								
 							// キャンセルしました
 							} else if (orderJyokyo == '2') {
 								order_index += '<div class="order_defined">';
-								order_index += 'キャンセルしました <span>' + getDateTime(parseInt(orders[i].item_cancel_time)) + '</span>';
+								order_index += 'キャンセルしました <span>' + getDateTime(parseInt(orders[i].cancel_kanou_time)) + '</span>';
 								order_index += '</div>';
 								
 							// 注文確定
