@@ -90,7 +90,7 @@
 				//後処理
 				if ($("p.error").size() > 0) {
 					$("p.error").parent().addClass("error");
-					$(".error:first").focus();
+					errorFocus($("p.error:first"));
 					return false;
 				} else {
 					onClickButton();

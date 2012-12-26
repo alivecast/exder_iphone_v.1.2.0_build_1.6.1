@@ -133,14 +133,15 @@
 				$("p.error").parent().removeClass("error");
 				$("p.error").remove();
 				
-				//必須項目のチェック
-				$(":text,textarea").filter(".validate").each(function() {
-					$(this).filter(".required").each(function() {
-						if ($(this).val() == "") {
-							$(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
-						}
-					});
-				});
+				// //必須項目のチェック
+				// $(":text,textarea").filter(".validate").each(function() {
+					// $(this).filter(".required").each(function() {
+						// if ($(this).val() == "") {
+							// $(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
+						// }
+					// });
+				// });
+				
 				//お届け先件名のチェック
 				$("#address_name_sel option:selected").each(function() {
 					if ($(this).val() == '' && $('#address_name').val() == "") {
@@ -180,7 +181,7 @@
 				//後処理
 				if ($("p.error").size() > 0) {
 					$("p.error").parent().addClass("error");
-					$(".error:first").focus();
+					errorFocus($("p.error:first"));
 					return false;
 				} else {
 					saveAddress();
@@ -359,7 +360,7 @@
 							<li class="address_subject">
 								<label for="address_name_sel" class="fieldLabel">お届け先名称の設定</label>
 								<div id="address_name1">
-									<select id="address_name_sel" name="address_name_sel">
+									<select id="address_name_sel" name="address_name_sel" class="validate">
 										<option value="" >お届け先の選択</option>
 										<option value="自宅" >自宅</option>
 										<option value="会社" >会社</option>
@@ -375,19 +376,19 @@
 
 							<li class="address_name">
 								<label for="customer_name" class="fieldLabel">お届け先氏名（受取人）</label>
-								<input type="text" id="customer_name" name="customer_name"  class="required" placeholder="受取人氏名を入力" />
+								<input type="text" id="customer_name" name="customer_name"  class="validate" placeholder="受取人氏名を入力" />
 							</li>
 
 							<li class="address_phone">
 								<label for="customer_phone" class="fieldLabel">電話番号</label>
-								<input type="tel" id="customer_phone" name="customer_phone"  maxlength='11' class="required" placeholder="例）0123456789(ハイフンなし)" />
+								<input type="tel" id="customer_phone" name="customer_phone"  maxlength='11' class="validate" placeholder="例）0123456789(ハイフンなし)" />
 							</li>
 
 							<li class="address_pref touch_address">
 								<label for="customer_zipcode">住所</label>
 								<!--<div id="zipcode" class="box2">
 									<div class="box2_01">-->
-								<input type="tel" id="customer_zipcode" name="customer_zipcode" maxlength=7 value="" class="required number" placeholder="郵便番号（ハイフンなし）" onKeyUp="zipKeyUp();"/>
+								<input type="tel" id="customer_zipcode" name="customer_zipcode" maxlength=7 value="" class="validate number" placeholder="郵便番号（ハイフンなし）" onKeyUp="zipKeyUp();"/>
 									<!--</div>
 									<div class="box2_02">
 										<a data-role="button" class="btn_prev"> 郵便番号から入力 </a>
@@ -395,7 +396,7 @@
 								</div>-->
 								<p class="fieldLabel txt">*郵便番号を入力すると、住所は自動で取得します</p>
 								<br />
-								<select id="customer_pref" class="required validate touch_address" name="customer_pref">
+								<div><select id="customer_pref" class="validate touch_address" name="customer_pref">
 									<option value="">都道府県</option>
 									<option value="北海道">北海道</option>
 									<option value="青森県">青森県</option>
@@ -444,9 +445,9 @@
 									<option value="宮崎県">宮崎県</option>
 									<option value="鹿児島県">鹿児島県</option>
 									<option value="沖縄県">沖縄県</option>
-								</select>
+								</select></div>
 								<br />
-								<input type="text" id="customer_address1" name="customer_address1" class="required validate touch_address" value=""  placeholder="〇〇市〇〇町" />
+								<div><input type="text" id="customer_address1" name="customer_address1" class="validate touch_address" value=""  placeholder="〇〇市〇〇町" /></div>
 								<br />
 								<input type="text" id="customer_address2" name="customer_address2" class="touch_address" value=""  placeholder="１-２-３　〇〇マンション101" />
 							</li>
@@ -472,7 +473,7 @@
 				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
+						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
 						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>

@@ -24,9 +24,9 @@
 			});
 
 			function onDeviceReady() {
-				
+
 				$.ajaxSetup({
-					timeout: 5000
+					timeout : 5000
 				});
 
 				// barcode読み取り
@@ -36,13 +36,13 @@
 						console.log('barcode::cancel');
 
 						// test
-						var result = 'http://exorder.jp/2001010000040000028101';
-						scannerSuccess(result);
-						
-						// 本番
-						// window.location.href = "setting.html";
+						// var result = 'http://exorder.jp/2001010000040000028101';
+						// scannerSuccess(result);
 
-					// 読み取り
+						// 本番
+						window.location.href = "setting.html";
+
+						// 読み取り
 					} else {
 						// 読み取り成功
 						console.log('barcode::succeed');
@@ -70,14 +70,13 @@
 			function scannerSuccess(result) {
 				// test
 				//result = 'http://speed-order.jp/';
-				
+
 				// 数量変更ファイルの削除
 				delFile('backAmount');
 
-				// src から Media オブジェクトを作成
+				// オーディオ再生
 				var src = 'mp3/decide.mp3';
 				var audio = new Media(src, null, null);
-				// オーディオ再生
 				audio.play();
 
 				// qr_id抽出
@@ -117,11 +116,9 @@
 
 			// Barcode 読み込み失敗　---------------------------------------------------------------
 			function scannerFailure(message) {
-				// console.log("scannerFailure: message: " + message)
-				// src から Media オブジェクトを作成
+				// オーディオ再生
 				var src = 'mp3/cancel.mp3';
 				audio = new Media(src, null, null);
-				// オーディオ再生
 				audio.play();
 
 				var message = 'もう一度QRコードを撮影してください';
@@ -130,6 +127,7 @@
 				navigator.notification.alert(message, function() {
 				}, title, button);
 			}
+
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
 				window.location.href = 'barcode.html';

@@ -1,4 +1,4 @@
-+<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>パスワードの再設定</title>
@@ -103,7 +103,7 @@
 				//後処理
 				if ($("p.error").size() > 0) {
 					$("p.error").parent().addClass("error");
-					$(".error:first").focus();
+					errorFocus($("p.error:first"));
 					return false;
 				} else {
 					eqPass();
@@ -244,7 +244,7 @@
 				<ul>
 					<li class="tab01">
 						<a href="show_order.html" data-ajax="false">
-							<span>注文履歴</span>
+							<span>購入履歴</span>
 						</a>
 					</li>
 					<li class="tab02">

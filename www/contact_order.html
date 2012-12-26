@@ -93,7 +93,7 @@
 				//後処理
 				if ($("p.error").size() > 0) {
 					$("p.error").parent().addClass("error");
-					$(".error:first").focus();
+					errorFocus($("p.error:first"));
 					return false;
 				} else {
 					onClickButton();
@@ -270,7 +270,7 @@
 			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
+						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
 						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>

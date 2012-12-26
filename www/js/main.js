@@ -489,3 +489,9 @@ function popup(type, title, message) {
 		modal : true
 	});
 }
+
+function errorFocus(obj){
+	var p = obj.offset();
+	alert(JSON.stringify(p));
+	$.mobile.silentScroll(-56 + -100 + p.top);
+}

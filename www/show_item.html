@@ -26,23 +26,22 @@
 		<script type="text/javascript" charset="utf-8" src="js/popupwindow.js"></script>
 
 		<script type="text/javascript">
-		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
 				$.mobile.allowCrossDomainPages = true;
 			});
 
-			$(document).ready(function(){
+			$(document).ready(function() {
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
-				
+
 				$('#loading').css('display', 'block');
 				$('#content').css('display', 'none');
 				$.ajaxSetup({
-					timeout: 5000
+					timeout : 5000
 				});
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
@@ -51,29 +50,27 @@
 			function onReadyFile(json) {
 
 				// Alert -----------------------------------------------------------------------
-			//	navigator.notification.alert("show_item.html");
-				
+				//	navigator.notification.alert("show_item.html");
+
 				// GETでJSON取得
 				var get = getQuery();
 				console.log("getQuery: " + JSON.stringify(get));
-				
+
 				// orderファイルに保存
 				fname = 'order';
 				setFile(fname, get);
 
-
-				
-				get['customer_id']  = json.customer_id;
+				get['customer_id'] = json.customer_id;
 				get['customer_key'] = json.customer_key;
 				get['customer_mail_1'] = json.customer_mail_1;
 
-				get['app_ver']  = json.app_ver;
+				get['app_ver'] = json.app_ver;
 				get['app_code'] = json.app_code;
-				get['url']      = json.url;
-				get['http']     = json.http;
-				get['https']    = json.https;
+				get['url'] = json.url;
+				get['http'] = json.http;
+				get['https'] = json.https;
 
-				if(get.order_amount){
+				if (get.order_amount) {
 					$("#order_amount").val(get.order_amount);
 				}
 
@@ -82,34 +79,34 @@
 				console.log("★customer_mail_1: " + json.customer_mail_1);
 
 				if (json.customer_id) {
-					var url = json.http+'json/get_addressee.php';
+					var url = json.http + 'json/get_addressee.php';
 					var hash = {
-						customer_id: json.customer_id,
-						customer_key: json.customer_key,
-						customer_mail_1: json.customer_mail_1
+						customer_id : json.customer_id,
+						customer_key : json.customer_key,
+						customer_mail_1 : json.customer_mail_1
 					};
 
-					hash['app_ver']  = json.app_ver;
+					hash['app_ver'] = json.app_ver;
 					hash['app_code'] = json.app_code;
-					hash['url']      = json.url;
-					hash['http']     = json.http;
-					hash['https']    = json.https;
+					hash['url'] = json.url;
+					hash['http'] = json.http;
+					hash['https'] = json.https;
 
 					$.ajax({
-						type: "POST",
-						url: url,
-						data:hash,
-						success: function(data){
+						type : "POST",
+						url : url,
+						data : hash,
+						success : function(data) {
 							if (data.address_id) {
 								$("#addressee").css("display", "block");
 								$("#recipient_subject").text(String(data.address_name));
 							}
 						},
-						error: function(){
-							networdERR(errorPostCallBack,'通信エラー');
-//							return false;
+						error : function() {
+							networdERR(errorPostCallBack, '通信エラー');
+							//							return false;
 						},
-						timeout: 5000
+						timeout : 5000
 					});
 
 				}
@@ -120,25 +117,25 @@
 				// 商品情報を取得 -----------------------------------------------------------------------
 				function sendData(get) {
 					console.log("sendData: " + JSON.stringify(get));
-					var url = get.http+'json/send_item_info.php';
+					var url = get.http + 'json/send_item_info.php';
 					var hash = {
-						qr_id: get.qr_id,
-						customer_id: get.customer_id,
-                        customer_key: get.customer_key,
-                        customer_mail_1: get.customer_mail_1
+						qr_id : get.qr_id,
+						customer_id : get.customer_id,
+						customer_key : get.customer_key,
+						customer_mail_1 : get.customer_mail_1
 					};
 
-					hash['app_ver']  = get.app_ver;
+					hash['app_ver'] = get.app_ver;
 					hash['app_code'] = get.app_code;
-					hash['url']      = get.url;
-					hash['http']     = get.http;
-					hash['https']    = get.https;
+					hash['url'] = get.url;
+					hash['http'] = get.http;
+					hash['https'] = get.https;
 
 					$.ajax({
-						type: "POST",
-						url: url,
-						data:hash,
-						success: function(data){
+						type : "POST",
+						url : url,
+						data : hash,
+						success : function(data) {
 							// 商品詳細
 							if (data != {} && data != null && data != '') {
 								// loading追加処理
@@ -153,16 +150,18 @@
 								navigator.notification.alert(message, alertCallBack(), title, button);
 							}
 						},
-						error: function(){
-							networdERR(errorPostCallBack,'通信エラー');
+						error : function() {
+							networdERR(errorPostCallBack, '通信エラー');
 						}
 					});
 
 				}
+
 				// alertCallBack -----------------------------------------------------------------------
 				function errorPostCallBack() {
 					window.location.href = 'netError.html';
 				}
+
 				// alertCallBack -----------------------------------------------------------------------
 				function alertCallBack() {
 					window.location.href = 'barcode.html';
@@ -170,6 +169,7 @@
 
 				// 商品情報をセット
 				function setData(params) {
+
 					console.log(params);
 					window.localStorage.removeItem('order_params');
 					window.localStorage.setItem('order_params', JSON.stringify(params));
@@ -186,10 +186,10 @@
 					// 商品価格
 					item_price = '無料';
 					if (parseInt(params['item_price']) > 0) {
-						var item_price = currency(String(params['item_price'])) + '円';
+						var item_price = currency(String(params['item_price'])) + '<span class="unit_name">円</span>';
 					}
 					//document.getElementById("item_price").innerText = item_price;
-					$("#item_price").text(item_price);
+					$("#item_price").html(item_price);
 
 					// 商品情報更新
 					if (params['item_update_flg'] == 'enable' && parseInt(params['item_create_time']) != parseInt(params['item_update_time'])) {
@@ -198,15 +198,15 @@
 					}
 
 					// １個の送料
-					var shippingCost = '<a href="website_soryo.html?qr_id='+params["qr_id"]+'" deta-transition="slide" data-ajax="false" class="shippingCost_link">';
+					var shippingCost = '<a href="website_soryo.html?qr_id=' + params["qr_id"] + '" deta-transition="slide" data-ajax="false" class="shippingCost_link">';
 					shippingCost += '<dl class="shippingCost"><dt>送料</dt><dd id="order_carriage"><span id="carriage">';
 					if (parseInt(params['order_carriage']) > 0) {
-						shippingCost += currency(params['order_carriage']) + '<span class="unit_name">円</span>　　</span></dd></dl>';
+						shippingCost += currency(params['order_carriage']) + '<span class="unit_name">円&nbsp;&nbsp;</span></span></dd></dl>';
 					} else {
-						if(params['customer_id'] && params['customer_id'] > 0){
-							shippingCost += '送料無料　　</span></dd></dl>';
-						}else{
-							shippingCost += '送料を確認　　</span></dd></dl>';
+						if (params['customer_id'] && params['customer_id'] > 0) {
+							shippingCost += '送料無料&nbsp;&nbsp;</span></dd></dl>';
+						} else {
+							shippingCost += '送料を確認&nbsp;&nbsp;</span></dd></dl>';
 						}
 					}
 					shippingCost += '<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></a>';
@@ -228,38 +228,38 @@
 					if (params['item_is_activate_flg'] == 'disable' || params['item_is_ready_flg'] == 'disable') {
 						item_stock_sts = '<p class="ico ico_backOrder">販売準備中</p>';
 						$('#item_buy_3').css('display', 'none');
-					//	$('#notSalesMsg').css('display', 'block');
+						//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
 						popup('warning', '販売準備中商品', '現在、ご購入いただけません。');
-						
+
 					} else if (params.item_stock_sts == 'backstock') {
 						item_stock_sts = '<p class="ico ico_backOrder">入荷待ち</p>';
 						$('#item_buy_3').css('display', 'none');
-					//	$('#notSalesMsg').css('display', 'block');
+						//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
 						popup('warning', '入荷待ち商品', '現在、ご購入いただけません。');
-						
+
 					} else if (params.item_stock_sts == 'discontinued') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売期間終了</p>';
 						$('#item_buy_3').css('display', 'none');
-					//	$('#notSalesMsg').css('display', 'block');
+						//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
 						popup('warning', '販売期間終了商品', '現在、ご購入いただけません。');
-						
+
 					} else if (params.item_stock_sts == 'nostock' || parseInt(params.item_stock_sts) < 1 || parseInt(params.item_stock_sts) < parseInt(params.item_min_sales)) {
 						item_stock_sts = '<p class="ico ico_backOrder">在庫切れ</p>';
 						$('#item_buy_3').css('display', 'none');
-					//	$('#notSalesMsg').css('display', 'block');
+						//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
 						popup('warning', '在庫切れ商品', '現在、ご購入いただけません。');
-						
+
 					} else if (params.item_is_stop_flg == 'disable') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売中止</p>';
 						$('#item_buy_3').css('display', 'none');
-					//	$('#notSalesMsg').css('display', 'block');
+						//	$('#notSalesMsg').css('display', 'block');
 						$('.buyView').css('display', 'none');
 						popup('warning', '販売中止商品', '現在、ご購入いただけません。');
-					
+
 					} else if (parseInt(params.item_stock_sts) < 3 && parseInt(params.item_stock_sts) > 0) {
 						item_stock_sts = '<p class="ico ico_onlyRemaining">残りわずか</p>';
 					}
@@ -289,7 +289,7 @@
 						// 合計金額をrelに持たせる
 						for (var i = min; i <= max; i++) {
 							var toto = parseInt(params.item_price) * i;
-							if( params['non_carriage_price'] == 0 || params['non_carriage_price'] > toto){
+							if (params['non_carriage_price'] == 0 || params['non_carriage_price'] > toto) {
 								toto = toto + parseInt(params.order_carriage);
 							}
 							amount += '<option value="' + String(i) + '" rel="' + toto + '">' + String(i) + '</option>';
@@ -350,41 +350,43 @@
 					} else {
 						document.getElementById("company_returned").innerText = 'お届けした商品がお申し込みと異なっていた場合は交換させて頂きます。';
 					}
-					console.log("contact qr_id: " + params.qr_id );
+					console.log("contact qr_id: " + params.qr_id);
 					contact = 'contact.html?&qr_id=' + params.qr_id + '&item_version=' + params.item_version + '&customer_id=' + params.customer_id;
-					$("#contact").attr("href",contact);
-					
+					$("#contact").attr("href", contact);
+
 					$("#loading").css("display", "none");
 					$("#content").css("display", "block");
-					
+
 					setLocalStorage('show_item_params', JSON.stringify(params));
-					
+
 					// 保存した数量変化の値をセット
-					getFile("backAmount", ChPriceOK,ChPriceNG);
-					function ChPriceOK(hash){
+					getFile("backAmount", ChPriceOK, ChPriceNG);
+					function ChPriceOK(hash) {
 						// alert('getFile::backAmount ' + JSON.stringify(hash));
 						var total = currency(String(hash.total)) + '円(税込)';
 						$('#order_amount').val(String(hash.selectedValue));
 						$('#total').text(total);
 						$('#order_carriage').html(hash.carriage);
 						$('.item_summary').listview();
-						
+
 						$('#order_amount').val(String(hash.selectedValue)).selectmenu('refresh', true);
 					}
-					function ChPriceNG(){
+
+					function ChPriceNG() {
 						$('.item_summary').listview();
 					}
+
 					// $('.item_summary').listview();
 
 				}
 
-			} // onDeviceReady
+			}// onDeviceReady
 
 			function changePrice() {
-			//	delFile('backAmount'); - barcode.htmlへ
+				//	delFile('backAmount'); - barcode.htmlへ
 				var paramsText = getLocalStorage('show_item_params');
 				var params = JSON.parse(paramsText);
-				var tototo2 = currency(String(parseInt($('#order_amount option:selected').attr('rel'))+ parseInt(params.order_carriage))) + '円(税込)';
+				var tototo2 = currency(String(parseInt($('#order_amount option:selected').attr('rel')) + parseInt(params.order_carriage))) + '円(税込)';
 				var total = parseInt($('#order_amount option:selected').attr('rel'));
 				$("#total").text(tototo2);
 				// 送料無料の反映
@@ -397,11 +399,11 @@
 				$('#order_carriage').html(htmlCarriage);
 				// 変化した値を保存
 				var chPrice = {
-					amount: parseInt($('#order_amount option:selected').attr('rel')),
-					total: parseInt($('#order_amount option:selected').attr('rel')),
-					tototo2: parseInt($('#order_amount option:selected').attr('rel'))+ parseInt(params.order_carriage),
-					carriage: htmlCarriage,
-					selectedValue: $('#order_amount').val(),
+					amount : parseInt($('#order_amount option:selected').attr('rel')),
+					total : parseInt($('#order_amount option:selected').attr('rel')),
+					tototo2 : parseInt($('#order_amount option:selected').attr('rel')) + parseInt(params.order_carriage),
+					carriage : htmlCarriage,
+					selectedValue : $('#order_amount').val(),
 				};
 				setFile("backAmount", chPrice);
 			}
@@ -417,12 +419,12 @@
 				// GETでJSON取得
 				var params = getQuery();
 
-				params['order_time']  = parseInt(new Date() / 1000);
+				params['order_time'] = parseInt(new Date() / 1000);
 				params['order_amount'] = document.getElementById('order_amount').value;
 				itemText = window.localStorage.getItem('order_params');
 				item = JSON.parse(itemText);
 				params['item_version'] = item['item_version'];
-				params['sample_id']    = item['sample_id'];
+				params['sample_id'] = item['sample_id'];
 				params['customer_id'] = json.customer_id;
 
 				console.log('order params1 :' + JSON.stringify(params));
@@ -432,7 +434,7 @@
 				// ファイル削除
 				delFile("backAmount");
 
-				function goOrder(){
+				function goOrder() {
 					console.log('order::params2 :' + JSON.stringify(params));
 					// リダイレクト
 					window.location.href = "order.html?order=" + JSON.stringify(params);
@@ -444,9 +446,9 @@
 			function alertCallBack() {
 				window.location.href = 'barcode.html';
 			}
-			
+
 		</script>
-		
+
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
@@ -461,7 +463,9 @@
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
-					<p>しばらくおまちください</p>
+					<p>
+						しばらくおまちください
+					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {
@@ -510,11 +514,14 @@
 									</dl>
 									<!-- 送料 -->
 									<div id="shippingCost">
-									<!-- 送料無料 -->
-									<div id="non_carriage_price"></div></div>
+										<!-- 送料無料 -->
+										<div id="non_carriage_price"></div>
+									</div>
 									<!-- 在庫状況 -->
 									<div id="item_stock_sts"></div>
-									<div id="notSalesMsg">只今、ご購入いただけません。</div>
+									<div id="notSalesMsg">
+										只今、ご購入いただけません。
+									</div>
 								</div>
 							</div>
 						</li>
@@ -550,25 +557,23 @@
 					</ul>
 					<!-- お届け先 -->
 					<ul id="addressee" class="item_summary" data-role="listview" style="display:none;">
-                        <li id="item_shippingAddress" class="item_shippingAddress">
-                            <a href="addressee_index.html" data-ajax="false">
-                                現在のお届け先：<span id="recipient_subject"></span>
-                                <p class="txt">お届け先の変更はこちら</p>
-                            </a>
-                        </li>
-                    </ul>
+						<li id="item_shippingAddress" class="item_shippingAddress">
+							<a href="addressee_index.html" data-ajax="false"> 現在のお届け先：<span id="recipient_subject"></span>
+							<p class="txt">
+								お届け先の変更はこちら
+							</p> </a>
+						</li>
+					</ul>
 					<ul class="item_summary" data-role="listview">
 						<!-- 商品説明 -->
 						<li class="shop_contact" id="shop_contact" ></li>
 						<!-- 販売者 -->
 						<li class="shop_neme">
 							<!--<a href="#page_shopProfile" deta-transition="slide"> 販売者：<span id="company_name"></span>-->
-							<a href="#page_shopProfile" deta-transition="slide">
-								販売者：<span id="company_name"></span>
-								<p class="txt">
-									販売者・特定商取引の詳細はこちら
-								</p>
-							</a>
+							<a href="#page_shopProfile" deta-transition="slide"> 販売者：<span id="company_name"></span>
+							<p class="txt">
+								販売者・特定商取引の詳細はこちら
+							</p> </a>
 						</li>
 						<li class="shop_contact">
 							<div class="txt">
@@ -595,9 +600,9 @@
 			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html"  data-ajax="false"> <span>注文履歴</span> </a>
+						<a href="show_order.html"  data-ajax="false"> <span>購入履歴</span> </a>
 					</li>
-					<li class="tab02 current">
+					<li class="tab02">
 						<a href="barcode.html"  data-ajax="false"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03">

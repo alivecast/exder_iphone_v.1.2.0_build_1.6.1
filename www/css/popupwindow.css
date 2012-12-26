@@ -208,6 +208,28 @@
 	height: 25px;
 	/zoom: 1;
 }
+.pwClose {
+	background: url(images/btn_pw_close.png) left top no-repeat;
+	display: -moz-inline-box;
+	display: inline-block;
+	/display: inline;
+	outline: 0;
+	line-height: 25px;
+	width: 75px;
+	height: 25px;
+	/zoom: 1;
+}
+.pwOk {
+	background: url(images/btn_pw_ok.png) left top no-repeat;
+	display: -moz-inline-box;
+	display: inline-block;
+	/display: inline;
+	outline: 0;
+	line-height: 25px;
+	width: 75px;
+	height: 25px;
+	/zoom: 1;
+}
 	.pwYes.confirm {
 		margin-right: 3px;
 	}

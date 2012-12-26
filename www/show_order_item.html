@@ -101,6 +101,9 @@
 			}
 
 			function setData(params){
+				
+				// alert('show_order_item::params: ' + JSON.stringify(params));
+				
 				$('#loading').css('display', 'none');
 								
 				// 値をセット -----------------------------------------------------------------------
@@ -226,14 +229,20 @@
 
 				// キャンセル・再購入
 				var buttons = '';
+				$("#buy_button").css("display","none");
+				$("#cancel_button").css("display","none");
 				if (params['item_cancel_flg'] == 'disable' && now <= (parseInt(params.cancel_kanou_time))){
 					// キャンセルボタン表示
 					$("#buy_button").removeClass();
+					$("#cancel_button").removeClass();
 					$("#buy_button").css("display","none");
+					$("#cancel_button").css("display","block");
 	       		} else if (params['item_repeat_flg'] == 'enable'){
 	       			// 再購入ボタン表示
 	       			$("#cancel_button").removeClass();
+	       			$("#buy_button").removeClass();
 	         		$("#cancel_button").css("display","none");
+	         		$("#buy_button").css("display","block");
 				}
 				
 				var contact = 'contact_order.html?order_id='+params.order_id+'&qr_id=' + params.qr_id + '&item_version=' + params.item_version + '&customer_id=' + params.customer_id;
@@ -358,10 +367,10 @@
 						
 						<li class="report">
 				          <div class="txt">
-				            QRコードを表示して商品を紹介できます
+				            ご家族やご友人のスマートフォンのExOrderから同じ商品を購入していただくことができます。
 				          </div>
 				          <div class="report_btn" id="show_qr">
-                              <a id="qr_view" class="btn_prev" href="#" data-role="button" target="_blank">この商品を友人に薦める</a>
+                              <a id="qr_view" class="btn_prev" href="#" data-role="button" target="_blank">QRコードでこの商品を紹介する</a>
                           </div>
 				        </li>
      					<li class="item_buy_1btn">
@@ -389,8 +398,8 @@
 			</div>
 			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
 				<ul>
-					<li class="tab01 current">
-						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
+					<li class="tab01">
+						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
 						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
