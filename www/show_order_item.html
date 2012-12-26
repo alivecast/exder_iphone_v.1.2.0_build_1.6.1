@@ -35,10 +35,11 @@
 			});
 
 			function onDeviceReady() {
-				
 				// 違反報告を初期状態で非表示
 				$('#order_item_report').css("display", "none");
-
+				$.ajaxSetup({
+					timeout: 5000
+				});
 				// 設定ファイルの読み込み
 				getonOrdering(onDeviceReady2);
 			}

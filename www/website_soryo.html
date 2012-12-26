@@ -28,6 +28,10 @@
 			});
 
 			function onDeviceReady() {
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
 
                 if(location.search.length > 1) {
                     var get = new Object();

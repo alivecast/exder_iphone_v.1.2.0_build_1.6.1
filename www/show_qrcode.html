@@ -37,6 +37,11 @@
 			});
 
 			function onDeviceReady() {
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				$('#loading').css('display', 'none');
 				
 				// GETでJSON取得

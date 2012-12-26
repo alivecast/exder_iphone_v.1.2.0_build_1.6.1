@@ -37,6 +37,10 @@
 			});
 
 			function onDeviceReady(){
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
 				// 設定ファイルの読み込み
 				getonOrdering(onReadFile);
 			}

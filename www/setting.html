@@ -27,57 +27,60 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
 
-			$(document).ready(function(){
+			$(document).ready(function() {
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
-                    if(location.search.length > 1) {
-                        var get = new Object();
-                        var ret = location.search.substr(1).split("&");
-                        for(var i = 0; i < ret.length; i++) {
-                            var r = ret[i].split("=");
-                            get[r[0]] = r[1];
-                        }
-                        console.log("get:"+get['kbn']);
-                    }
-                onReadyFile();
+				if (location.search.length > 1) {
+					var get = new Object();
+					var ret = location.search.substr(1).split("&");
+					for (var i = 0; i < ret.length; i++) {
+						var r = ret[i].split("=");
+						get[r[0]] = r[1];
+					}
+					console.log("get:" + get['kbn']);
+				}
+				$.ajaxSetup({
+					timeout : 5000
+				});
+				onReadyFile();
 			}
 
 			function onReadyFile() {
 				// ファイルの読み込み
 				console.log("start Setting");
 				var fname = 'order';
-				getFile(fname,onReadyOrderOK,onReadyOrderNG);
+				getFile(fname, onReadyOrderOK, onReadyOrderNG);
 			}
 
 			function onReadyOrderOK(json) {
 				console.log("正常にorderテキストを読み込みました。");
 				var getParam = '';
-				if(json.qr_id) {
-					getParam = "?qr_id="+json.qr_id;
+				if (json.qr_id) {
+					getParam = "?qr_id=" + json.qr_id;
 
 					// 緯度・経度
-					if(json.order_latitude) {
-						getParam = getParam+"&order_latitude="+json.order_latitude+"&order_longitude="+json.order_longitude;
+					if (json.order_latitude) {
+						getParam = getParam + "&order_latitude=" + json.order_latitude + "&order_longitude=" + json.order_longitude;
 					}
 					// 数量
-					if(json.order_amount) {
-						getParam = getParam+"&order_amount="+json.order_amount;
+					if (json.order_amount) {
+						getParam = getParam + "&order_amount=" + json.order_amount;
 					}
 
 				}
 
-				if(getParam) {
-					console.log("getParam:"+getParam);
-					$("#order").css("display","block");
-					$("#itemName").attr("href","show_item.html"+getParam);
+				if (getParam) {
+					console.log("getParam:" + getParam);
+					$("#order").css("display", "block");
+					$("#itemName").attr("href", "show_item.html" + getParam);
 				}
 
 				onReadyFile2();
@@ -94,113 +97,110 @@
 				getonOrdering(getCustomers);
 			}
 
-            // ファイルがある場合は、サーバー通信を行い値を取得する。
-            function getCustomers(params){
-                console.log("Start POST:"+params['customer_id']);
-                
-                var url = params.http+'json/send_setup.php';
+			// ファイルがある場合は、サーバー通信を行い値を取得する。
+			function getCustomers(params) {
+				console.log("Start POST:" + params['customer_id']);
+
+				var url = params.http + 'json/send_setup.php';
 
 				$.ajax({
-					type: "POST",
-					url: url,
-					data:params,
-					success: function(data){
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
 
-console.log("customer_id:"+params.customer_id);
-console.log("password_ck:"+data.password_ck);
-console.log("customer_ck:"+data.customer_ck);
-console.log("address_ck:"+data.address_ck);
-console.log("card_ck:"+data.card_ck);
-console.log("password_ck:"+data.password_ck);
-                       
-                       	$('#loading').css('display', 'none');
-                       
-                       // 個人情報の設定
-                       if(data.password_ck == 1){
-                            $("#ico4").css("display","block");
-                            $("#href4").attr("href","passcode_edit.html");
-                            $('#ordering_ok').css("display","block");
-                            $('#ordering_ng').css("display","none");
-                       }else{
-                            $('#ordering_ok').css("display","none");
-                            $('#ordering_ng').css("display","block");
-                       }
-                       
-						if(data.customer_ck == 1){
-                            $("#ico1").css("display","block");
-                            $('#address_ok').css("display","block");
-                            $('#address_ng').css("display","none");
-                        }else{
-                            $('#address_ok').css("display","none");
-                            $('#address_ng').css("display","block");
+						console.log("customer_id:" + params.customer_id);
+						console.log("password_ck:" + data.password_ck);
+						console.log("customer_ck:" + data.customer_ck);
+						console.log("address_ck:" + data.address_ck);
+						console.log("card_ck:" + data.card_ck);
+						console.log("password_ck:" + data.password_ck);
+
+						$('#loading').css('display', 'none');
+
+						// 個人情報の設定
+						if (data.password_ck == 1) {
+							$("#ico4").css("display", "block");
+							$("#href4").attr("href", "passcode_edit.html");
+							$('#ordering_ok').css("display", "block");
+							$('#ordering_ng').css("display", "none");
+						} else {
+							$('#ordering_ok').css("display", "none");
+							$('#ordering_ng').css("display", "block");
 						}
 
-						if(data.address_ck == 1){
-                            $("#ico2").css("display","block");
-                            $('#card_ok').css("display","block");
-                            $('#card_ng').css("display","none");
-						}else{
-                            $('#card_ok').css("display","none");
-                            $('#card_ng').css("display","block");
-                        }
-
-						if(data.card_ck == 1){
-                            $("#ico3").css("display","block");
-							$("#href3").attr("href","card_show.html");
+						if (data.customer_ck == 1) {
+							$("#ico1").css("display", "block");
+							$('#address_ok').css("display", "block");
+							$('#address_ng').css("display", "none");
+						} else {
+							$('#address_ok').css("display", "none");
+							$('#address_ng').css("display", "block");
 						}
 
+						if (data.address_ck == 1) {
+							$("#ico2").css("display", "block");
+							$('#card_ok').css("display", "block");
+							$('#card_ng').css("display", "none");
+						} else {
+							$('#card_ok').css("display", "none");
+							$('#card_ng').css("display", "block");
+						}
 
-                       if(data.setup_ok == 1){
-                            $("#setup_ok").css("display","block");
-                            $("#setup_no").css("display","none");
-                       }else{
-                            $("#setup_ok").css("display","none");
-                            $("#setup_no").css("display","block");
-                       }
-                       
-                       $("#loading").css("display","none");
-                       $("#content_all").css("display","block");
+						if (data.card_ck == 1) {
+							$("#ico3").css("display", "block");
+							$("#href3").attr("href", "card_show.html");
+						}
 
-						if(data.password_ck == 1){
-							if(data.customer_ck == 1 || data.card_ck == 1){
+						if (data.setup_ok == 1) {
+							$("#setup_ok").css("display", "block");
+							$("#setup_no").css("display", "none");
+						} else {
+							$("#setup_ok").css("display", "none");
+							$("#setup_no").css("display", "block");
+						}
+
+						$("#loading").css("display", "none");
+						$("#content_all").css("display", "block");
+
+						if (data.password_ck == 1) {
+							if (data.customer_ck == 1 || data.card_ck == 1) {
 								ckPassTime();
 							}
 						}
 
 					},
-					error: function(){
-						networdERR(alertCallBack,'通信エラー');
+					error : function() {
+						networdERR(alertCallBack, '通信エラー');
 						return false;
 					}
 				});
 
+			}
 
-            }
+			function alertCallBack() {
 
-            function alertCallBack(){
-            	
-            }
-
+			}
 
 			// 暗証番号をもとめる
 			function ckPassTime() {
 				// ファイルの読み込み
 				console.log("Start passtime");
 				var fname = 'passtime';
-				getFile(fname,onGetPassTimeOK,onGetPassTimeNG);
+				getFile(fname, onGetPassTimeOK, onGetPassTimeNG);
 			}
 
-			function onGetPassTimeOK(json){
-				console.log("正常にテキストを読み込みました。:passtime "+json.pass_time);
-				var cktime   = json.pass_time+(60*60);
-				var nowtime  = parseInt( new Date() /1000 );
-				if(cktime < nowtime){
-					location.href="passcode_input.html";
-				}else{
-					if(json.pass_time < nowtime){
+			function onGetPassTimeOK(json) {
+				console.log("正常にテキストを読み込みました。:passtime " + json.pass_time);
+				var cktime = json.pass_time + (60 * 60);
+				var nowtime = parseInt(new Date() / 1000);
+				if (cktime < nowtime) {
+					location.href = "passcode_input.html";
+				} else {
+					if (json.pass_time < nowtime) {
 						// 暗証番号をもとめるリミット
 						var psstime = {};
-						psstime['pass_time'] = parseInt( new Date() /1000 );
+						psstime['pass_time'] = parseInt(new Date() / 1000);
 						var fname2 = 'passtime';
 						console.log("fname2: " + fname2);
 						setFile(fname2, psstime);
@@ -208,134 +208,124 @@ console.log("password_ck:"+data.password_ck);
 				}
 			}
 
-			function onGetPassTimeNG(){
-				location.href="passcode_input.html";
+			function onGetPassTimeNG() {
+				location.href = "passcode_input.html";
 			}
 		</script>
 
-	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
-		<div data-role="page" data-add-back-btn="false" data-theme="z">
+	<div data-role="page" data-add-back-btn="false" data-theme="z">
 
-			<div data-role="header" id="header" data-position="fixed">
-				<h1>設定</h1>
-                <a href="website.html" class="ui-btn-right" data-icon="info" data-ajax="false">使い方</a>
-			</div>
+		<div data-role="header" id="header" data-position="fixed">
+			<h1>設定</h1>
+			<a href="website.html" class="ui-btn-right" data-icon="info" data-ajax="false">使い方</a>
+		</div>
 
-            <!-- loading -->
-			<div class="loading" data-role="content" id="loading">
-				<div class="loading_box">
-					<p>しばらくおまちください</p>
-					<div id="loadingImg" class="square"></div>
-					<script>
-						$(function() {
-							$('#loadingImg').activity({
-								segments : 12,
-								width : 6,
-								space : 3,
-								length : 20,
-								color : '#FFFFFF',
-								speed : 1.5,
-								align : 'center',
-								valign : 'center'
-							});
+		<!-- loading -->
+		<div class="loading" data-role="content" id="loading">
+			<div class="loading_box">
+				<p>
+					しばらくおまちください
+				</p>
+				<div id="loadingImg" class="square"></div>
+				<script>
+					$(function() {
+						$('#loadingImg').activity({
+							segments : 12,
+							width : 6,
+							space : 3,
+							length : 20,
+							color : '#FFFFFF',
+							speed : 1.5,
+							align : 'center',
+							valign : 'center'
 						});
-					</script>
-				</div>
+					});
+				</script>
 			</div>
-            
-			<div data-role="content" id="content_all" style="display:none;">
+		</div>
 
-                <div id="order" style="display:none">
+		<div data-role="content" id="content_all" style="display:none;">
+
+			<div id="order" style="display:none">
 				<div class="setup_no">
-					<div id="purchased_item" class="tl" >未購入の商品があります。</div>
+					<div id="purchased_item" class="tl" >
+						未購入の商品があります。
+					</div>
 				</div>
 				<ul data-role="listview">
 					<li style="background-color:#ccc;">
 						<a id="itemName" href="#" data-ajax="false">商品を見る</a>
 					</li>
 				</ul>
-                </div>
-
-				<div class="setup_no" id="setup_no" style="display:block">
-					<div class="tl">
-						ご注文いただくには下記の設定を行ってください。
-					</div>
-					<div class="txt">
-						<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" />表示がない項目の設定を行ってください。
-					</div>
-                </div>
-
-				<div class="setup_ok" id="setup_ok" style="display:none">
-					<div class="tl">
-						ご注文いただけます。
-					</div>
-				</div>
-
-
-				<ul data-role="listview">
-					<li>
-						<a data-ajax="false" href="passcode_new.html" id="href4">
-							<span class="ico_check"><img id="ico4" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;" /></span>
-							<span class="tl"> 暗証番号 </span>
-						</a>
-					</li>
-
-					<li id="ordering_ok" style="display:none;">
-						<a data-ajax="false" href="#" onclick="location.href='ordering_new.html'"> 
-							<span class="ico_check"><img id="ico1" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;"/></span>
-							<span class="tl"> 利用者情報 </span> 
-						</a>
-					</li>
-					<li id="ordering_ng">
-							<span class="ico_check"></span>
-							<span class="tl">　利用者情報 </span> 
-					</li>
-
-					<li id="address_ok" style="display:none;">
-						<a data-ajax="false" href="addressee_index.html" >
-							<span class="ico_check"><img id="ico2" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;" /></span>
-							<span class="tl"> お届け先 </span>
-						</a>
-					</li>
-					<li id="address_ng">
-							<span class="ico_check"></span>
-							<span class="tl"> お届け先 </span> 
-					</li>
-
-
-					<li id="card_ok" style="display:none;">
-						<a id="href3" data-ajax="false" href="card_new.html">
-							<span class="ico_check"><img id="ico3" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;" /></span>
-							<span class="tl"> クレジットカード </span>
-						</a>
-					</li>
-					<li id="card_ng">
-							<span class="ico_check"></span>
-							<span class="tl"> クレジットカード </span> 
-					</li>
-
-				</ul>
-
 			</div>
 
-			<!-- タブバー -->
-			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber"　>
-				<ul>
-					<li class="tab01">
-						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
-					</li>
-					<li class="tab02">
-						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
-					</li>
-					<li class="tab03 current">
-						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
-					</li>
-				</ul>
-			</div><!-- /dr-footer -->
+			<div class="setup_no" id="setup_no" style="display:block">
+				<div class="tl">
+					ご注文いただくには下記の設定を行ってください。
+				</div>
+				<div class="txt">
+					<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" />表示がない項目の設定を行ってください。
+				</div>
+			</div>
+
+			<div class="setup_ok" id="setup_ok" style="display:none">
+				<div class="tl">
+					ご注文いただけます。
+				</div>
+			</div>
+
+			<ul data-role="listview">
+				<li>
+					<a data-ajax="false" href="passcode_new.html" id="href4"> <span class="ico_check"><img id="ico4" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;" /></span> <span class="tl"> 暗証番号 </span> </a>
+				</li>
+
+				<li id="ordering_ok" style="display:none;">
+					<a data-ajax="false" href="#" onclick="location.href='ordering_new.html'"> <span class="ico_check"><img id="ico1" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;"/></span> <span class="tl"> 利用者情報 </span> </a>
+				</li>
+				<li id="ordering_ng">
+					<span class="ico_check"></span>
+					<span class="tl"> 　利用者情報 </span>
+				</li>
+
+				<li id="address_ok" style="display:none;">
+					<a data-ajax="false" href="addressee_index.html" > <span class="ico_check"><img id="ico2" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;" /></span> <span class="tl"> お届け先 </span> </a>
+				</li>
+				<li id="address_ng">
+					<span class="ico_check"></span>
+					<span class="tl"> お届け先 </span>
+				</li>
+
+				<li id="card_ok" style="display:none;">
+					<a id="href3" data-ajax="false" href="card_new.html"> <span class="ico_check"><img id="ico3" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;" /></span> <span class="tl"> クレジットカード </span> </a>
+				</li>
+				<li id="card_ng">
+					<span class="ico_check"></span>
+					<span class="tl"> クレジットカード </span>
+				</li>
+
+			</ul>
 
 		</div>
+
+		<!-- タブバー -->
+		<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber"　>
+			<ul>
+				<li class="tab01">
+					<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
+				</li>
+				<li class="tab02">
+					<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
+				</li>
+				<li class="tab03 current">
+					<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
+				</li>
+			</ul>
+		</div><!-- /dr-footer -->
+
+	</div>
 
 	</body>
 </html>

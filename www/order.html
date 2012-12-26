@@ -1,294 +1,349 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title></title>
+	<head>
+		<title></title>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
-	<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
 
-	<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
-	<link rel="stylesheet" href="css/iphone.css" type="text/css" />
-		
-	<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-	
-	<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-	
-	<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-	
-	<script type="text/javascript">
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
 
-	$( document ).bind( "mobileinit", function() {
-		// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-		$.support.cors = true;
-		$.mobile.allowCrossDomainPages = true;
-	});
-	$(document).ready(function(){
-		document.addEventListener("deviceready", onDeviceReady, false);
-	});
-	
-	function onDeviceReady() {
-	//	getSetting();
-	
-		// 設定ファイルの読み込み
-		getonOrdering(getSetting);
-	}
-	
-	function getSetting(ordering){
-		console.log("正常にテキストを読み込みましたよ。:cid "+ordering.customer_id);
-		console.log("正常にテキストを読み込みましたよ。:key "+ordering.customer_key);
-		if(ordering.customer_pass){
-			// パスワードのチェック
-			ckPassTime(ordering);
-		}else{
-			// ★メイン処理
-			setSetting(ordering);
-		}
-	}
-	
-	
-	function ckPassTime(ordering) {
-		// ファイルの読み込み
-		console.log("Start passtime");
-		var fname = 'passtime';
-		getFile(fname,onPasstimeOK,onPasstimeNG);
-		
-		function onPasstimeOK(json){
-			console.log("正常にテキストを読み込みました。:passtime "+json.pass_time);
-	
-			var cktime   = json.pass_time+(60*60);
-			var nowtime  = parseInt( new Date() /1000 );
-			if(cktime < nowtime){
-				location.href="passcode_input.html?kbn=buy";
-			}else{
-				// ★メイン処理
-				setSetting(ordering);
-			}
-		}
-	
-		function onPasstimeNG(){
-			location.href="passcode_input.html?kbn=buy";
-		}
-	}
-	
-	
-	// サーバー通信を行い値を設定を行なう
-	function setSetting(params){
-		console.log("Start:"+params);
-	
-	    title = '情報の初期設定';
-	    button = 'OK';
-		
-	    var url = params.http+'json/send_setup.php';
-	
-	
-		$.ajax({
-			type: "POST",
-			url: url,
-			data:params,
-			success: function(data){
-				// 戻り値により処理を振り分ける
-	
-				if(data.setup_ok == 1){
-	console.log("-- 注文処理 --");
-					getOrder(params);
-	
-	            }else if(data.password_ck == 0){
-	console.log("-- 暗証番号--");
-	                message = '１．暗証番号を設定してください。';
-	                navigator.notification.alert(message, alertCallBack(), title, button);
-	                location.href="passcode_new.html?kbn=buy";
-	       
-				}else if(data.customer_ck == 0){
-	console.log("-- 個人設定・お届け先 --");
-	                message = '２．あなた様のお名前やご住所を設定してください。';
-	                navigator.notification.alert(message, alertCallBack(), title, button);
-					location.href="ordering_new.html?kbn=buy";
-	
-	            }else if(data.address_ck == 0){
-	console.log("-- お届け先 --");
-	                message = '３．お届け先のお名前やご住所を設定してください。';
-	                navigator.notification.alert(message, alertCallBack(), title, button);
-	                location.href="addressee_new.html?kbn=buy";
-	       
-				}else if(data.card_ck == 0){
-	console.log("-- カード--");
-	                message = '４．お支払いに使うクレジットカード情報を設定してください。クレジットカードはご本人様（個人設定にて設定したお名前・ご住所）のカード以外はご利用いただけません。';
-	                navigator.notification.alert(message, alertCallBack(), title, button);
-					location.href="card_new.html?kbn=buy";
-	       
-				}else{
-	console.log("-- エラー１--");
-	                message = '１．暗証番号を設定してください。';
-	                navigator.notification.alert(message, alertCallBack(), title, button);
-					location.href="ordering_new.html?kbn=buy";
-	
-				}
-			},
-			error: function(data) {
-	console.log("-- エラー２--");
-					errMsg();
-			}
-		});
-	
-	console.log("-- END--");
-	}
-	
-	
-	function getOrder(params) {
-		// ファイルの読み込み
-		console.log("Start order");
-		var fname = 'order';
-		getFile(fname,onOrderOK,onOrderNG);
-	
-		function onOrderOK(order){
-			console.log("正常にorderを読み込みました。");
-	
-			order['customer_id']   = params.customer_id;
-			order['customer_key']  = params.customer_key;
-	
-			order['app_ver']  = params.app_ver;
-			order['app_code'] = params.app_code;
-			order['url']      = params.url;
-			order['http']     = params.http;
-			order['https']    = params.https;
-	
-			setOrder(order);
-		}
-	
-		function onOrderNG(){
-			location.href="barcode.html";
-		}
-	
-	}
-	
-	// サーバー通信を行い値を設定を行なう
-	function setOrder(order){
-		console.log("Start post:"+order);
-	
-		var url = order.https+'json/receive_order.php';
-	
-		$.ajax({
-			type: "POST",
-			url: url,
-			data:order,
-			success: function(data){
-				// 戻り値により処理を振り分ける
-				if(data.errmsg){
-					console.log("-- 注文内容エラー--");
-					var msg = {};
-					msg['title'] = data.errtitle;
-					msg['msg']   = data.errmsg;
-					cardErrMsg(msg);
-				}else{
-					if(data.order_id > 0 && data.order_id < 99999999999){
-						console.log("-- 注文完了--");
-						okMsg();
-					}else{
-						console.log("-- エラー--");
-						errMsg();
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+
+		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+
+		<script type="text/javascript">
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
+			$(document).ready(function() {
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+			function onDeviceReady() {
+				//	getSetting();
+				$.ajaxSetup({
+					timeout : 5000
+				});
+
+				getFile('initFlg', okFunc, ngFunc);
+				function okFunc(json) {
+					// 初期設定の読み込み
+					var inputPasscode = json.inputPasscode;
+					var inputedPass = json.inputedPass;
+					var get = getQuery();
+					if(get != null && get.inputedPass){
+						inputedPass = get.inputedPass;
+					}
+					setLocalStorage('inputPasscode', inputPasscode);
+					setLocalStorage('inputedPass', inputedPass);
+					var initFlg = {
+						inputPasscode: inputPasscode,
+						inputedPass: inputedPass
+					};
+					setFile('initFlg',initFlg , okFunc, okFunc);
+					function okFunc(){
+						// 設定ファイルの読み込み
+						getonOrdering(getSetting);
 					}
 				}
-			},
-			error: function(data) {
-				console.log("-- 通信エラー--");
-				errBuyMsg();
-			}
-		});
-	
-	console.log("-- END--");
-	}
-	
-	// 処理完了時
-	function okMsg() {
-
-		// オーダー削除
-		alertCallBackOk();
-		
-		// 設定ファイルの読み込み
-		getonOrdering(calcelAttention);
-
-		function calcelAttention(ordering){
-			if (ordering.orderAttnetion && ordering.orderAttnetion == 1) {
-				// 確認メッセージを表示しない
-				goShowOrder();
-			}else{
-				// 確認メッセージを表示する
-				var message = 'ご購入をキャンセルされる場合は、30分以内にお願いいたします。';
-				var title = 'ご注文を受付いたしました。';
-				var button = "OK,次回表示しない";
-				navigator.notification.confirm(message, onConfirm, title, button);
-				// goShowOrder();
-			}
-			
-			function onConfirm(btn){
-				if (btn == 1) {
-					ordering['orderAttnetion'] = 0;
-				} else {
-					ordering['orderAttnetion'] = 1;
+				function ngFunc() {
+					// 設定ファイルの読み込み
+					getonOrdering(getSetting);
 				}
-				
-				var fname = 'ordering';
-				setFile(fname, ordering, goShowOrder, goShowOrder);
+
 			}
-			
-			function goShowOrder(){
-				window.location.href = 'show_order.html';
+
+			function getSetting(ordering) {
+				console.log("正常にテキストを読み込みましたよ。:cid " + ordering.customer_id);
+				console.log("正常にテキストを読み込みましたよ。:key " + ordering.customer_key);
+				if (ordering.customer_pass) {
+					// パスワードのチェック
+					ckPassTime(ordering);
+				} else {
+					// ★メイン処理
+					setSetting(ordering);
+				}
 			}
-			
-		}
-		return false;
-	}
-	
-	function cardErrMsg(msg) {
-	    // カードエラー   
-		button = 'OK';
-		navigator.notification.alert(msg.msg, alertCallBack(), msg.title, button);
-		location.href = 'setting.html';
-	}
-	function alertCallBackOk() {
-	    fname = 'order';
-	    var order = {};
-	    order['qr_id'] = "";
-	    setFile(fname,order);
-	}
-	
-	function errMsg() {
-		networdERR(alertCallBack,'注文出来ませんでした');
-		location.href = 'setting.html';
-	}
-	
-	function errBuyMsg() {
-		networdBuyERR(alertCallBack,'注文出来ませんでした');
-		location.href = 'setting.html';
-	}
-	
-	function alertCallBack() {
-	}
-	
-	var fname = 'order_attention';
-	getFile(fname, onGetOrderAttentionOK, onGetOrderAttentionNG);
-	
-	function onGetOrderAttentionOK(json) {
-		console.log("正常にorder_attentionを読み込みました。");
-		if (json.order_attention && (json.order_attention != '' || json.order_attention != null)) {
-			jsonObj = {
-				order_attention : 'enable'
-			};
-			setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
-		}
-	}
-	
-	function onGetOrderAttentionNG() {
-		console.log("err : order_attention NO");
-		onReadyFile3(rdata);
-	}
-	
-	</script>
+
+			function ckPassTime(ordering) {
+				// ファイルの読み込み
+				console.log("Start passtime");
+				var fname = 'passtime';
+				getFile(fname, onPasstimeOK, onPasstimeNG);
+
+				function onPasstimeOK(json) {
+					console.log("正常にテキストを読み込みました。:passtime " + json.pass_time);
+
+					var cktime = json.pass_time + (60 * 60);
+					var nowtime = parseInt(new Date() / 1000);
+					if (cktime < nowtime) {
+						location.href = "passcode_input.html?kbn=buy";
+					} else {
+						// ★メイン処理
+						setSetting(ordering);
+					}
+				}
+
+				function onPasstimeNG() {
+					location.href = "passcode_input.html?kbn=buy";
+				}
+
+			}
+
+			// サーバー通信を行い値を設定を行なう
+			function setSetting(params) {
+				console.log("Start:" + params);
+
+				title = '情報の初期設定';
+				button = 'OK';
+
+				var url = params.http + 'json/send_setup.php';
+
+				$.ajax({
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
+						// 戻り値により処理を振り分ける
+
+						if (data.setup_ok == 1) {
+							console.log("-- 注文処理 --");
+							// 暗証番号選択式の追加　121211 ogawa
+							var inputPass = getLocalStorage('inputPasscode');
+							// 暗証番号の入力で購入：true
+							var inputedPass = getLocalStorage('inputedPass');
+							// passcode_inputで入力している：true
+							// 時間経過
+							getFile('passTime',okPassTime, okPassTime);
+							function okPassTime(json){
+								var passTime = json.passTime;
+								var cktime = passTime + (60 * 60);
+								var nowtime = parseInt(new Date() / 1000);
+								// 総合判定
+								if (cktime < nowtime || (inputPass == 'true' && inputedPass == 'false')) {
+								//	setLocalStorage('kbn', 'buy');
+									location.href = "passcode_input.html?kbn=buy";
+								} else {
+								//	setLocalStorage('kbn', '');
+									getOrder(params);
+								}
+							}
+							// getOrder(params);
+						} else if (data.password_ck == 0) {
+							console.log("-- 暗証番号--");
+							message = '１．暗証番号を設定してください。';
+							navigator.notification.alert(message, alertCallBack(), title, button);
+							location.href = "passcode_new.html?kbn=buy";
+
+						} else if (data.customer_ck == 0) {
+							console.log("-- 個人設定・お届け先 --");
+							message = '２．あなた様のお名前やご住所を設定してください。';
+							navigator.notification.alert(message, alertCallBack(), title, button);
+							location.href = "ordering_new.html?kbn=buy";
+
+						} else if (data.address_ck == 0) {
+							console.log("-- お届け先 --");
+							message = '３．お届け先のお名前やご住所を設定してください。';
+							navigator.notification.alert(message, alertCallBack(), title, button);
+							location.href = "addressee_new.html?kbn=buy";
+
+						} else if (data.card_ck == 0) {
+							console.log("-- カード--");
+							message = '４．お支払いに使うクレジットカード情報を設定してください。クレジットカードはご本人様（個人設定にて設定したお名前・ご住所）のカード以外はご利用いただけません。';
+							navigator.notification.alert(message, alertCallBack(), title, button);
+							location.href = "card_new.html?kbn=buy";
+
+						} else {
+							console.log("-- エラー１--");
+							message = '１．暗証番号を設定してください。';
+							navigator.notification.alert(message, alertCallBack(), title, button);
+							location.href = "ordering_new.html?kbn=buy";
+
+						}
+					},
+					error : function(data) {
+						console.log("-- エラー２--");
+						errMsg();
+					}
+				});
+
+				console.log("-- END--");
+			}
+
+			function getOrder(params) {
+				// ファイルの読み込み
+				console.log("Start order");
+				var fname = 'order';
+				getFile(fname, onOrderOK, onOrderNG);
+
+				function onOrderOK(order) {
+					console.log("正常にorderを読み込みました。");
+
+					order['customer_id'] = params.customer_id;
+					order['customer_key'] = params.customer_key;
+
+					order['app_ver'] = params.app_ver;
+					order['app_code'] = params.app_code;
+					order['url'] = params.url;
+					order['http'] = params.http;
+					order['https'] = params.https;
+
+					setOrder(order);
+				}
+
+				function onOrderNG() {
+					location.href = "barcode.html";
+				}
+
+			}
+
+			// サーバー通信を行い値を設定を行なう
+			function setOrder(order) {
+				console.log("Start post:" + order);
+
+				var url = order.https + 'json/receive_order.php';
+
+				$.ajax({
+					type : "POST",
+					url : url,
+					data : order,
+					success : function(data) {
+						// 戻り値により処理を振り分ける
+						if (data.errmsg) {
+							console.log("-- 注文内容エラー--");
+							var msg = {};
+							msg['title'] = data.errtitle;
+							msg['msg'] = data.errmsg;
+							cardErrMsg(msg);
+						} else {
+							if (data.order_id > 0 && data.order_id < 99999999999) {
+								console.log("-- 注文完了--");
+								okMsg();
+							} else {
+								console.log("-- エラー--");
+								errMsg();
+							}
+						}
+					},
+					error : function(data) {
+						console.log("-- 通信エラー--");
+						errBuyMsg();
+					}
+				});
+
+				console.log("-- END--");
+			}
+
+			// 処理完了時
+			function okMsg() {
+
+				// オーダー削除
+				alertCallBackOk();
+
+				// 設定ファイルの読み込み
+				getonOrdering(calcelAttention);
+
+				function calcelAttention(ordering) {
+					if (ordering.orderAttnetion && ordering.orderAttnetion == 1) {
+						// 確認メッセージを表示しない
+						goShowOrder();
+					} else {
+						// 確認メッセージを表示する
+						var message = 'ご購入をキャンセルされる場合は、30分以内にお願いいたします。';
+						var title = 'ご注文を受付いたしました。';
+						var button = "OK,次回表示しない";
+						navigator.notification.confirm(message, onConfirm, title, button);
+						// goShowOrder();
+					}
+
+					function onConfirm(btn) {
+						if (btn == 1) {
+							ordering['orderAttnetion'] = 0;
+						} else {
+							ordering['orderAttnetion'] = 1;
+						}
+						var inputPasscode = getLocalStorage('inputPasscode');
+						var initFlg = {
+							inputPasscode: inputPasscode,
+							inputedPass: 'false'
+						};
+						setFile('initFlg',initFlg , okFunc, ngFunc);
+						function okFunc(){
+							var fname = 'ordering';
+							setFile(fname, ordering, goShowOrder, goShowOrder);
+						}
+						function ngFunc(){
+				alert('ngFunc::initFlg: ' + JSON.stringify(initFlg));
+							var fname = 'ordering';
+							setFile(fname, ordering, goShowOrder, goShowOrder);
+						}
+					}
+					function goShowOrder() {
+						window.location.href = 'show_order.html';
+					}
+
+				}
+
+				return false;
+			}
+
+			function cardErrMsg(msg) {
+				// カードエラー
+				button = 'OK';
+				navigator.notification.alert(msg.msg, alertCallBack(), msg.title, button);
+				location.href = 'setting.html';
+			}
+
+			function alertCallBackOk() {
+				fname = 'order';
+				var order = {};
+				order['qr_id'] = "";
+				setFile(fname, order);
+			}
+
+			function errMsg() {
+				networdERR(alertCallBack, '注文出来ませんでした');
+				location.href = 'setting.html';
+			}
+
+			function errBuyMsg() {
+				networdBuyERR(alertCallBack, '注文出来ませんでした');
+				location.href = 'setting.html';
+			}
+
+			function alertCallBack() {
+			}
+
+			var fname = 'order_attention';
+			getFile(fname, onGetOrderAttentionOK, onGetOrderAttentionNG);
+
+			function onGetOrderAttentionOK(json) {
+				console.log("正常にorder_attentionを読み込みました。");
+				if (json.order_attention && (json.order_attention != '' || json.order_attention != null)) {
+					jsonObj = {
+						order_attention : 'enable'
+					};
+					setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
+				}
+			}
+
+			function onGetOrderAttentionNG() {
+				console.log("err : order_attention NO");
+				onReadyFile3(rdata);
+			}
+
+		</script>
 	</head>
-	
+
 	<body>
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
 			<div data-role="header" id="header" data-position="fixed">

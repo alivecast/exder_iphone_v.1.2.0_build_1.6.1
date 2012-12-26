@@ -55,6 +55,7 @@
 						$('#btnOrder').css("display", "block");
 						$("#backb").attr("href","order.html");
 						$("#tab3a").attr("href","order.html");
+						setLocalStorage('kbn', 'buy');
 					}else{
 						$('#btnSetting').css("display", "block");
 						$("#report").css("display","block");
@@ -63,6 +64,11 @@
 					$('#btnSetting').css("display", "block");
 					$("#report").css("display","block");
 				}
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				getonOrdering(onReadyFile);
             }
 
@@ -119,23 +125,21 @@
 					navigator.notification.alert(message, alertCallBack(), title, button);
 					return false;
 				}else{
-
 					// 入力値
 					var psstime = {};
 					psstime['pass_time'] = parseInt( new Date() /1000 );
-
 					console.log("fname: " + fname);
 					// ファイル処理(登録)
 					var fname = 'passtime';
 					setFile(fname, psstime, goHref, goHref);
 				}
-
 			}
 
 			function goHref() {
-				var kbn = $("#kbn").val();
+				var kbn = getLocalStorage('kbn');
+			//	alert('kbn: ' + kbn);
 				if(kbn == "buy"){
-					location.href="order.html";
+					location.href="order.html?kbn=buy&inputedPass=ture";
 				}else{
 					location.href="setting.html";
 				}

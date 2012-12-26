@@ -35,12 +35,7 @@
 
 			function onDeviceReady() {
 				
-				$.ajaxSetup({timeout: 3000});
-				// TEST
-				//var fname = 'ordering';
-				//delFile(fname);
-				//var fname = 'order';
-				//delFile(fname);
+				$.ajaxSetup({timeout: 5000});
 				
 				// ネットワークの判定
 				// check_network();
@@ -137,8 +132,27 @@
 				setFile(fname, datalist, goIntro, goIntro);
 
 				function goIntro(){
-					location.href="website_all.html?page=tr.html";
-					return false;
+					var initFlg = {};
+					initFlg = {
+						// appFirst: 'true',
+						// isOrdering: 'false',
+						inputPasscode: 'true',
+						inputedPass: 'false',
+						// cancelAttention: 'true',
+						// throwOrder: 'false'
+					}
+					setFile('initFlg', initFlg, okFunc, ngFunc);
+					function okFunc(){
+						// alert('goIntro::okFunc');
+						location.href="website_all.html?page=tr.html";
+						return false;
+					}
+					function ngFunc(){
+						// alert('goIntro::ngFunc');
+						location.href="website_all.html?page=tr.html";
+						return false;
+					}
+					
 				}
 
 			}

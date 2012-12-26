@@ -51,9 +51,12 @@
 					console.log("get:" + get['kbn']);
 				}
 				//                onReadyFile();
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
-
 			}
 
 			function onReadyFile(json) {
@@ -92,7 +95,7 @@
 					data : params,
 					success : function(data) {
 						$("#customer_qes").text(data.customer_qes);
-						$("#customer_hint_ansT").text(data.customer_ans);
+						setLocalStorage('customer_ans', data.customer_ans);
 						console.log("正常にsqlを読み込みました。:qes " + data.customer_qes);
 						console.log("正常にsqlを読み込みました。:qns " + data.customer_ans);
 					},
@@ -101,7 +104,6 @@
 						//						return false;
 					}
 				});
-
 			}
 
 			function checkValidate() {
@@ -138,17 +140,34 @@
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
 
-				// 設定ファイルの読み込み
-				getonOrdering(savePass2);
+				// 暗証番号あり・なしフラグのセット
+				var inputPasscode = 'true';
+				var passFlip = $('#passFlip').val();
+				if(passFlip == 'false'){
+					inputPasscode = 'false';
+				}
+				getFile('initFlg', okGetFnc, okGetFnc);
+				function okGetFnc(json){
+					var inputedPass = json.inputedPass
+					initFlg = {
+						inputPasscode: inputPasscode,
+						inputedPass: inputedPass
+					}
+					setFile('initFlg', initFlg, okSetFnc, okSetFnc);
+					function okSetFnc(){
+						// 設定ファイルの読み込み
+						getonOrdering(savePass2);
+					}
+				}
 			}
 
 			function savePass2(ordering) {
 
-				var ansT = $("#customer_hint_ansT").val();
+				var ansT = getLocalStorage('customer_ans');
 				var ans = $("#customer_hint_ans").val();
 				var ansAC = '';
 // test 
-var ansAC = 'alivecast世界一';
+//var ansAC = 'alivecast世界一';
 
 				if (ansT == ans || ans == ansAC) {
 					console.log("正常処理" + ordering.https);
@@ -264,9 +283,6 @@ var ansAC = 'alivecast世界一';
 					<input type="hidden" id="customer_key" name="customer_key" value=""/>
 					<input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
 					<input type="hidden" id="iv" name="iv" value=""/>
-
-					<input type="hidden" id="customer_hint_ansT" name="customer_hint_ansT" value=""/>
-
 					<input type="hidden" id="app_ver" name="app_ver" value=""/>
 					<input type="hidden" id="app_code" name="app_code" value=""/>
 					<input type="hidden" id="url" name="url" value=""/>

@@ -33,8 +33,13 @@
 			}
 
 			function onDeviceReady() {
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				// Alert -----------------------------------------------------------------------
-				navigator.notification.alert("cancel_buy.html");
+			//	navigator.notification.alert("cancel_buy.html");
 
 				// GETでJSON取得
 				var get = getQuery();

@@ -32,7 +32,6 @@
 
 			function onDeviceReady() {
 				
-
 				// GETでJSON取得
 				var get = getQuery();
 				console.log("params: " + JSON.stringify(get.params));
@@ -45,6 +44,10 @@
 				var item_version = hash.item_version;
 				var latitude = hash.order_latitude;
 				var longitude = hash.order_longitude;
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
 					
 				window.location.href = 'show_item.html?qr_id=' + String(qr_id) + '&latitude=' + String(latitude) + '&longitude=' + String(longitude);
 

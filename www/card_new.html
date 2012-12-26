@@ -27,39 +27,44 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
 
-			$(document).ready(function(){
+			$(document).ready(function() {
 				$('#loading').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
-            function onDeviceReady(){
-                    if(location.search.length > 1) {
-                        var get = new Object();
-                        var ret = location.search.substr(1).split("&");
-                        for(var i = 0; i < ret.length; i++) {
-                            var r = ret[i].split("=");
-                            get[r[0]] = r[1];
-                        }
-                        console.log("get:"+get['kbn']);
-						$("#kbn").val(get['kbn']);
-                        if(get['kbn'] == "buy"){
-                            $("#backb").attr("href","addressee_index.html?kbn=buy");
-                            $("#tab3a").attr("href","order.html");
-                        }
-                    }
-					// 設定ファイルの読み込み
-					getonOrdering(onReadyFile);
-            }
+			function onDeviceReady() {
+				if (location.search.length > 1) {
+					var get = new Object();
+					var ret = location.search.substr(1).split("&");
+					for (var i = 0; i < ret.length; i++) {
+						var r = ret[i].split("=");
+						get[r[0]] = r[1];
+					}
+					console.log("get:" + get['kbn']);
+					$("#kbn").val(get['kbn']);
+					if (get['kbn'] == "buy") {
+						$("#backb").attr("href", "addressee_index.html?kbn=buy");
+						$("#tab3a").attr("href", "order.html");
+					}
+				}
+
+				$.ajaxSetup({
+					timeout : 5000
+				});
+
+				// 設定ファイルの読み込み
+				getonOrdering(onReadyFile);
+			}
 
 			function onReadyFile(json) {
-				console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
-				console.log("正常にテキストを読み込みました。:key "+json.customer_key);
+				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
+				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
 
 				$("#customer_id").val(json.customer_id);
 				$("#customer_mail_1").val(json.customer_mail_1);
@@ -73,7 +78,6 @@
 				$("#http").val(json.http);
 				$("#https").val(json.https);
 			}
-
 
 			function checkValidate() {
 				var i = 0;
@@ -143,50 +147,48 @@
 			}
 
 			// 新規登録
-			function saveCard(){
+			function saveCard() {
 
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
 
 				var ordering = {};
-
-				ordering['app_ver']  = $("#app_ver").val();
+				ordering['app_ver'] = $("#app_ver").val();
 				ordering['app_code'] = $("#app_code").val();
-				ordering['url']      = $("#url").val();
-				ordering['http']     = $("#http").val();
-				ordering['https']    = $("#https").val();
-
-                ordering['customer_id']   = $("#customer_id").val();
-                ordering['customer_key']   = $("#customer_key").val();
-                ordering['customer_pass']   = $("#customer_pass").val();
-                ordering['card_company']    = $("#card_company").val();
-				ordering['card_number']  = $("#card_number").val();
-                ordering['card_validity'] = $("#card_validity").val();
+				ordering['url'] = $("#url").val();
+				ordering['http'] = $("#http").val();
+				ordering['https'] = $("#https").val();
+				ordering['customer_id'] = $("#customer_id").val();
+				ordering['customer_key'] = $("#customer_key").val();
+				ordering['customer_pass'] = $("#customer_pass").val();
+				ordering['card_company'] = $("#card_company").val();
+				ordering['card_number'] = $("#card_number").val();
+				ordering['card_validity'] = $("#card_validity").val();
 				ordering['card_holder'] = $("#card_holder").val();
 				ordering['card_security_code'] = $("#card_security_code").val();
 
 				// 送信
-				var url = ordering['https']+'json/receive_card.php';
+				var url = ordering['https'] + 'json/receive_card.php';
 				var params = ordering;
 
 				$.ajax({
-					type: "POST",
-					url: url,
-					data:params,
-					success: function(data){
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
 						// 戻り値の保存
 						console.log("customer_id: " + data.customer_id);
 
 						var kbn = $("#kbn").val();
-						if(kbn == "buy"){
-							location.href="order.html";
-						}else{
-							location.href="setting.html";
+						if (kbn == "buy") {
+							location.href = "order.html";
+						} else {
+							location.href = "setting.html";
 						}
 					},
-					error: function(){
-						networdERR(alertCallBack,'通信エラー');
-//						return false;
+					error : function() {
+						networdERR(alertCallBack, '通信エラー');
+						//						return false;
 					}
 				});
 			}
@@ -198,8 +200,7 @@
 			}
 
 		</script>
-
-	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
 
@@ -215,7 +216,9 @@
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
-					<p>しばらくおまちください</p>
+					<p>
+						しばらくおまちください
+					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {
@@ -300,7 +303,9 @@
 							<li class="card_num">
 								<label for="card_number" class="fieldLabel">クレジットカード番号</label>
 								<p style="color:red;">
-									・ 半角数字のみで入力してください。<br />（スペースは不要です）
+									・ 半角数字のみで入力してください。
+									<br />
+									（スペースは不要です）
 								</p>
 								<input type="tel" id="card_number" name="card_number" value="" maxlength=16 class="required validate" placeholder="例）数値16桁。または15桁" />
 							</li>
@@ -324,7 +329,7 @@
 
 							<li class="item_buy_1btn btn_txt_ow">
 								<div>
-								<a class="btn_next" data-role="button" onclick="checkValidate();">登録する</a>
+									<a class="btn_next" data-role="button" onclick="checkValidate();">登録する</a>
 								</div>
 							</li>
 
@@ -334,7 +339,7 @@
 			</div>
 
 			<!-- nav -->
-				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
 						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>

@@ -37,6 +37,10 @@
 
 			function onDeviceReady(){
 				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				//loading呼び出し
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');

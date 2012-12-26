@@ -24,6 +24,10 @@
 			});
 
 			function onDeviceReady() {
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
 
 				// barcode読み取り
 				window.plugins.barcodeScanner.scan(function(result) {

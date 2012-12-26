@@ -75,7 +75,10 @@ h1 {
 /* ---------- JQM theme customization ------------- */
 
 .ui-bar-a {
+	/*
 	border: 1px solid 		#ccc;
+	*/	
+	
 	background: 			#bbb;
     color: white;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
@@ -558,6 +561,14 @@ li.ui-li {
     padding-right: 35px;
 }
 
+/*
+.ui-li .ui-btn-inner a.ui-link-inherit,
+.ui-li-static.ui-li {
+*/
+.ui-li .ui-btn-inner a.ui-link-inherit {
+	padding:.7em 30px .7em 10px;
+}
+
 
 /* ---/　input周り
 ----------------------------------*/
@@ -741,6 +752,15 @@ body {
 	display:block;
 }
 
+.footer li a.ui-link:visited {
+	color:#FFF;
+}
+
+.footer li a.ui-link:hover,
+.footer li a.ui-link:active {
+	color:#EEE;
+}
+
 .footer li.current {
 	background:url(../images/bg_tabber_current.png) 2px 50% no-repeat;
 	-webkit-background-size:76px 41px;
@@ -838,8 +858,13 @@ button.btn_next {
 	color:#30402E;
 	text-shadow:1px 1px 0 #FFF;
 	
+	/*
 	-webkit-box-shadow: 0 1px 1px #FFF inset;
 	box-shadow: 0 1px 1px #FFF inset;
+	*/
+	
+	-webkit-box-shadow: 0 1px 1px #FFF inset, 2px 2px 2px rgba(0,0,0,0.1);
+	box-shadow: 0 1px 1px #FFF inset, 2px 2px 2px rgba(0,0,0,0.1);
 }
 
 .btn_prev .ui-btn-inner {
@@ -907,9 +932,11 @@ button.btn_next {
 	-ms-border-radius: 0 0 6px 6px;
 	border-radius: 0 0 6px 6px;
 	
+	/*
 	height:30px;
 	line-height:30px;
-	padding:0 10px;	
+	*/
+	padding:5px 10px;	
 	margin-bottom:5px;
 	
 	color:#FFF;
@@ -964,26 +991,28 @@ button.btn_next {
 	width:auto;
 }
 
-.price,
-.shippingCost {
+.item_price .price,
+.item_price .shippingCost {
 	border-bottom:#EDF1EC 1px solid;
 	margin-bottom:5px;
 }
 
-.price dt,
-.shippingCost dt {
+.item_price .price dt,
+.item_price .shippingCost dt {
 }
 
-.price dd,
-.shippingCost dd {
+.item_price .price dd,
+.item_price .shippingCost dd {
 	font-size:18px;
 	color:#F30;
 	text-align:right;
 	border-bottom:#C0CDBE 1px solid;
+	
+	padding-right:25px;
 }
 
-.price dd span,
-.shippingCost dd span {
+.item_price .price dd span,
+.item_price .shippingCost dd span {
 	font-size:12px;
 }
 
@@ -1042,6 +1071,12 @@ button.btn_next {
 .item_shippingAddress {
 }
 
+
+.item_shippingAddress .ui-btn-inner {
+	font-size:13px;
+}
+
+
 .item_shippingAddress .address {
 	margin-bottom:5px;
 }
@@ -1050,6 +1085,22 @@ button.btn_next {
 	font-size:16px;
 	margin-left:5px;
 }
+
+
+.item_shippingAddress .ui-btn-inner ,
+.item_shippingAddress .ui-btn-text a.ui-link-inherit {
+	/* 折り返しの解除 */
+	overflow:visible;
+	white-space:normal;
+	text-overflow:clip;
+}
+
+
+.item_shippingAddress span {
+	font-size:16px;
+	margin-left:5px;
+}
+
 
 
 /* ---/ 数量・購入ボタン /--- */
@@ -1079,9 +1130,21 @@ button.btn_next {
 .shop_neme {
 }
 
+.shop_neme .ui-btn-inner {
+	font-size:13px;
+}
+
+.shop_neme .ui-btn-inner ,
+.shop_neme .ui-btn-text a.ui-link-inherit {
+	/* 折り返しの解除 */
+	overflow:visible;
+	white-space:normal;
+	text-overflow:clip;
+}
+
 .ui-li .txt {/* 共通 */
 	font-weight:normal;
-	margin-bottom:5px;
+	margin-top:5px;
 }
 
 .shop_neme span {
@@ -1098,8 +1161,11 @@ button.btn_next {
 	padding:15px 10px;
 }
 
+/*
 .item_buy_1btn .ui-btn-inner a.ui-link-inherit,
-.ui-li-static.ui-li {
+.ui-li-static.ui-li {*/
+
+.item_buy_1btn .ui-btn-inner a.ui-link-inherit {
 	padding:15px 10px;
 }
 
@@ -1116,7 +1182,11 @@ button.btn_next {
 
 /* ---/　販売者概要
 ----------------------------------*/
-.page_shopProfile {
+#page_shopProfile {
+}
+
+#page_shopProfile h1 {
+	font-size:16px;
 }
 
 .cont_shopProfile dt {
@@ -1147,6 +1217,10 @@ button.btn_next {
 
 /* ---/　販売者への問い合わせ
 ----------------------------------*/
+.shop_contact .txt {
+	margin-bottom:5px;
+}
+
 .form_link .ui-btn-inner {
 	background:url(../images/ico_form_link.png) 10px 50% no-repeat;
 	-webkit-background-size:27px 27px;
@@ -1340,7 +1414,9 @@ button.btn_next {
 	white-space:nowrap;
 	text-overflow:ellipsis;
 	
-	// margin-bottom:5px;
+	/* 
+	margin-bottom:5px;
+	*/
 	margin-bottom:1px;
 }
 
@@ -1350,7 +1426,9 @@ button.btn_next {
 	white-space:nowrap;
 	text-overflow:ellipsis;
 	
-	// margin-bottom:5px;
+	/*
+	margin-bottom:5px;
+	*/
 	margin-bottom:2px;
 }
 
@@ -1371,7 +1449,9 @@ button.btn_next {
 	white-space:nowrap;
 	text-overflow:ellipsis;
 	
-	// margin-bottom:5px;
+	/*
+	margin-bottom:5px;
+	*/
 	margin-bottom:2px;
 	
 	/*
@@ -1475,7 +1555,7 @@ button.btn_next {
 
 
 /* ------------------------------------------/
-　購入商品(個別)
+　購入商品(個別)?
 ------------------------------------------ */
 #page_orderInfoApp_show {
 }
@@ -1534,6 +1614,30 @@ button.btn_next {
 .item_shippingAddress dd {
 	margin-left:5em;
 }
+
+
+
+
+/* ------------------------------------------/
+　購入商品(個別)show_order_item.html
+------------------------------------------ */
+.page_itemDetail {
+}
+
+.cont_itemDetail {
+}
+
+/* ---/ ＱＲコードを表示（友人に紹介） /--- */
+.report .txt {
+	margin-bottom:5px;
+}
+
+
+
+
+
+
+
 
 
 
@@ -1614,11 +1718,22 @@ button.btn_next {
 	margin-right:5px;
 }
 
+.setup_list .ui-btn-inner {
+	font-size:100%;
+}
+
 
 /* ---/ チェック /--- */
 .setup_list .ico_check {
 	display:inline-block;
 	width:20px;
+}
+
+/* ---/ チェックがない場合（未入力項目） /--- */
+#ordering_ng,
+#address_ng,
+#card_ng {
+	padding-right:35px;
 }
 
 

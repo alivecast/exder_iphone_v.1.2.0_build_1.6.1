@@ -35,6 +35,11 @@
 			});
 
 			function onDeviceReady(){
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				// 設定ファイルを読み込む
 				getonOrdering(onReadyFile);
 			}
@@ -147,7 +152,7 @@
 					}
 				})
 				//氏名のチェック
-				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/^　|^ /) || $("#customer_name").val().match(/[０-９0-9]|[!-/:-@[-`{-~]/) || !$("#customer_name").val().match(/^\w{1,30}$|^\W{1,30}$/) {
+				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/^　|^ /) || $("#customer_name").val().match(/[０-９0-9]|[!-/:-@[-`{-~]/) || !$("#customer_name").val().match(/^\w{1,30}$|^\W{1,30}$/)) {
 					$("#customer_name").parent().append("<p class='error'>氏名を入力してください。</p>");
 				}
 				//郵便番号のチェック

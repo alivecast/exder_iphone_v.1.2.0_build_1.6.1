@@ -41,7 +41,9 @@
 				
 				$('#loading').css('display', 'block');
 				$('#content').css('display', 'none');
-
+				$.ajaxSetup({
+					timeout: 5000
+				});
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
 			}
@@ -199,7 +201,7 @@
 					var shippingCost = '<a href="website_soryo.html?qr_id='+params["qr_id"]+'" deta-transition="slide" data-ajax="false" class="shippingCost_link">';
 					shippingCost += '<dl class="shippingCost"><dt>送料</dt><dd id="order_carriage"><span id="carriage">';
 					if (parseInt(params['order_carriage']) > 0) {
-						shippingCost += currency(params['order_carriage']) + '円　　</span></dd></dl>';
+						shippingCost += currency(params['order_carriage']) + '<span class="unit_name">円</span>　　</span></dd></dl>';
 					} else {
 						if(params['customer_id'] && params['customer_id'] > 0){
 							shippingCost += '送料無料　　</span></dd></dl>';

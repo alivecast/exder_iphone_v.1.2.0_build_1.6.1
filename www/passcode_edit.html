@@ -27,42 +27,46 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
 
-			$(document).ready(function(){
+			$(document).ready(function() {
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
-            function onDeviceReady(){
-            	$('#loading').css('display', 'none');
-            	$('#content').css('display', 'block');
-            	
-                    if(location.search.length > 1) {
-                        var get = new Object();
-                        var ret = location.search.substr(1).split("&");
-                        for(var i = 0; i < ret.length; i++) {
-                            var r = ret[i].split("=");
-                            get[r[0]] = r[1];
-                        }
-                        console.log("get:"+get['kbn']);
-                    }
-//                onReadyFile();
+			function onDeviceReady() {
+				$('#loading').css('display', 'none');
+				$('#content').css('display', 'block');
+
+				if (location.search.length > 1) {
+					var get = new Object();
+					var ret = location.search.substr(1).split("&");
+					for (var i = 0; i < ret.length; i++) {
+						var r = ret[i].split("=");
+						get[r[0]] = r[1];
+					}
+					console.log("get:" + get['kbn']);
+				}
+
+				$.ajaxSetup({
+					timeout : 5000
+				});
+				//                onReadyFile();
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
-            }
+			}
 
 			function onReadyFile(json) {
-				
-//alert('json: ' + JSON.stringify(json));
-				
-				console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
-				console.log("正常にテキストを読み込みました。:key "+json.customer_key);
-				console.log("正常にテキストを読み込みました。:pas "+json.customer_pass);
-				
+
+				//alert('json: ' + JSON.stringify(json));
+
+				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
+				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
+				console.log("正常にテキストを読み込みました。:pas " + json.customer_pass);
+
 				//alert('json: ' + JSON.stringify(json));
 
 				$("#customer_id").val(json.customer_id);
@@ -70,7 +74,7 @@
 				$("#customer_email_1").val(json.customer_email_1);
 				$("#customer_passT").val(json.customer_pass);
 				$("#customer_ansT").val(json.customer_ans);
-				
+
 				$("#iv").val(json.iv);
 
 				$("#app_ver").val(json.app_ver);
@@ -97,7 +101,7 @@
 				if ($("#re_pass").val() != $("#customer_pass").val() || $("#re_pass").val() == "") {
 					$("#re_pass").parent().append("<p class='error'>新しい暗証番号と同じ番号を入力してください</p>");
 				}
-				
+
 				//後処理
 				if ($("p.error").size() > 0) {
 					$("p.error").parent().addClass("error");
@@ -109,64 +113,80 @@
 			}
 
 			// 更新
-			function savePass(){
+			function savePass() {
 				//loading呼び出し
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
 				
-				// 設定ファイルの読み込み
-				getonOrdering(savePass2);
+				// 暗証番号あり・なしフラグのセット
+				var inputPasscode = 'true';
+				var passFlip = $('#passFlip').val();
+				if(passFlip == 'false'){
+					inputPasscode = 'false';
+				}
+				getFile('initFlg', okGetFnc, okGetFnc);
+				function okGetFnc(json){
+					var inputedPass = json.inputedPass
+					initFlg = {
+						inputPasscode: inputPasscode,
+						inputedPass: inputedPass
+					}
+					setFile('initFlg', initFlg, okSetFnc, okSetFnc);
+					function okSetFnc(){
+						// 設定ファイルの読み込み
+						getonOrdering(savePass2);
+					}
+				}
 			}
 
-			function savePass2(ordering){
-				
+			function savePass2(ordering) {
+
 				//alert('customer_passT: ' + $("#customer_passT").val());
 				//alert('old_pass: ' + $("#old_pass").val());
-				
-                    var passT = $("#customer_passT").val();
-                    var pass  = $("#old_pass").val();
-                    
-                    if( passT == pass ){
-						console.log("OK customer_key: "+ ordering['customer_key']);
 
-						// 送信
-						var url = ordering.https+'json/receive_pass.php';
-						var params = ordering;
-						params['old_pass']           = $("#old_pass").val();
-						params['customer_pass']      = $("#customer_pass").val();
+				var passT = $("#customer_passT").val();
+				var pass = $("#old_pass").val();
 
-						$.ajax({
-							type: "POST",
-							url: url,
-							data:params,
-							success: function(data){
-								// 戻り値の保存
-								console.log("customer_id: " + data.customer_id);
-								console.log("customer_pass: " + data.customer_pass);
-								// ファイル登録
+				if (passT == pass) {
+					console.log("OK customer_key: " + ordering['customer_key']);
 
-								//json
-								var datalist = ordering;
-								datalist['customer_pass'] = data.customer_pass;
-								datalist['customer_ans'] = $("#customer_ansT").val();
+					// 送信
+					var url = ordering.https + 'json/receive_pass.php';
+					var params = ordering;
+					params['old_pass'] = $("#old_pass").val();
+					params['customer_pass'] = $("#customer_pass").val();
 
-								// ファイル登録
-								var fname = 'ordering';
-								setFile(fname, datalist, goSetting, goSetting);
-							},
-							error: function(){
-								networdERR(alertCallBack,'暗証番号を変更出来ませんでした');
-								return false;
-							}
-						});
-                    }else{
-                        message = '現在の暗証番号に誤りがあります。('+pass+')';
-                        title = 'エラー';
-                        button = 'OK';
-                        navigator.notification.alert(message, alertCallBack(), title, button);
-                    }
+					$.ajax({
+						type : "POST",
+						url : url,
+						data : params,
+						success : function(data) {
+							// 戻り値の保存
+							console.log("customer_id: " + data.customer_id);
+							console.log("customer_pass: " + data.customer_pass);
+							// ファイル登録
 
- 
+							//json
+							var datalist = ordering;
+							datalist['customer_pass'] = data.customer_pass;
+							datalist['customer_ans'] = $("#customer_ansT").val();
+
+							// ファイル登録
+							var fname = 'ordering';
+							setFile(fname, datalist, goSetting, goSetting);
+						},
+						error : function() {
+							networdERR(alertCallBack, '暗証番号を変更出来ませんでした');
+							return false;
+						}
+					});
+				} else {
+					message = '現在の暗証番号に誤りがあります。(' + pass + ')';
+					title = 'エラー';
+					button = 'OK';
+					navigator.notification.alert(message, alertCallBack(), title, button);
+				}
+
 			}
 
 			function goSetting() {
@@ -176,9 +196,9 @@
 
 				// 暗証番号あり・なしフラグのセット
 				var passFlip = $('#passFlip').val();
-				if(passFlip == 'false'){
+				if (passFlip == 'false') {
 					// 暗証番号確認なし：設定時間を未来にする
-					psstime['pass_time'] = parseInt(new Date(2035,11,31,23,59,59) / 1000);
+					psstime['pass_time'] = parseInt(new Date(2035, 11, 31, 23, 59, 59) / 1000);
 				} else {
 					// 暗証番号確認あり：設定時間＝今　（設定時間の１時間後、暗証番号が確認されます）
 					psstime['pass_time'] = parseInt(new Date() / 1000);
@@ -189,9 +209,9 @@
 			}
 
 			function goHref() {
-				location.href="setting.html";
+				location.href = "setting.html";
 			}
-			
+
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
 				// location.href="passcode_edit.html";
@@ -200,7 +220,7 @@
 
 		</script>
 
-	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
 
@@ -214,7 +234,9 @@
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
-					<p>しばらくおまちください</p>
+					<p>
+						しばらくおまちください
+					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {
@@ -239,83 +261,88 @@
 					<div class="txt">
 						ExOrderで利用している暗証番号を変更します。
 					</div>
-					<div id="form_password">
-						<input type="hidden" id="customer_id" name="customer_id" value=""/>
-						<input type="hidden" id="customer_key" name="customer_key" value=""/>
-						<input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
-						<input type="hidden" id="iv" name="iv" value=""/>
-						<input type="hidden" id="customer_passT" name="customer_passT" value=""/>
-						<input type="hidden" id="customer_ansT" name="customer_ansT" value=""/>
+				</div>
+				<div id="form_password">
+					<input type="hidden" id="customer_id" name="customer_id" value=""/>
+					<input type="hidden" id="customer_key" name="customer_key" value=""/>
+					<input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
+					<input type="hidden" id="iv" name="iv" value=""/>
+					<input type="hidden" id="customer_passT" name="customer_passT" value=""/>
+					<input type="hidden" id="customer_ansT" name="customer_ansT" value=""/>
 
-						<input type="hidden" id="app_ver" name="app_ver" value=""/>
-						<input type="hidden" id="app_code" name="app_code" value=""/>
-						<input type="hidden" id="url" name="url" value=""/>
-						<input type="hidden" id="http" name="http" value=""/>
-						<input type="hidden" id="https" name="https" value=""/>
+					<input type="hidden" id="app_ver" name="app_ver" value=""/>
+					<input type="hidden" id="app_code" name="app_code" value=""/>
+					<input type="hidden" id="url" name="url" value=""/>
+					<input type="hidden" id="http" name="http" value=""/>
+					<input type="hidden" id="https" name="https" value=""/>
 
-						<div data-role="fieldcontain" >
-							<ul class="setup_list" data-role="listview">
-								<li class="passcode">
-									<label for="old_pass" class="fieldLabel">現在の暗証番号<span class="form_note">(数字4～16桁)</span></label>
-									<input type="password" autocomplete="off" id="old_pass" name="old_pass" value="" class="required validate" maxlength=16 />
-								</li>
+					<div data-role="fieldcontain" >
+						<ul class="setup_list" data-role="listview">
+							<li class="passcode">
+								<label for="old_pass" class="fieldLabel">現在の暗証番号<span class="form_note">(数字4～16桁)</span></label>
+								<input type="password" autocomplete="off" id="old_pass" name="old_pass" value="" class="required validate" maxlength=16 />
+							</li>
 
-								<li class="passcode">
-									<label for="customer_pass" class="fieldLabel">新しい暗証番号<span class="form_note">(数字4～16桁)</span></label>
-									<input type="password" autocomplete="off" id="customer_pass" name="customer_pass" class="required validate" value="" maxlength=16 placeholder="数字4～16桁" />
-								</li>
-								<li class="passcode">
-									<label for="re_pass" class="fieldLabel">確認のため、上と同じ値を再入力</label>
-									<input type="password" autocomplete="off" id="re_pass" name="re_pass" value="" class="required validate" maxlength=16 placeholder="上と同じ値を入力" />
-								</li>
-								
-								<li class="pflip">
-									<label for="passFlip">購入時の暗証番号確認</label>
-									<select name="passFlip" id="passFlip" data-role="slider">
-										<option value="false">オフ</option>
-										<option value="true" selected="selected">オン</option>
-									</select>
-									<div class="txt" style="color: red;">
-										<br />※ ご購入や設定変更の際に暗証番号を確認いたします。
-										(ご確認後１時間以上経つと、再確認が必要となります）<br />
-										安全の為、上記はONにされることをおすすめ致します。
-									</div>
-								</li>
-								
-								<li class="item_buy_1btn btn_txt_ow">
-									<div><a data-role="button" class="btn_next" onclick="checkValidate();">変更する</a></div>
-								</li>
+							<li class="passcode">
+								<label for="customer_pass" class="fieldLabel">新しい暗証番号<span class="form_note">(数字4～16桁)</span></label>
+								<input type="password" autocomplete="off" id="customer_pass" name="customer_pass" class="required validate" value="" maxlength=16 placeholder="数字4～16桁" />
+							</li>
+							<li class="passcode">
+								<label for="re_pass" class="fieldLabel">確認のため、上と同じ値を再入力</label>
+								<input type="password" autocomplete="off" id="re_pass" name="re_pass" value="" class="required validate" maxlength=16 placeholder="上と同じ値を入力" />
+							</li>
 
-								<li class="report">
-									<div class="txt" style="color: red;">
-										暗証番号を忘れた方はコチラ
-									</div>
-									<div class="report_btn">
-										<a class="btn_prev" href="passcode_hint.html" data-role="button" data-ajax="false"> 暗証番号の再設定へ </a>
-									</div>
-								</li>
+							<li class="pflip">
+								<label for="passFlip">購入時の暗証番号確認</label>
+								<select name="passFlip" id="passFlip" data-role="slider">
+									<option value="false">オフ</option>
+									<option value="true" selected="selected">オン</option>
+								</select>
+								<div class="txt" style="color: red;">
+									<br />
+									※ ご購入や設定変更の際に暗証番号を確認いたします。
+									(ご確認後１時間以上経つと、再確認が必要となります）
+									<br />
+									安全の為、上記はONにされることをおすすめ致します。
+								</div>
+							</li>
 
-							</ul>
-						</div>
+							<li class="item_buy_1btn btn_txt_ow">
+								<div>
+									<a data-role="button" class="btn_next" onclick="checkValidate();">変更する</a>
+								</div>
+							</li>
+
+							<li class="report">
+								<div class="txt" style="color: red;">
+									暗証番号を忘れた方はコチラ
+								</div>
+								<div class="report_btn">
+									<a class="btn_prev" href="passcode_hint.html" data-role="button" data-ajax="false"> 暗証番号の再設定へ </a>
+								</div>
+							</li>
+
+						</ul>
 					</div>
 				</div>
-
-				<!-- nav -->
-				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
-					<ul>
-						<li class="tab01">
-							<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
-						</li>
-						<li class="tab02">
-							<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
-						</li>
-						<li class="tab03 current">
-							<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
-						</li>
-					</ul>
-					<!-- /dr-footer -->
-				</div>
-
 			</div>
+
+			<!-- nav -->
+			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+				<ul>
+					<li class="tab01">
+						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
+					</li>
+					<li class="tab02">
+						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
+					</li>
+					<li class="tab03 current">
+						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
+					</li>
+				</ul>
+				<!-- /dr-footer -->
+			</div>
+
+		</div>
 	</body>
 </html>
