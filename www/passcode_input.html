@@ -34,6 +34,8 @@
 			});
 
             function onDeviceReady(){
+            	
+            //	alert('passcode_input::onDeviceReady');
 
             	$('#loading').css('display', 'none');
 
@@ -134,10 +136,8 @@
 					setFile(fname, psstime, goHref, goHref);
 				}
 			}
-
 			function goHref() {
 				var kbn = getLocalStorage('kbn');
-			//	alert('kbn: ' + kbn);
 				if(kbn == "buy"){
 					location.href="order.html?kbn=buy&inputedPass=ture";
 				}else{

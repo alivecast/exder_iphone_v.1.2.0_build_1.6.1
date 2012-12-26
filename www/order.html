@@ -13,9 +13,7 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
 
 		<script type="text/javascript">
@@ -29,6 +27,8 @@
 			});
 
 			function onDeviceReady() {
+			//	alert('onDeviceReady');
+				
 				//	getSetting();
 				$.ajaxSetup({
 					timeout : 5000
@@ -63,6 +63,8 @@
 			}
 
 			function getSetting(ordering) {
+			//	alert('getSetting');
+				
 				console.log("正常にテキストを読み込みましたよ。:cid " + ordering.customer_id);
 				console.log("正常にテキストを読み込みましたよ。:key " + ordering.customer_key);
 				if (ordering.customer_pass) {
@@ -101,6 +103,8 @@
 
 			// サーバー通信を行い値を設定を行なう
 			function setSetting(params) {
+			//	alert('setSetting');
+				
 				console.log("Start:" + params);
 
 				title = '情報の初期設定';
@@ -122,18 +126,27 @@
 							// 暗証番号の入力で購入：true
 							var inputedPass = getLocalStorage('inputedPass');
 							// passcode_inputで入力している：true
+							
 							// 時間経過
-							getFile('passTime',okPassTime, okPassTime);
+							getFile('passTime',okPassTime, ngPassTime);
 							function okPassTime(json){
+							//	alert('okPassTime');
 								var passTime = json.passTime;
 								var cktime = passTime + (60 * 60);
 								var nowtime = parseInt(new Date() / 1000);
 								// 総合判定
 								if (cktime < nowtime || (inputPass == 'true' && inputedPass == 'false')) {
-								//	setLocalStorage('kbn', 'buy');
 									location.href = "passcode_input.html?kbn=buy";
 								} else {
-								//	setLocalStorage('kbn', '');
+									getOrder(params);
+								}
+							}
+							function ngPassTime(){
+							//	alert('ngPassTime');
+								// 総合判定
+								if (inputPass == 'true' && inputedPass == 'false') {
+									location.href = "passcode_input.html?kbn=buy";
+								} else {
 									getOrder(params);
 								}
 							}
@@ -180,6 +193,7 @@
 			}
 
 			function getOrder(params) {
+				
 				// ファイルの読み込み
 				console.log("Start order");
 				var fname = 'order';
@@ -208,6 +222,7 @@
 
 			// サーバー通信を行い値を設定を行なう
 			function setOrder(order) {
+
 				console.log("Start post:" + order);
 
 				var url = order.https + 'json/receive_order.php';
@@ -247,7 +262,6 @@
 			function okMsg() {
 
 				// オーダー削除
-				alertCallBackOk();
 
 				// 設定ファイルの読み込み
 				getonOrdering(calcelAttention);
@@ -282,7 +296,7 @@
 							setFile(fname, ordering, goShowOrder, goShowOrder);
 						}
 						function ngFunc(){
-				alert('ngFunc::initFlg: ' + JSON.stringify(initFlg));
+			//	alert('ngFunc::initFlg: ' + JSON.stringify(initFlg));
 							var fname = 'ordering';
 							setFile(fname, ordering, goShowOrder, goShowOrder);
 						}

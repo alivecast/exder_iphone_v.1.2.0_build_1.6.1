@@ -214,8 +214,8 @@
 
 					// 送料無料金額
 					if (parseInt(params['non_carriage_price']) > 0) {
-						var non_carriage_price = '<dl class="shippingCost"><dd id="order_carriage"><span>';
-						non_carriage_price = non_carriage_price + currency(params['non_carriage_price']) + '円以上は送料無料</span></dd></dl>';
+						var non_carriage_price = '<p id="order_carriage">';
+						non_carriage_price = non_carriage_price + currency(params['non_carriage_price']) + '<span>円以上は送料無料</span></p>';
 						document.getElementById("non_carriage_price").innerHTML = non_carriage_price;
 					}
 
@@ -509,9 +509,9 @@
 										<dd id="item_price"></dd>
 									</dl>
 									<!-- 送料 -->
-									<div id="shippingCost"></div>
+									<div id="shippingCost">
 									<!-- 送料無料 -->
-									<div id="non_carriage_price"></div>
+									<div id="non_carriage_price"></div></div>
 									<!-- 在庫状況 -->
 									<div id="item_stock_sts"></div>
 									<div id="notSalesMsg">只今、ご購入いただけません。</div>

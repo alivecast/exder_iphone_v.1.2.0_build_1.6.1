@@ -124,7 +124,7 @@
 				if(passFlip == 'false'){
 					inputPasscode = 'false';
 				}
-				getFile('initFlg', okGetFnc, okGetFnc);
+				getFile('initFlg', okGetFnc, ngGetFnc);
 				function okGetFnc(json){
 					var inputedPass = json.inputedPass
 					initFlg = {
@@ -136,6 +136,10 @@
 						// 設定ファイルの読み込み
 						getonOrdering(savePass2);
 					}
+				}
+				function ngGetFnc(){
+					// 設定ファイルの読み込み
+					getonOrdering(savePass2);
 				}
 			}
 
