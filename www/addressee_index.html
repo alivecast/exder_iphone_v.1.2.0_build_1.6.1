@@ -282,9 +282,10 @@
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>お届け先一覧</h1>
 				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false"> 戻る </a>
-				<a id="addb" href="" class="ui-btn-right" data-icon="plus" data-ajax="false" onclick="goEdit(0);" > 追加 </a>
+				<a id="addb" href="" class="ui-btn-right" data-icon="plus" data-ajax="false" onClick="goEdit(0);" > 追加 </a>
 			</div>
 			<input type="hidden" id="kbn" name="kbn" />
+			
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
@@ -308,73 +309,101 @@
 					</script>
 				</div>
 			</div>
+			
+			
 			<!-- content -->
-			<div id="content" class="cont_ordering_new" data-role="content">
-				<span class="txt" style="color:red;">※お届け先は最大10件まで登録できます。</span>
-				<br />
-				<ul class="user_mail_list" data-role="listview">
-					<li id="adr1" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href1" data-ajax="false" onclick="goEdit(1);"> <span class="ico_check"> <span  id="adr_ck1"></span> </span> <span class="tl"> <span id="adr_name1"></span> </span>
+			<div id="content" class="cont_addressIndex" data-role="content">
+				
+				<ul class="address_list" data-role="listview">
+					<li class="address_list_txt">
+						<div class="txt">
+							現在<img src="images/ico_check_r.png" width="16" height="15" alt="" />マークのあるお届け先が選択されています。
+						</div>
+						<p class="note">※お届け先は最大10件まで登録できます。</p>
+						<!-- /item_name -->
+					</li>
+					
+					<li id="adr1" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href1" data-ajax="false" onClick="goEdit(1);">
+							<span class="ico_check">
+								<span id="adr_ck1"></span>
+							</span>
+							
+							<span class="tl">
+								<span id="adr_name1"></span>
+							</span>
 						<input type="hidden" id="adr_id1" name="adr_id1" value="" />
 						</a>
 					</li>
-
-					<li id="adr2" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href2" data-ajax="false" onclick="goEdit(2);"> <span class="ico_check"> <span  id="adr_ck2"></span> </span> <span class="tl"> <span id="adr_name2"></span> </span>
+					
+					<li id="adr2" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href2" data-ajax="false" onClick="goEdit(2);">
+							<span class="ico_check"> <span  id="adr_ck2"></span> </span>
+							<span class="tl"> <span id="adr_name2"></span> </span>
 						<input type="hidden" id="adr_id2" name="adr_id2" value="" />
 						</a>
-					</li>
+					</li>				
+					
 
-					<li id="adr3" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href3" data-ajax="false" onclick="goEdit(3);"> <span class="ico_check"> <span  id="adr_ck3"></span> </span> <span class="tl"> <span id="adr_name3"></span> </span>
+					<li id="adr3" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href3" data-ajax="false" onClick="goEdit(3);"> <span class="ico_check"> <span  id="adr_ck3"></span> </span> <span class="tl"> <span id="adr_name3"></span> </span>
 						<input type="hidden" id="adr_id3" name="adr_id3" value="" />
 						</a>
 					</li>
 
-					<li id="adr4" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href4" data-ajax="false" onclick="goEdit(4);"> <span class="ico_check"> <span  id="adr_ck4"></span> </span> <span class="tl"> <span id="adr_name4"></span> </span>
+					<li id="adr4" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href4" data-ajax="false" onClick="goEdit(4);"> <span class="ico_check"> <span  id="adr_ck4"></span> </span> <span class="tl"> <span id="adr_name4"></span> </span>
 						<input type="hidden" id="adr_id4" name="adr_id4" value="" />
 						</a>
 					</li>
 
-					<li id="adr5" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href5" data-ajax="false" onclick="goEdit(5);"> <span class="ico_check"> <span  id="adr_ck5"></span> </span> <span class="tl"> <span id="adr_name5"></span> </span>
+					<li id="adr5" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href5" data-ajax="false" onClick="goEdit(5);"> <span class="ico_check"> <span  id="adr_ck5"></span> </span> <span class="tl"> <span id="adr_name5"></span> </span>
 						<input type="hidden" id="adr_id5" name="adr_id5" value="" />
 						</a>
 					</li>
 
-					<li id="adr6" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href6" data-ajax="false" onclick="goEdit(6);"> <span class="ico_check"> <span  id="adr_ck6"></span> </span> <span class="tl"> <span id="adr_name6"></span> </span>
+					<li id="adr6" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href6" data-ajax="false" onClick="goEdit(6);"> <span class="ico_check"> <span  id="adr_ck6"></span> </span> <span class="tl"> <span id="adr_name6"></span> </span>
 						<input type="hidden" id="adr_id6" name="adr_id6" value="" />
 						</a>
 					</li>
 
-					<li id="adr7" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href7" data-ajax="false" onclick="goEdit(7);"> <span class="ico_check"> <span  id="adr_ck7"></span> </span> <span class="tl"> <span id="adr_name7"></span> </span>
+					<li id="adr7" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href7" data-ajax="false" onClick="goEdit(7);"> <span class="ico_check"> <span  id="adr_ck7"></span> </span> <span class="tl"> <span id="adr_name7"></span> </span>
 						<input type="hidden" id="adr_id7" name="adr_id7" value="" />
 						</a>
 					</li>
 
-					<li id="adr8" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href8" data-ajax="false" onclick="goEdit(8);"> <span class="ico_check"> <span  id="adr_ck8"></span> </span> <span class="tl"> <span id="adr_name8"></span> </span>
+					<li id="adr8" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href8" data-ajax="false" onClick="goEdit(8);"> <span class="ico_check"> <span  id="adr_ck8"></span> </span> <span class="tl"> <span id="adr_name8"></span> </span>
 						<input type="hidden" id="adr_id8" name="adr_id8" value="" />
 						</a>
 					</li>
 
-					<li id="adr9" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href9" data-ajax="false" onclick="goEdit(9);"> <span class="ico_check"> <span  id="adr_ck9"></span> </span> <span class="tl"> <span id="adr_name9"></span> </span>
+					<li id="adr9" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href9" data-ajax="false" onClick="goEdit(9);"> <span class="ico_check"> <span  id="adr_ck9"></span> </span> <span class="tl"> <span id="adr_name9"></span> </span>
 						<input type="hidden" id="adr_id9" name="adr_id9" value="" />
 						</a>
 					</li>
 
-					<li id="adr10" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href10" data-ajax="false" onclick="goEdit(10);"> <span class="ico_check"> <span  id="adr_ck10"></span> </span> <span class="tl"> <span id="adr_name10"></span> </span>
+					<li id="adr10" class="item_img_price" style="display:none;">
+						<a href="#" data-icon="arrow-l" id="adr_href10" data-ajax="false" onClick="goEdit(10);"> <span class="ico_check"> <span  id="adr_ck10"></span> </span> <span class="tl"> <span id="adr_name10"></span> </span>
 						<input type="hidden" id="adr_id10" name="adr_id10" value="" />
 						</a>
 					</li>
 
 				</ul>
-
+				
+				<!-- 追加についての注意書き
+				<div class="address_list_description">
+					右上の追加ボタンより、お届け先を10件までご登録いただけます。<br />
+					内容の確認、および変更は各お届け先をタップしてください。
+				</div>
+				-->
+				
+				
+				<!-- /dl-content -->
 			</div>
 
 			<!-- nav -->

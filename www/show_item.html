@@ -37,8 +37,10 @@
 			});
 
 			function onDeviceReady() {
+				console.log('show_item::onDeviceReady');
 				// show_itemに戻るためのURL保存
 				var get = getQuery();
+				console.log('show_item::get ' + JSON.stringify(get));
 				var qr_id = String(get.qr_id);
 				var order_latitude = String(get.order_latitude);
 				var order_longitude = String(get.order_longitude);
@@ -56,7 +58,7 @@
 			}
 
 			function onReadyFile(json) {
-
+				console.log('show_item::onReadyFile');
 				// Alert -----------------------------------------------------------------------
 				//	navigator.notification.alert("show_item.html");
 
@@ -180,13 +182,9 @@
 					window.localStorage.removeItem('order_params');
 					window.localStorage.setItem('order_params', JSON.stringify(params));
 					// 商品名
-					//document.getElementById("item_name").innerText = params['item_name'];
 					$("#item_name").text(params['item_name']);
 
 					// 商品画像
-					//var item_image = '<img src="' + params['item_image'] + '" width="150" height="150" alt="商品画像" />';
-					//document.getElementById("item_image").innerHTML = item_image;
-
 					$("#item_image1").attr("src", params['item_image']);
 
 					// 商品価格
@@ -194,7 +192,6 @@
 					if (parseInt(params['item_price']) > 0) {
 						var item_price = currency(String(params['item_price'])) + '<span class="unit_name">円</span>';
 					}
-					//document.getElementById("item_price").innerText = item_price;
 					$("#item_price").html(item_price);
 
 					// 商品情報更新
@@ -204,25 +201,25 @@
 					}
 
 					// １個の送料
-					var shippingCost = '<a href="website_soryo.html?qr_id=' + params["qr_id"] + '" deta-transition="slide" data-ajax="false" class="shippingCost_link">';
+					var shippingCost = '<a href="website_soryo.html?qr_id='+params["qr_id"]+'" deta-transition="slide" data-ajax="false" class="shippingCost_link">';
 					shippingCost += '<dl class="shippingCost"><dt>送料</dt><dd id="order_carriage"><span id="carriage">';
 					if (parseInt(params['order_carriage']) > 0) {
-						shippingCost += currency(params['order_carriage']) + '<span class="unit_name">円&nbsp;&nbsp;</span></span></dd></dl>';
+						shippingCost += currency(String(params['order_carriage'])) + '<span class="unit_name">円</span></span></dd></dl>';
 					} else {
-						if (params['customer_id'] && params['customer_id'] > 0) {
-							shippingCost += '送料無料&nbsp;&nbsp;</span></dd></dl>';
-						} else {
-							shippingCost += '送料を確認&nbsp;&nbsp;</span></dd></dl>';
+						if(params['customer_id'] && params['customer_id'] > 0){
+							shippingCost += '送料無料</span></dd></dl>';
+						}else{
+							shippingCost += '送料を確認</span></dd></dl>';
 						}
 					}
 					shippingCost += '<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></a>';
 					document.getElementById("shippingCost").innerHTML = shippingCost;
 
 					// 送料無料金額
-					if (parseInt(params['non_carriage_price']) > 0) {
-						var non_carriage_price = '<p id="order_carriage">';
-						non_carriage_price = non_carriage_price + currency(params['non_carriage_price']) + '<span>円以上は送料無料</span></p>';
-						document.getElementById("non_carriage_price").innerHTML = non_carriage_price;
+					if (params['non_carriage_price'] && parseInt(params['non_carriage_price']) > 0) {
+						var non_carriage_price = '<p>';
+						non_carriage_price = currency(non_carriage_price + String(params['non_carriage_price'])) + '<span>円以上は送料無料</span></p>';
+						$("#non_carriage_price").html(non_carriage_price);
 					}
 
 					// 在庫状況
@@ -269,7 +266,6 @@
 					// 合計金額
 					if (params.is_sales_flg == 'enable') {
 						var total_price = currency(String(parseInt(params.item_price) + parseInt(params.order_carriage))) + '円(税込)';
-						// document.getElementById("total_price").innerHTML = total_price;
 						$("#total").text(total_price);
 					} else {
 						$('#total_price').css('display', 'none');
@@ -385,12 +381,14 @@
 				//	delFile('backAmount'); - barcode.htmlへ
 				var paramsText = getLocalStorage('show_item_params');
 				var params = JSON.parse(paramsText);
-				var tototo2 = currency(String(parseInt($('#order_amount option:selected').attr('rel')) + parseInt(params.order_carriage))) + '円(税込)';
-				var total = parseInt($('#order_amount option:selected').attr('rel'));
+				var tototo2 = currency(String($('#order_amount option:selected').attr('rel'))) + '円(税込)';
 				$("#total").text(tototo2);
+				var total = parseInt($('#order_amount option:selected').attr('rel'));
 				// 送料無料の反映
 				var htmlCarriage = '';
-				if (parseInt(total) >= parseInt(params.non_carriage_price)) {
+				alert('total: ' + total);
+				alert('non_carriage: ' + params.non_carriage_price);
+				if ((parseInt(total) - parseInt(params.order_carriage)) >= parseInt(params.non_carriage_price)) {
 					htmlCarriage = '<span id="carriage">送料無料</span>';
 				} else {
 					htmlCarriage = '<span id="carriage">' + String(params.order_carriage) + '</span>';
@@ -516,10 +514,9 @@
 										<dd id="item_price"></dd>
 									</dl>
 									<!-- 送料 -->
-									<div id="shippingCost">
-										<!-- 送料無料 -->
-										<div id="non_carriage_price"></div>
-									</div>
+									<div id="shippingCost"></div>
+									<!-- 送料無料 -->
+									<div id="non_carriage_price" class="shippingCost"></div>
 									<!-- 在庫状況 -->
 									<div id="item_stock_sts"></div>
 								</div>
