@@ -691,9 +691,37 @@ li.ui-li {
 }
 
 .ui-select .ui-btn-inner {
+	/*
 	font-size:16px;
+	*/
+	font-size:14px;
 	margin-top:-3px;
 }
+
+
+/* ---/　選択した部分の効果
+----------------------------------*/
+.ui-input-text.ui-focus,
+.ui-input-search.ui-focus,
+.ui-focus,
+.ui-btn:focus {
+	-moz-box-shadow: 0 0 6px #387BBE;
+	-webkit-box-shadow:0 0 6px #387BBE;
+	box-shadow:0 0 6px #387BBE;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ------------------------------------------/
 　共通レイアウト
@@ -844,9 +872,11 @@ button.btn_next {
 	text-shadow:1px 1px 0 #DA7B18;
 }
 
+/*
 .ui-btn-text {
 	z-index:3;
 }
+*/
 
 
 .btn_prev {
@@ -1011,10 +1041,20 @@ button.btn_next {
 	padding-right:25px;
 }
 
-.item_price .price dd span,
-.item_price .shippingCost dd span {
+.item_price .price dd span,/* classが付いたら削除 */
+.item_price .price dd span.unit_name,
+.item_price .shippingCost dd span.unit_name {
 	font-size:12px;
+	margin-left:3px;
 }
+
+/* ○○円以上で送料無料、統一など */
+#order_carriage {
+	color:#F30;	
+	border-bottom:#C0CDBE 1px solid;
+}
+
+
 
 /* 送料一覧へのリンク */
 .box2 .box2_02 a.shippingCost_link {
@@ -1122,7 +1162,6 @@ button.btn_next {
 	display:inline-block;
 }
 
-.ui-li .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li
 
 
 
@@ -1718,8 +1757,21 @@ button.btn_next {
 	margin-right:5px;
 }
 
-.setup_list .ui-btn-inner {
+
+
+/*  */
+
+.setup_list li#ordering_ng,
+.setup_list li#address_ng,
+.setup_list li#card_ng {
+	padding-left:10px;
+}
+
+.setup_list .tl {
+	/*
 	font-size:100%;
+	*/
+	font-size:16px;
 }
 
 
@@ -1741,7 +1793,8 @@ button.btn_next {
 /* ------------------------------------------/
 　ご利用者情報
 ------------------------------------------ */
-.address_main_check label {
+
+.address_main_check .ui-controlgroup .ui-checkbox label.ui-btn-inner {
 	background-color:#DDE5DC;
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #F5F7F5), color-stop(1.0, #DDE5DC));
 	border:#9AA598 1px solid;
@@ -1752,9 +1805,14 @@ button.btn_next {
 	margin:0;
 	
 	color:#30402E;
+	/*
 	height:36px;
+	*/
 }
 
+.address_main_check .ui-controlgroup .ui-checkbox .ui-btn-inner {
+	font-size:14px;
+}
 
 
 /* ---/　メアド4つの場合
@@ -1899,6 +1957,7 @@ input#customer_mail {
 }
 
 /* オレンジbtnでinput,buttonの場合のテキストの設定 */
+/*
 .btn_txt_ow .ui-btn-text {
 	color:#FFF;
 	text-shadow:1px 1px 0 #DA7B18;
@@ -1907,6 +1966,7 @@ input#customer_mail {
 .ui-btn-text {
 	z-index:3;
 }
+*/
 
 
 /* ------------------------------------------/
@@ -1943,14 +2003,18 @@ input#customer_mail {
 }
 
 /* オレンジbtnでinput,buttonの場合のテキストの設定 */
+/*
+
 .btn_txt_ow .ui-btn-text {
 	color:#FFF;
 	text-shadow:1px 1px 0 #DA7B18;
 }
-
 .ui-btn-text {
 	z-index:3;
 }
+*/
+
+
 
 /* ------------------------------------------/
 　ローディング
@@ -2052,7 +2116,7 @@ input#customer_mail {
 	font-family: Helvetica,Arial,sans-serif;
 }
 
-.ui-btn-down-z {
+.pflip .ui-btn-down-z {
 	border: 1px solid #BBB;
 	background: #D6D6D6;
 	font-weight: bold;
