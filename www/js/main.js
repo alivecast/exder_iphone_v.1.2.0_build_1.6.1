@@ -79,7 +79,8 @@ function getDateTime(timestamp) {
 	var hour = (d.getHours() < 10 ) ? '0' + d.getHours() : d.getHours();
 	var min = (d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
 	var sec = (d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-	return String(year) + '年' + String(month) + '月' + String(day) + '日 ' + String(hour) + ':' + String(min) + ':' + String(sec);
+	// return String(year) + '年' + String(month) + '月' + String(day) + '日 ' + String(hour) + ':' + String(min) + ':' + String(sec);
+	return String(year) + '年' + String(month) + '月' + String(day) + '日 ' + String(hour) + ':' + String(min);
 }
 
 // 桁区切り
@@ -492,6 +493,6 @@ function popup(type, title, message) {
 
 function errorFocus(obj){
 	var p = obj.offset();
-	alert(JSON.stringify(p));
+//	alert(JSON.stringify(p));
 	$.mobile.silentScroll(-56 + -100 + p.top);
 }

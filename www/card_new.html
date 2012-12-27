@@ -34,11 +34,15 @@
 			});
 
 			$(document).ready(function() {
-				$('#loading').css('display', 'none');
+			//	$('#loading').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
+				
+				$('#content').css('display', 'none');
+				$('#loading').css('display', 'block');
+				
 				if (location.search.length > 1) {
 					var get = new Object();
 					var ret = location.search.substr(1).split("&");
@@ -65,6 +69,9 @@
 			function onReadyFile(json) {
 				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
 				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
+				
+				$('#loading').css('display', 'none');
+				$('#content').css('display', 'block');
 
 				$("#customer_id").val(json.customer_id);
 				$("#customer_mail_1").val(json.customer_mail_1);
@@ -201,6 +208,7 @@
 
 		</script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		
 
 	</head>
 
@@ -215,11 +223,17 @@
 			</div>
 
 			<!-- loading -->
-			<div class="loading" data-role="content" id="loading">
+			<div class="loading" data-role="content" id="loading" style="display: none;">
 				<div class="loading_box">
-					<p>
-						しばらくおまちください
-					</p>
+					<p>しばらくおまちください</p>
+					<style>
+						.square {
+							width: 70%;
+							height: 100px;
+							margin:0 auto;
+							padding:0 50%;
+						}
+					</style>
 					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {

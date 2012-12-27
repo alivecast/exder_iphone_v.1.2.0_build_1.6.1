@@ -83,7 +83,7 @@
             	$('#loading').css('display', 'none');
 				$('#content').css('display', 'block');
             	
-                console.log("Start:"+params['customer_id']+params['customer_key']);
+                console.log("Start::getCustomers:"+params['customer_id']+params['customer_key']);
                 
                 var url = params['https']+'json/send_customer.php';
 
@@ -93,6 +93,10 @@
 					url: url,
 					data:params,
 					success: function(data){
+						
+						console.log('ordering_new::data: ' + JSON.stringify(data));
+						console.log('ordering_new::birthday: ' + data.customer_birthday);
+						
 						// 戻り値の保存
 						$("#customer_name").val(data.customer_name);
 						$("input[name='customer_sex']").val([data.customer_sex]).checkboxradio('refresh');
@@ -117,7 +121,6 @@
 
 
 			function checkValidate() {
-				// alert('checkValidate');  errorFocus(id)
 				
 				var i = 0;
 				//エラーの初期化
@@ -174,12 +177,14 @@
 					$("#customer_phone").parent().append("<p class='error'>半角数字11桁までで市外局番から入力してください</p>");
 				}
 				// 性別のチェック
-				if (!$("#user_gender01").attr("checked") && !$("#user_gender02").attr("checked") ) {
-					$("#user_gender_radio").parent().append("<p class='error'>性別を選択してください</p>");
-					if (error == ''){
-						error = 'user_gender_radio';
+				var errorCount = 0;
+				$(":radio").filter(".customer_sex").each(function(){
+					if($(":radio[name='customer_sex']:checked").size() == 0 && errorCount < 1){
+						$("#user_gender_radio").parent().append("<p class='error'>性別を選択してください</p>");
+						errorCount += 1;
 					}
-				}
+				})
+				
 				//メールアドレスのチェック
 				if ($('#customer_mail_1').val() == ""){
 					$('#customer_mail_1').parent().append("<p class='error'>メールアドレスを入力してください</p>");
@@ -226,9 +231,16 @@
                 ordering['iv'] = $("#iv").val();
                 
 				ordering['customer_name'] = $("#customer_name").val();
-                
-                
-                ordering['customer_sex'] = $("input[name='customer_sex']").val();
+				
+				// ordering['customer_sex'] = $("input[name='customer_sex']").val();
+                if ($("#user_gender01").attr("checked")){
+                	ordering['customer_sex'] = $("#user_gender01").val();
+                } else if($("#user_gender02").attr("checked")){
+                	ordering['customer_sex'] = $("#user_gender02").val();
+                } else {
+                	ordering['customer_sex'] = "";
+                }
+                console.log('ordering_new::customer_sex: ' + ordering['customer_sex']);
                 
 				ordering['customer_birthday'] = $("#customer_birthday").val();
 				ordering['customer_zipcode']  = $("#customer_zipcode").val();
