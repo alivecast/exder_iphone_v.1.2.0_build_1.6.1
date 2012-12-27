@@ -109,6 +109,8 @@
 								$("#addressee").css("display", "block");
 								$("#recipient_subject").text(String(data.address_name));
 							}
+							// 商品情報を取得
+							sendData(get);
 						},
 						error : function() {
 							networdERR(errorPostCallBack, '通信エラー');
@@ -116,11 +118,7 @@
 						},
 						timeout : 5000
 					});
-
 				}
-
-				// 商品情報を取得
-				sendData(get);
 
 				// 商品情報を取得 -----------------------------------------------------------------------
 				function sendData(get) {
@@ -155,19 +153,19 @@
 								var message = 'もう一度QRコードを撮影してください';
 								var title = '商品情報を取得できませんでした';
 								var button = 'OK';
-								navigator.notification.alert(message, alertCallBack(), title, button);
+								navigator.notification.alert(message, alertCallBack, title, button);
 							}
 						},
 						error : function() {
-							networdERR(errorPostCallBack, '通信エラー');
+							networdERR(errorPostCallBack, '商品情報を取得できませんでした');
 						}
 					});
-
 				}
 
 				// alertCallBack -----------------------------------------------------------------------
 				function errorPostCallBack() {
-					window.location.href = 'netError.html';
+					return false;
+					// window.location.href = 'netError.html';
 				}
 
 				// alertCallBack -----------------------------------------------------------------------

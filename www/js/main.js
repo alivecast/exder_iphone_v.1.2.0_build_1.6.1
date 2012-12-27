@@ -296,7 +296,7 @@ function networdERR(callfn, title) {
 	message = '通信が混み合っているか、通信環境がよくないため、しばらく時間をおいて操作を行ってください。';
 	button = 'OK';
 	callback = $FN(callfn);
-	if (title) {
+	if (title == '' || title == null) {
 	} else {
 		title = '通信エラー';
 	}
@@ -316,9 +316,9 @@ function networdBuyERR(callfn, title) {
 	message = '通信が込み合っているか通信環境が良くないため、しばらく時間をおいて再度購入を行ってください。';
 	button = 'OK';
 	callback = $FN(callfn);
-	if (title) {
+	if (title == '' || title == null) {
 	} else {
-		title = '通信エラー';
+		title = '注文出来ませんでした';
 	}
 	// navigator.notification.alert(message, callback, title, button);
 	navigator.notification.alert(
@@ -333,7 +333,7 @@ function networdBuyERR(callfn, title) {
 
 // ネットワーク状態を調べる
 function check_network() {
-	var domain = 'speed-order.jp';
+	var domain = 'exorder.jp';
 	navigator.network.isReachable(domain, reachableCallback);
 }
 

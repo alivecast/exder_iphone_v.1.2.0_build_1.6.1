@@ -242,7 +242,7 @@
 								okMsg();
 							} else {
 								console.log("-- エラー--");
-								errMsg();
+								errBuyMsg();
 							}
 						}
 					},
@@ -251,18 +251,15 @@
 						errBuyMsg();
 					}
 				});
-
 				console.log("-- END--");
 			}
 
 			// 処理完了時
 			function okMsg() {
-
 				// オーダー削除
 				delFile('order');
 				// 設定ファイルの読み込み
 				getonOrdering(calcelAttention);
-
 				function calcelAttention(ordering) {
 					if (ordering.orderAttnetion && ordering.orderAttnetion == 1) {
 						// 確認メッセージを表示しない
@@ -275,7 +272,6 @@
 						navigator.notification.confirm(message, onConfirm, title, button);
 						// goShowOrder();
 					}
-
 					function onConfirm(btn) {
 						if (btn == 1) {
 							ordering['orderAttnetion'] = 0;
@@ -293,7 +289,6 @@
 							setFile(fname, ordering, goShowOrder, goShowOrder);
 						}
 						function ngFunc(){
-			//	alert('ngFunc::initFlg: ' + JSON.stringify(initFlg));
 							var fname = 'ordering';
 							setFile(fname, ordering, goShowOrder, goShowOrder);
 						}
@@ -301,16 +296,14 @@
 					function goShowOrder() {
 						window.location.href = 'show_order.html';
 					}
-
 				}
-
 				return false;
 			}
 
 			function cardErrMsg(msg) {
 				// カードエラー
 				button = 'OK';
-				navigator.notification.alert(msg.msg, alertCallBack(), msg.title, button);
+				navigator.notification.alert(msg.msg, alertCallBack, msg.title, button);
 				location.href = 'setting.html';
 			}
 
