@@ -185,45 +185,35 @@
 						errMsg();
 					}
 				});
-
 				console.log("-- END--");
 			}
 
 			function getOrder(params) {
-				
 				// ファイルの読み込み
 				console.log("Start order");
 				var fname = 'order';
 				getFile(fname, onOrderOK, onOrderNG);
-
 				function onOrderOK(order) {
 					console.log("正常にorderを読み込みました。");
-
 					order['customer_id'] = params.customer_id;
 					order['customer_key'] = params.customer_key;
-
 					order['app_ver'] = params.app_ver;
 					order['app_code'] = params.app_code;
 					order['url'] = params.url;
 					order['http'] = params.http;
 					order['https'] = params.https;
-
+					
 					setOrder(order);
 				}
-
 				function onOrderNG() {
 					location.href = "barcode.html";
 				}
-
 			}
 
 			// サーバー通信を行い値を設定を行なう
 			function setOrder(order) {
-
 				console.log("Start post:" + order);
-
 				var url = order.https + 'json/receive_order.php';
-
 				$.ajax({
 					type : "POST",
 					url : url,
@@ -248,10 +238,48 @@
 					},
 					error : function(data) {
 						console.log("-- 通信エラー--");
-						errBuyMsg();
+						errMsg();
 					}
 				});
 				console.log("-- END--");
+			}
+			
+			
+			function cardErrMsg(msg) {
+				// カードエラー
+				button = 'OK';
+				navigator.notification.alert(
+					msg.msg,
+					function(){
+						location.href = 'setting.html';
+					},
+					msg.title, 
+					button
+				);
+			}
+
+			function errMsg() {
+				// 通信エラー
+				navigator.notification.alert(
+					'通信が込み合っているか通信環境が良くないため注文処理を完了できませんでした。しばらく時間をおいて再度購入を行ってください。',
+					function(){
+						location.href = 'netError.html';
+					},
+					'注文出来ませんでした', 
+					'OK'
+				);
+			}
+
+			function errBuyMsg() {
+				// 注文情報エラー
+				navigator.notification.alert(
+					'注文に必要な情報を取得できませんでした。設定情報をご確認の上、再度購入操作を行ってください。',
+					function(){
+						location.href = 'setting.html';
+					},
+					'注文出来ませんでした', 
+					'OK'
+				);
 			}
 
 			// 処理完了時
@@ -299,14 +327,7 @@
 				}
 				return false;
 			}
-
-			function cardErrMsg(msg) {
-				// カードエラー
-				button = 'OK';
-				navigator.notification.alert(msg.msg, alertCallBack, msg.title, button);
-				location.href = 'setting.html';
-			}
-
+			
 			function alertCallBackOk() {
 				fname = 'order';
 				var order = {};
@@ -314,22 +335,11 @@
 				setFile(fname, order);
 			}
 
-			function errMsg() {
-				networdERR(alertCallBack, '注文出来ませんでした');
-				location.href = 'setting.html';
-			}
-
-			function errBuyMsg() {
-				networdBuyERR(alertCallBack, '注文出来ませんでした');
-				location.href = 'setting.html';
-			}
-
 			function alertCallBack() {
 			}
 
 			var fname = 'order_attention';
 			getFile(fname, onGetOrderAttentionOK, onGetOrderAttentionNG);
-
 			function onGetOrderAttentionOK(json) {
 				console.log("正常にorder_attentionを読み込みました。");
 				if (json.order_attention && (json.order_attention != '' || json.order_attention != null)) {
@@ -339,11 +349,11 @@
 					setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
 				}
 			}
-
 			function onGetOrderAttentionNG() {
 				console.log("err : order_attention NO");
 				onReadyFile3(rdata);
 			}
+			function onReadyFile3(rdata){}
 
 		</script>
 	</head>

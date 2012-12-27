@@ -237,12 +237,18 @@
 					$("#cancel_button").removeClass();
 					$("#buy_button").css("display","none");
 					$("#cancel_button").css("display","block");
+					// test
+					$("#cancel_button").css("display","none");
+					$("#notRepeatMsg").css("display","block");
+					
 	       		} else if (params['item_repeat_flg'] == 'enable'){
 	       			// 再購入ボタン表示
 	       			$("#cancel_button").removeClass();
 	       			$("#buy_button").removeClass();
 	         		$("#cancel_button").css("display","none");
 	         		$("#buy_button").css("display","block");
+				} else if (params['item_repeat_flg'] != 'enable'){
+					$("#notRepeatMsg").css("display","block");
 				}
 				
 				var contact = 'contact_order.html?order_id='+params.order_id+'&qr_id=' + params.qr_id + '&item_version=' + params.item_version + '&customer_id=' + params.customer_id;
@@ -379,6 +385,9 @@
 							</div>
 							<div class="item_buy btn_txt_ow" id="buy_button">
 								<a class="btn_next" type="button" href="#" onclick="cancel_buy('repeat');" >この商品を再購入する</a>
+							</div>
+							<div class="txt" id="notRepeatMsg" style="display:none;">
+								この商品は再購入できない商品になります。
 							</div>
 						</li>
 

@@ -68,7 +68,6 @@
 				console.log("Start order_attention");
 				var fname = 'order_attention';
 				getFile(fname,onGetOrderAttentionOK,onGetOrderAttentionNG);
-
 				function onGetOrderAttentionOK(json){
 					console.log("正常にorder_attentionを読み込みました。");
 					if(json.order_attention && (json.order_attention != '' || json.order_attention != null)){
@@ -76,7 +75,6 @@
 						setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
 					}
 				}
-
 				function onGetOrderAttentionNG(){
 					console.log("err : order_attention NO");
 					onReadyFile3(rdata);
