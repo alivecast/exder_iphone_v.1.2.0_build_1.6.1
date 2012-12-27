@@ -55,7 +55,8 @@
 					$("#kbn").val(get['kbn']);
 					if(get['kbn'] == "buy"){
 						$('#btnOrder').css("display", "block");
-						$("#tab3a").attr("href","order.html");
+						// $("#tab3a").attr("href","order.html");
+						$("#tab3a").attr("href","setting.html");
 						setLocalStorage('kbn', 'buy');
 						getFile('order', okGetOrder, ngGetOrder);
 						function okGetOrder(json){
@@ -70,12 +71,15 @@
 					}else{
 						$('#btnSetting').css("display", "block");
 						$("#report").css("display","block");
+						// 誤購入防止の暫定処置 ogawa 121227
+						setLocalStorage('kbn', '');
 					}
 				}else{
 					$('#btnSetting').css("display", "block");
 					$("#report").css("display","block");
+					// 誤購入防止の暫定処置 ogawa 121227
+					setLocalStorage('kbn', '');
 				}
-				
 				$.ajaxSetup({
 					timeout: 5000
 				});
@@ -107,7 +111,7 @@
 				
 				//暗証番号のチェック
 				if ($("#customer_pass").val() == "" || !$("#customer_pass").val().match(/^[0-9]{4,16}$/)) {
-					$("#customer_pass").parent().append("<p class='error'>半角数字４〜16桁で暗証番号を入力してください。</p>");
+					$("#customer_pass").parent().append("<p class='error'>半角数字４〜16桁で暗証番号を入力してください</p>");
 				}
 				//後処理
 				if ($("p.error").size() > 0) {
@@ -261,7 +265,7 @@
 							<span>読み取り</span>
 						</a>
 					</li>
-					<li class="tab03 current">
+					<li class="tab03">
 						<a id="tab3a" href="setting.html" data-ajax="false">
 							<span>設定</span>
 						</a>

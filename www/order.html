@@ -8,13 +8,16 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/popupwindow.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/popupwindow.js"></script>
 
 		<script type="text/javascript">
 			$(document).bind("mobileinit", function() {
@@ -28,7 +31,6 @@
 
 			function onDeviceReady() {
 			//	alert('onDeviceReady');
-				
 				//	getSetting();
 				$.ajaxSetup({
 					timeout : 5000
@@ -130,10 +132,35 @@
 							//	alert('okPassTime');
 								var passTime = json.passTime;
 								var cktime = passTime + (60 * 60);
+								// var cktime = passTime + (60 * 1);
 								var nowtime = parseInt(new Date() / 1000);
 								// 総合判定
 								if (cktime < nowtime || (inputPass == 'true' && inputedPass == 'false')) {
-									location.href = "passcode_input.html?kbn=buy";
+									// ダイアログ
+									var message = '';
+									var title = '';
+									if(cktime < nowtime){
+										title = '前回ご購入から時間が経過しています';
+										message = 'お手数ですがご利用者確認のためにご登録している暗証番号を入力してください';
+									} else {
+										title = 'ご購入の確認';
+										message = 'ご登録している暗証番号を入力してください';
+									}
+									navigator.notification.alert(
+										message, 
+										function(){
+											window.location.href = "passcode_input.html?kbn=buy";
+										}, 
+										title, 
+										'OK'
+									);
+									
+									// setTimeout( function() {
+										// window.location.href = "passcode_input.html?kbn=buy";
+									// }, 3000);
+									// popup('caution', title, message);
+									
+									// window.location.href = "passcode_input.html?kbn=buy";
 								} else {
 									getOrder(params);
 								}
@@ -356,6 +383,7 @@
 			function onReadyFile3(rdata){}
 
 		</script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 	</head>
 
 	<body>

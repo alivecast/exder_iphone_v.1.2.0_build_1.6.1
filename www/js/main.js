@@ -480,15 +480,29 @@ function setPrice(price) {
 	return num;
 }
 
-function popup(type, title, message) {
-	new $pop(message, {
-		type : type,
-		title : title,
-		width : 220,
-		height : 120,
-		close : false,
-		modal : true
-	});
+function popup(type, title, message, url) {
+	if(type == 'popup' && url != null){
+		setTimeout( function() {
+			window.location.href = url;
+		}, 3000);
+		new $pop(message, {
+			type : type,
+			title : title,
+			width : 220,
+			height : 120,
+			close : false,
+			modal : true
+		});
+	} else {
+		new $pop(message, {
+			type : type,
+			title : title,
+			width : 220,
+			height : 120,
+			close : false,
+			modal : true
+		});
+	}
 }
 
 function errorFocus(obj){

@@ -201,34 +201,12 @@
 	background: url(images/btn_pw_yes.png) left top no-repeat;
 	display: -moz-inline-box;
 	display: inline-block;
-	/display: inline;
+	display: inline;
 	outline: 0;
 	line-height: 25px;
 	width: 75px;
 	height: 25px;
-	/zoom: 1;
-}
-.pwClose {
-	background: url(images/btn_pw_close.png) left top no-repeat;
-	display: -moz-inline-box;
-	display: inline-block;
-	/display: inline;
-	outline: 0;
-	line-height: 25px;
-	width: 75px;
-	height: 25px;
-	/zoom: 1;
-}
-.pwOk {
-	background: url(images/btn_pw_ok.png) left top no-repeat;
-	display: -moz-inline-box;
-	display: inline-block;
-	/display: inline;
-	outline: 0;
-	line-height: 25px;
-	width: 75px;
-	height: 25px;
-	/zoom: 1;
+	zoom: 1;
 }
 	.pwYes.confirm {
 		margin-right: 3px;
@@ -242,11 +220,33 @@
 	background: url(images/btn_pw_no.png) left top no-repeat;
 	display: -moz-inline-box;
 	display: inline-block;
-	/display: inline;
+	display: inline;
 	outline: 0;
 	width: 75px;
 	height: 25px;
-	/zoom: 1;
+	zoom: 1;
+}
+
+.pwClose {
+	background: url(images/btn_pw_close.png) left top no-repeat;
+	display: -moz-inline-box;
+	display: inline-block;
+	display: inline;
+	outline: 0;
+	width: 75px;
+	height: 25px;
+	zoom: 1;
+}
+
+.pwOk {
+	background: url(images/btn_pw_ok.png) left top no-repeat;
+	display: -moz-inline-box;
+	display: inline-block;
+	display: inline;
+	outline: 0;
+	width: 75px;
+	height: 25px;
+	zoom: 1;
 }
 	.pwNo:hover {
 		background-position: left bottom;

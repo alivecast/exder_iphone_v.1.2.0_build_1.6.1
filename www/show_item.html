@@ -196,7 +196,7 @@
 
 					// 商品情報更新
 					if (params['item_update_flg'] == 'enable' && parseInt(params['item_create_time']) != parseInt(params['item_update_time'])) {
-						var data_change = '<div class="data_change"><div class="tl">' + getDate(params['item_update_time']) + 'に商品情報が変更されました</div></div>';
+						var data_change = '<div class="data_change"><div class="tl">' + getDate(params['item_update_time']) + ' 商品情報が変更されました</div></div>';
 						document.getElementById("data_change").innerHTML = data_change;
 					}
 
@@ -385,8 +385,6 @@
 				var total = parseInt($('#order_amount option:selected').attr('rel'));
 				// 送料無料の反映
 				var htmlCarriage = '';
-				alert('total: ' + total);
-				alert('non_carriage: ' + params.non_carriage_price);
 				if ((parseInt(total) - parseInt(params.order_carriage)) >= parseInt(params.non_carriage_price)) {
 					htmlCarriage = '<span id="carriage">送料無料</span>';
 				} else {
@@ -402,6 +400,7 @@
 					selectedValue : $('#order_amount').val(),
 				};
 				setFile("backAmount", chPrice);
+				errorFocus($('#content'));
 			}
 
 			// 注文へ

@@ -215,7 +215,7 @@
                 case 'caution':
                     content = this.getTextContent( content, 'caution' );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
-                    $( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwYes"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
+                    $( '<p class="pwBtn"><a href="javascript:;" id="pwClose' + _cnt + '" class="pwClose"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
                     $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'image':
