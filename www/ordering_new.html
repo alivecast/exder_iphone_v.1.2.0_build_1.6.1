@@ -37,6 +37,8 @@
 
 			function onDeviceReady(){
 				
+				console.log('onDeviceReady');
+				
 				$.ajaxSetup({
 					timeout: 5000
 				});
@@ -45,14 +47,16 @@
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
 				
-				if(location.search.length > 1) {
-					var get = new Object();
-					$("#kbn").val(get['kbn']);
-					if(get['kbn'] == "buy"){
-						$("#backb").attr("href","passcode_new.html?kbn=buy");
-						$("#tab3a").attr("href","order.html");
+					var get = getQuery();
+					console.log('get: ' + JSON.stringify(get));
+					if(get != null){
+						setLocalStorage('kbn', get.kbn);
+						// $("#kbn").val(get['kbn']);
+						if(get['kbn'] == "buy"){
+							$("#backb").attr("href","passcode_new.html?kbn=buy");
+							$("#tab3a").attr("href","order.html");
+						}
 					}
-				}
 
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
@@ -60,6 +64,9 @@
 
 
 			function onReadyFile(json) {
+				
+				console.log('onReadyFile');
+				
 				$("#iv").val(json.iv);
 
 				$("#customer_id").val(json.customer_id);
@@ -78,6 +85,8 @@
 
             // ファイルがある場合は、サーバー通信を行い値を取得する。
             function getCustomers(params){
+            	
+            	console.log('getCustomers');
             	
             	//loading呼び出し
             	$('#loading').css('display', 'none');
@@ -313,7 +322,8 @@
 						setFile(fname, datalist);
 
 						var kbn = $("#kbn").val();
-						if(kbn == "buy"){
+						kbn = getLocalStorage('kbn');
+						if(kbn == "buy"){  // ogawa
 							location.href="order.html";
 						}else{
 							location.href="setting.html";
@@ -412,11 +422,11 @@
 
 								<label for="customer_name" class="fieldLabel">お名前</label>
 								<input type="text" id="customer_name" name="customer_name" value="" class="validate"  placeholder="ご利用者の氏名" />
-								<input type="hidden" id="customer_id" name="customer_id" />
-								<input type="hidden" id="customer_key" name="customer_key" />
-								<input type="hidden" id="customer_pass" name="customer_pass" />
-								<input type="hidden" id="iv" name="iv" />
-								<input type="hidden" id="kbn" name="kbn" />
+								<input type="hidden" id="customer_id" name="customer_id" value=""/>
+								<input type="hidden" id="customer_key" name="customer_key" value=""/>
+								<input type="hidden" id="customer_pass" name="customer_pass" value=""/>
+								<input type="hidden" id="iv" name="iv" value=""/>
+								<input type="hidden" id="kbn" name="kbn" value=""/>
 
 								<input type="hidden" id="app_ver" name="app_ver" value=""/>
 								<input type="hidden" id="app_code" name="app_code" value=""/>

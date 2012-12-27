@@ -220,6 +220,8 @@
 					},
 					timeout : 5000
 				});
+				
+				setBackb();
 			}
 
 			function goEdit(area) {
@@ -253,6 +255,18 @@
 
 				} else {
 					location.href = "addressee_new.html?id=0" + rekbn;
+				}
+				
+				setBackb();
+			}
+			
+			function setBackb(){
+				getFile('backb', okGetFile, ngGetFile);
+				function okGetFile(json){
+					$("#backb").attr("href", json.url);
+				}
+				function ngGetFile(){
+					$("#backb").attr("href", 'setting.html');
 				}
 			}
 

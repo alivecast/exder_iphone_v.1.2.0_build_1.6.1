@@ -55,9 +55,18 @@
 					$("#kbn").val(get['kbn']);
 					if(get['kbn'] == "buy"){
 						$('#btnOrder').css("display", "block");
-						$("#backb").attr("href","order.html");
 						$("#tab3a").attr("href","order.html");
 						setLocalStorage('kbn', 'buy');
+						getFile('order', okGetOrder, ngGetOrder);
+						function okGetOrder(json){
+							var qr_id = String(json.qr_id);
+							var order_latitude = String(json.order_latitude);
+							var order_longitude = String(json.order_longitude);
+							$("#backb").attr("href",'show_item.html?order_latitude=' + order_latitude + '&order_longitude=' + order_longitude + '&qr_id=' + qr_id);
+						}
+						function ngGetOrder(){
+							$("#backb").attr("href","order.html");
+						}
 					}else{
 						$('#btnSetting').css("display", "block");
 						$("#report").css("display","block");

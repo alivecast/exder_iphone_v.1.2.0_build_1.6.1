@@ -38,19 +38,24 @@
 			});
 
 			function onDeviceReady() {
-				if (location.search.length > 1) {
-					var get = new Object();
-					var ret = location.search.substr(1).split("&");
-					for (var i = 0; i < ret.length; i++) {
-						var r = ret[i].split("=");
-						get[r[0]] = r[1];
+				// settingに戻るためのURL保存
+				var params = {url: 'setting.html'}
+				setFile('backb', params, okSetFile, okSetFile);
+				function okSetFile(){
+					if (location.search.length > 1) {
+						var get = new Object();
+						var ret = location.search.substr(1).split("&");
+						for (var i = 0; i < ret.length; i++) {
+							var r = ret[i].split("=");
+							get[r[0]] = r[1];
+						}
+						console.log("get:" + get['kbn']);
 					}
-					console.log("get:" + get['kbn']);
+					$.ajaxSetup({
+						timeout : 5000
+					});
+					onReadyFile();
 				}
-				$.ajaxSetup({
-					timeout : 5000
-				});
-				onReadyFile();
 			}
 
 			function onReadyFile() {

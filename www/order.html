@@ -81,7 +81,6 @@
 				console.log("Start passtime");
 				var fname = 'passtime';
 				getFile(fname, onPasstimeOK, onPasstimeNG);
-
 				function onPasstimeOK(json) {
 					console.log("正常にテキストを読み込みました。:passtime " + json.pass_time);
 
@@ -94,11 +93,9 @@
 						setSetting(ordering);
 					}
 				}
-
 				function onPasstimeNG() {
 					location.href = "passcode_input.html?kbn=buy";
 				}
-
 			}
 
 			// サーバー通信を行い値を設定を行なう
@@ -262,7 +259,7 @@
 			function okMsg() {
 
 				// オーダー削除
-
+				delFile('order');
 				// 設定ファイルの読み込み
 				getonOrdering(calcelAttention);
 
