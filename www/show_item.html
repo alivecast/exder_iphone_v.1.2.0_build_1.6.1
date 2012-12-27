@@ -213,14 +213,13 @@
 						}
 					}
 					shippingCost += '<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></a>';
-					document.getElementById("shippingCost").innerHTML = shippingCost;
-
 					// 送料無料金額
 					if (params['non_carriage_price'] && parseInt(params['non_carriage_price']) > 0) {
-						var non_carriage_price = '<p>';
-						non_carriage_price = currency(non_carriage_price + String(params['non_carriage_price'])) + '<span>円以上は送料無料</span></p>';
-						$("#non_carriage_price").html(non_carriage_price);
+						var non_carriage_price = '<p style="font-size:11px;">' + currency(String(params['non_carriage_price'])) + '<span>円以上は送料無料</span></font></p>';
+					//	var non_carriage_price = '<p><font size="-2">' + currency(String(params['non_carriage_price'])) + '<span>円以上は送料無料</span></font></p>';
+						shippingCost += non_carriage_price;
 					}
+					document.getElementById("shippingCost").innerHTML = shippingCost;
 
 					// 在庫状況
 					item_stock_sts = '';
