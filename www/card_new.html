@@ -185,19 +185,40 @@
 					success : function(data) {
 						// 戻り値の保存
 						console.log("customer_id: " + data.customer_id);
-
-						var kbn = $("#kbn").val();
-						if (kbn == "buy") {
-							location.href = "order.html";
-						} else {
-							location.href = "setting.html";
-						}
+						
+						// 設定ファイルの更新処理
+						getonOrdering(updateOradering);
+						
 					},
 					error : function() {
 						networdERR(alertCallBack, '通信エラー');
 						//						return false;
 					}
 				});
+				
+				
+				function updateOradering(udata){
+					// 設定ファイル上書き
+					var datalist = udata;
+					datalist['value3']  = data.value3;
+
+					// ファイル処理
+					var fname = 'ordering';
+					setFile(fname, datalist, goNext, goNext);
+	
+					// ページ遷移
+					function goNext(){
+						var kbn = $("#kbn").val();
+						if (kbn == "buy") {
+							location.href = "order.html";
+						} else {
+							location.href = "setting.html";
+						}
+						return false;
+					}
+	
+				}
+				
 			}
 
 			// alertCallBack -----------------------------------------------------------------------

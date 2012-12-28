@@ -195,7 +195,7 @@
                 case 'alert':
                     content = this.getTextContent( content );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
-                    $( '<p class="pwBtn"><a href="javascript:;" id="pwClose' + _cnt + '" class="pwClose"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
+                    $( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwClose"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
                     $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     //$( '#pwYES' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
@@ -208,14 +208,14 @@
                 case 'warning':
                     content = this.getTextContent( content, 'warning' );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
-                    $( '<p class="pwBtn"><a href="javascript:;" id="pwClose' + _cnt + '" class="pwClose"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
+                    $( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwYes"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
                     // $( '#pwbody' + _cnt ).click( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'caution':
                     content = this.getTextContent( content, 'caution' );
                     $( content ).appendTo( $( '#pwbody' + _cnt ) );
-                    $( '<p class="pwBtn"><a href="javascript:;" id="pwClose' + _cnt + '" class="pwClose"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
+                    $( '<p class="pwBtn"><a href="javascript:;" id="pwYES' + _cnt + '" class="pwClose"></a></p>' ).appendTo( $( '#pwBtnArea' + _cnt ) );
                     $(window).tap( ( function( obj ) { return function() { obj.YES.apply( obj, arguments ); } } )( this ) );
                     break;
                 case 'image':
