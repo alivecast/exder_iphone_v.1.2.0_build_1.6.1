@@ -229,31 +229,36 @@
 						item_stock_sts = '<p class="ico ico_backOrder">販売準備中</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('.buyView').css('display', 'none');
-						popup('warning', '販売準備中商品', '現在、ご購入いただけません。');
+					//	popup('warning', '販売準備中商品', '現在、ご購入いただけません。');
+						navigator.notification.alert('現在、ご購入いただけません。', function(){}, '販売準備中商品', 'OK');
 
 					} else if (params.item_stock_sts == 'backstock') {
 						item_stock_sts = '<p class="ico ico_backOrder">入荷待ち</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('.buyView').css('display', 'none');
-						popup('warning', '入荷待ち商品', '現在、ご購入いただけません。');
+					//	popup('warning', '入荷待ち商品', '現在、ご購入いただけません。');
+						navigator.notification.alert('現在、ご購入いただけません。', function(){}, '入荷待ち商品', 'OK');
 
 					} else if (params.item_stock_sts == 'discontinued') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売期間終了</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('.buyView').css('display', 'none');
-						popup('warning', '販売期間終了商品', '現在、ご購入いただけません。');
+					//	popup('warning', '販売期間終了商品', '現在、ご購入いただけません。');
+						navigator.notification.alert('現在、ご購入いただけません。', function(){}, '販売期間終了商品', 'OK');
 
 					} else if (params.item_stock_sts == 'nostock' || parseInt(params.item_stock_sts) < 1 || parseInt(params.item_stock_sts) < parseInt(params.item_min_sales)) {
 						item_stock_sts = '<p class="ico ico_backOrder">在庫切れ</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('.buyView').css('display', 'none');
-						popup('warning', '在庫切れ商品', '現在、ご購入いただけません。');
+					//	popup('warning', '在庫切れ商品', '現在、ご購入いただけません。');
+						navigator.notification.alert('現在、ご購入いただけません。', function(){}, '在庫切れ商品', 'OK');
 
 					} else if (params.item_is_stop_flg == 'disable') {
 						item_stock_sts = '<p class="ico ico_discontinued">販売中止</p>';
 						$('#item_buy_3').css('display', 'none');
 						$('.buyView').css('display', 'none');
-						popup('warning', '販売中止商品', '現在、ご購入いただけません。');
+					//	popup('warning', '販売中止商品', '現在、ご購入いただけません。');
+						navigator.notification.alert('現在、ご購入いただけません。', function(){}, '販売中止商品', 'OK');
 
 					} else if (parseInt(params.item_stock_sts) < 3 && parseInt(params.item_stock_sts) > 0) {
 						item_stock_sts = '<p class="ico ico_onlyRemaining">残りわずか</p>';

@@ -311,26 +311,6 @@ function networdERR(callfn, title) {
 	);
 }
 
-// 購入時の通信エラーメッセージ文
-function networdBuyERR(callfn, title) {
-	message = '通信が込み合っているか通信環境が良くないため、しばらく時間をおいて再度購入を行ってください。';
-	button = 'OK';
-	callback = $FN(callfn);
-	if (title == '' || title == null) {
-	} else {
-		title = '注文出来ませんでした';
-	}
-	// navigator.notification.alert(message, callback, title, button);
-	navigator.notification.alert(
-		message, 
-		function(){
-			window.location.href = 'netError.html'
-		}, 
-		title, 
-		button
-	);
-}
-
 // ネットワーク状態を調べる
 function check_network() {
 	var domain = 'exorder.jp';
@@ -480,11 +460,7 @@ function setPrice(price) {
 	return num;
 }
 
-function popup(type, title, message, url) {
-	if(type == 'popup' && url != null){
-		setTimeout( function() {
-			window.location.href = url;
-		}, 3000);
+function popup(type, title, message) {
 		new $pop(message, {
 			type : type,
 			title : title,
@@ -493,16 +469,6 @@ function popup(type, title, message, url) {
 			close : false,
 			modal : true
 		});
-	} else {
-		new $pop(message, {
-			type : type,
-			title : title,
-			width : 220,
-			height : 120,
-			close : false,
-			modal : true
-		});
-	}
 }
 
 function errorFocus(obj){

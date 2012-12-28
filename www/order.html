@@ -126,41 +126,41 @@
 								var passTime = json.passTime;
 								var cktime = passTime + (60 * 60);
 								var nowtime = parseInt(new Date() / 1000);
+								// ダイアログメッセージ
+								var title = '暗証番号の入力';
+								var message = '前回ご購入、または設定操作から時間が経過しています。ご利用者確認のために暗証番号を入力してください';
+								if(inputPass == 'true'){
+									title = 'ご購入の確認';
+									message = 'ご登録している暗証番号を入力してください';
+								}
 								// 総合判定
 								if (cktime < nowtime || (inputPass == 'true' && inputedPass == 'false')) {
-									// ダイアログ
-									var message = '';
-									var title = '';
-									if(cktime < nowtime){
-										title = '前回のご購入・設定変更から時間が経過しています';
-										message = 'お手数ですがご利用者確認のためにご登録している暗証番号を入力してください';
-									} else {
-										title = 'ご購入の確認';
-										message = 'ご登録している暗証番号を入力してください';
-									}
+									// ダイアログ表示
 									navigator.notification.alert(
 										message, 
-										function(){
-											window.location.href = "passcode_input.html?kbn=buy";
-										}, 
+										function(){}, 
 										title, 
 										'OK'
 									);
-									
-									// setTimeout( function() {
-										// window.location.href = "passcode_input.html?kbn=buy";
-									// }, 3000);
-									// popup('caution', title, message);
-									
-									// window.location.href = "passcode_input.html?kbn=buy";
+									window.location.href = "passcode_input.html?kbn=buy";
 								} else {
 									getOrder(params);
 								}
 							}
 							function ngPassTime(){
 								// 総合判定（初注文）
-								if (inputPass == 'true' && inputedPass == 'false') {
-									location.href = "passcode_input.html?kbn=buy";
+								if (inputPass == 'true' && inputedPass == 'false'){
+									// ダイアログ表示
+									var title = 'ご購入の確認';
+									var message = 'ご登録している暗証番号を入力してください';
+									navigator.notification.alert(
+										message, 
+										function(){
+										}, 
+										title, 
+										'OK'
+									);
+									window.location.href = "passcode_input.html?kbn=buy";
 								} else {
 									getOrder(params);
 								}
@@ -226,7 +226,10 @@
 					order['url'] = params.url;
 					order['http'] = params.http;
 					order['https'] = params.https;
-					order['value3'] = params.value3;
+					// test 条件
+					if(params.value3){
+						order['value3'] = params.value3;
+					}
 					
 					setOrder(order);
 				}

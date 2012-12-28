@@ -34,15 +34,15 @@
 			});
 
 			$(document).ready(function() {
-			//	$('#loading').css('display', 'none');
+				//	$('#loading').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
-				
+
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
-				
+
 				if (location.search.length > 1) {
 					var get = new Object();
 					var ret = location.search.substr(1).split("&");
@@ -69,7 +69,7 @@
 			function onReadyFile(json) {
 				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
 				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
-				
+
 				$('#loading').css('display', 'none');
 				$('#content').css('display', 'block');
 
@@ -185,40 +185,36 @@
 					success : function(data) {
 						// 戻り値の保存
 						console.log("customer_id: " + data.customer_id);
-						
+
 						// 設定ファイルの更新処理
 						getonOrdering(updateOradering);
-						
+						function updateOradering(udata) {
+							// 設定ファイル上書き
+							var datalist = udata;
+							datalist['value3'] = data.value3;
+
+							// ファイル処理
+							var fname = 'ordering';
+							setFile(fname, datalist, goNext, goNext);
+
+							// ページ遷移
+							function goNext() {
+								var kbn = $("#kbn").val();
+								if (kbn == "buy") {
+									location.href = "order.html?kbn=buy";
+								} else {
+									location.href = "setting.html";
+								}
+								return false;
+							}
+						}
+
 					},
 					error : function() {
 						networdERR(alertCallBack, '通信エラー');
 						//						return false;
 					}
 				});
-				
-				
-				function updateOradering(udata){
-					// 設定ファイル上書き
-					var datalist = udata;
-					datalist['value3']  = data.value3;
-
-					// ファイル処理
-					var fname = 'ordering';
-					setFile(fname, datalist, goNext, goNext);
-	
-					// ページ遷移
-					function goNext(){
-						var kbn = $("#kbn").val();
-						if (kbn == "buy") {
-							location.href = "order.html";
-						} else {
-							location.href = "setting.html";
-						}
-						return false;
-					}
-	
-				}
-				
 			}
 
 			// alertCallBack -----------------------------------------------------------------------
@@ -229,7 +225,6 @@
 
 		</script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
 
 	</head>
 
@@ -247,15 +242,7 @@
 			<div class="loading" data-role="content" id="loading" style="display: none;">
 				<div class="loading_box">
 					<p>しばらくおまちください</p>
-					<style>
-						.square1 {
-							width: 70%;
-							height: 100px;
-						/*	margin:0 auto 320px auto;
-							padding:0 auto 100px auto; */
-						}
-					</style>
-					<div id="loadingImg" class="square1"></div>
+					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {
 							$('#loadingImg').activity({
