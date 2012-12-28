@@ -85,7 +85,6 @@
 				getFile(fname, onPasstimeOK, onPasstimeNG);
 				function onPasstimeOK(json) {
 					console.log("正常にテキストを読み込みました。:passtime " + json.pass_time);
-
 					var cktime = json.pass_time + (60 * 60);
 					var nowtime = parseInt(new Date() / 1000);
 					if (cktime < nowtime) {
@@ -102,15 +101,10 @@
 
 			// サーバー通信を行い値を設定を行なう
 			function setSetting(params) {
-			//	alert('setSetting');
-				
-				console.log("Start:" + params);
-
-				title = '情報の初期設定';
+				console.log("setSetting:" + params);
+				title = 'ご利用情報の初期設定';
 				button = 'OK';
-
 				var url = params.http + 'json/send_setup.php';
-
 				$.ajax({
 					type : "POST",
 					url : url,
@@ -129,10 +123,8 @@
 							// 時間経過
 							getFile('passTime',okPassTime, ngPassTime);
 							function okPassTime(json){
-							//	alert('okPassTime');
 								var passTime = json.passTime;
 								var cktime = passTime + (60 * 60);
-								// var cktime = passTime + (60 * 1);
 								var nowtime = parseInt(new Date() / 1000);
 								// 総合判定
 								if (cktime < nowtime || (inputPass == 'true' && inputedPass == 'false')) {
@@ -140,7 +132,7 @@
 									var message = '';
 									var title = '';
 									if(cktime < nowtime){
-										title = '前回ご購入から時間が経過しています';
+										title = '前回のご購入・設定変更から時間が経過しています';
 										message = 'お手数ですがご利用者確認のためにご登録している暗証番号を入力してください';
 									} else {
 										title = 'ご購入の確認';
@@ -166,15 +158,14 @@
 								}
 							}
 							function ngPassTime(){
-							//	alert('ngPassTime');
-								// 総合判定
+								// 総合判定（初注文）
 								if (inputPass == 'true' && inputedPass == 'false') {
 									location.href = "passcode_input.html?kbn=buy";
 								} else {
 									getOrder(params);
 								}
 							}
-							// getOrder(params);
+							
 						} else if (data.password_ck == 0) {
 							console.log("-- 暗証番号--");
 							message = '１．暗証番号を設定してください。';
@@ -208,11 +199,17 @@
 						}
 					},
 					error : function(data) {
-						console.log("-- エラー２--");
-						errMsg();
+						// 通信エラー
+						navigator.notification.alert(
+							'通信が込み合っているか通信環境が良くないため、しばらく時間をおいて再度操作を行ってください。',
+							function(){
+								location.href = 'netError.html';
+							},
+							'設定を完了できませんでした', 
+							'OK'
+						);
 					}
 				});
-				console.log("-- END--");
 			}
 
 			function getOrder(params) {
@@ -248,68 +245,47 @@
 					success : function(data) {
 						// 戻り値により処理を振り分ける
 						if (data.errmsg) {
-							console.log("-- 注文内容エラー--");
-							var msg = {};
-							msg['title'] = data.errtitle;
-							msg['msg'] = data.errmsg;
-							cardErrMsg(msg);
+							// カードエラー
+							navigator.notification.alert(
+								data.errmsg,
+								function(){
+									location.href = 'setting.html';
+								},
+								data.errtitle, 
+								'OK'
+							);
 						} else {
 							if (data.order_id > 0 && data.order_id < 99999999999) {
 								console.log("-- 注文完了--");
 								okMsg();
 							} else {
-								console.log("-- エラー--");
-								errBuyMsg();
+								// 注文情報エラー
+								navigator.notification.alert(
+									'注文に必要な情報を取得できませんでした。設定情報をご確認の上、再度購入操作を行ってください。',
+									function(){
+										location.href = 'setting.html';
+									},
+									'注文出来ませんでした', 
+									'OK'
+								);
 							}
 						}
 					},
 					error : function(data) {
-						console.log("-- 通信エラー--");
-						errMsg();
+						// 通信エラー
+						navigator.notification.alert(
+							'通信が込み合っているか通信環境が良くないため注文処理を完了できませんでした。しばらく時間をおいて再度購入を行ってください。',
+							function(){
+								location.href = 'netError.html';
+							},
+							'注文出来ませんでした', 
+							'OK'
+						);
 					}
 				});
-				console.log("-- END--");
-			}
-			
-			
-			function cardErrMsg(msg) {
-				// カードエラー
-				button = 'OK';
-				navigator.notification.alert(
-					msg.msg,
-					function(){
-						location.href = 'setting.html';
-					},
-					msg.title, 
-					button
-				);
 			}
 
-			function errMsg() {
-				// 通信エラー
-				navigator.notification.alert(
-					'通信が込み合っているか通信環境が良くないため注文処理を完了できませんでした。しばらく時間をおいて再度購入を行ってください。',
-					function(){
-						location.href = 'netError.html';
-					},
-					'注文出来ませんでした', 
-					'OK'
-				);
-			}
-
-			function errBuyMsg() {
-				// 注文情報エラー
-				navigator.notification.alert(
-					'注文に必要な情報を取得できませんでした。設定情報をご確認の上、再度購入操作を行ってください。',
-					function(){
-						location.href = 'setting.html';
-					},
-					'注文出来ませんでした', 
-					'OK'
-				);
-			}
-
-			// 処理完了時
+			// 注文処理完了
 			function okMsg() {
 				// オーダー削除
 				delFile('order');
@@ -355,32 +331,15 @@
 				return false;
 			}
 			
-			function alertCallBackOk() {
-				fname = 'order';
-				var order = {};
-				order['qr_id'] = "";
-				setFile(fname, order);
-			}
-
 			function alertCallBack() {
 			}
-
-			var fname = 'order_attention';
-			getFile(fname, onGetOrderAttentionOK, onGetOrderAttentionNG);
-			function onGetOrderAttentionOK(json) {
-				console.log("正常にorder_attentionを読み込みました。");
-				if (json.order_attention && (json.order_attention != '' || json.order_attention != null)) {
-					jsonObj = {
-						order_attention : 'enable'
-					};
-					setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
-				}
-			}
-			function onGetOrderAttentionNG() {
-				console.log("err : order_attention NO");
-				onReadyFile3(rdata);
-			}
-			function onReadyFile3(rdata){}
+			
+			// function alertCallBackOk() {
+				// fname = 'order';
+				// var order = {};
+				// order['qr_id'] = "";
+				// setFile(fname, order);
+			// }
 
 		</script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>

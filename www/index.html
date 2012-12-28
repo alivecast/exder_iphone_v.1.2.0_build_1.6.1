@@ -37,9 +37,6 @@
 				
 				$.ajaxSetup({timeout: 5000});
 				
-				// ネットワークの判定
-				// check_network();
-
 				// URLの取得
 				$.ajax({
 					type: "POST",
@@ -64,24 +61,6 @@
 
             // 設定ファイルの接続に成功の場合
 			function onReadyFile2(rdata) {
-				// ファイルの読み込み
-				console.log("Start order_attention");
-				var fname = 'order_attention';
-				getFile(fname,onGetOrderAttentionOK,onGetOrderAttentionNG);
-				function onGetOrderAttentionOK(json){
-					console.log("正常にorder_attentionを読み込みました。");
-					if(json.order_attention && (json.order_attention != '' || json.order_attention != null)){
-						jsonObj = {order_attention: 'enable'};
-						setFile(fname, jsonObj, onReadyFile3(rdata), onReadyFile3(rdata));
-					}
-				}
-				function onGetOrderAttentionNG(){
-					console.log("err : order_attention NO");
-					onReadyFile3(rdata);
-				}
-			}
-
-			function onReadyFile3(rdata) {
 				// 設定ファイルの読み込み
 				console.log("Start ordering");
 				var fname = 'ordering';
@@ -136,7 +115,7 @@
 						// isOrdering: 'false',
 						inputPasscode: 'true',
 						inputedPass: 'false',
-						// cancelAttention: 'true',
+						cancelAttention: 'true',
 						// throwOrder: 'false'
 					}
 					setFile('initFlg', initFlg, okFunc, ngFunc);
