@@ -129,7 +129,23 @@
             }
 
 			function checkValidate() {
+				
+				getFile('addressee', okGetAddressee, ngGetAddressee);
+				function okGetAddressee(json){
+					validate(json);
+				}
+				function ngGetAddressee(){
+					var json = {};
+					validate(json);
+				}
+			}
+				
+			function validate(json){
+				
+				console.log(JSON.stringify(json));
+				
 				var i = 0;
+				var error = 0;
 				//エラーの初期化
 				$("p.error").parent().removeClass("error");
 				$("p.error").remove();
@@ -142,8 +158,8 @@
 						// }
 					// });
 				// });
-				
 				//お届け先件名のチェック
+				var addr = $('#address_name').val();
 				$("#address_name_sel option:selected").each(function() {
 					if ($(this).val() == '' && $('#address_name').val() == "") {
 						if (i <= 0) {
@@ -151,6 +167,21 @@
 							$("#address_name_sel").css('background:#FFCCCC;');
 							i++;
 						}
+						// if(json.address_name1 && addr == json.address_name1){error = 1;}
+						// if(json.address_name2 && addr == json.address_name2){error = 2;}
+						// if(json.address_name3 && addr == json.address_name3){error = 3;}
+						// if(json.address_name4 && addr == json.address_name4){error = 4;}
+						// if(json.address_name5 && addr == json.address_name5){error = 5;}
+						// if(json.address_name6 && addr == json.address_name6){error = 6;}
+						// if(json.address_name7 && addr == json.address_name7){error = 7;}
+						// if(json.address_name8 && addr == json.address_name8){error = 8;}
+						// if(json.address_name9 && addr == json.address_name9){error = 9;}
+						// if(json.address_name10 && addr == json.address_name10){error = 10;}
+						// if(error > 0){
+							// $("#address_name_sel").parent().append("<p class='error'>このお届先名は既に登録されてます。<br/>他のお届先名を選択、または入力してください。</p>");
+							// $("#address_name_sel").css('background:#FFCCCC;');
+							// i++;
+						// }
 					}
 				})
 				//氏名のチェック

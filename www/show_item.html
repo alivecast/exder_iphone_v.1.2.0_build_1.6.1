@@ -207,9 +207,9 @@
 						shippingCost += currency(String(params['order_carriage'])) + '<span class="unit_name">円</span></span></dd></dl>';
 					} else {
 						if(params['customer_id'] && params['customer_id'] > 0){
-							shippingCost += '送料無料</span></dd></dl>';
+							shippingCost += '<span style="font-size:14px;">送料無料</span></span></dd></dl>';
 						}else{
-							shippingCost += '送料を確認</span></dd></dl>';
+							shippingCost += '<span style="font-size:14px;">送料を確認</span></span></dd></dl>';
 						}
 					}
 					shippingCost += '<span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span></a>';
@@ -617,7 +617,7 @@
 		<div id="page_shopProfile" data-role="page" data-add-back-btn="false" data-theme="z">
 			<div data-role="header" id="header" data-position="fixed">
 				<!--<h1>特定商取引法に基づく表示</h1>-->
-				<h1><font size="2">特定商取引情報</font></h1>
+				<h1>特定商取引情報</h1>
 				<a href="#page_itemDetail" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse"> 戻る </a>
 			</div>
 			<!-- コンテンツここから-->

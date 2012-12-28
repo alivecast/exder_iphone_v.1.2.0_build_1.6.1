@@ -87,129 +87,137 @@
 					url : url,
 					data : params,
 					success : function(data) {
-						// お届け先の表示1
-						if (data.address_id1 == 0 || data.address_id1 == "" || data.address_id1 == undefined) {
-						} else {
-							$("#adr_id1").val(data.address_id1);
-							$("#adr_name1").text(data.address_name1);
-							if (data.address_ck1 == 1) {
-								$("#adr_ck1").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+						
+						// お届け先件名の保存
+						dataText = JSON.stringify(data);
+						setFile('addressee', dataText, okSetAddressee, okSetAddressee);
+						
+						function okSetAddressee(){
+						
+							// お届け先の表示1
+							if (data.address_id1 == 0 || data.address_id1 == "" || data.address_id1 == undefined) {
+							} else {
+								$("#adr_id1").val(data.address_id1);
+								$("#adr_name1").text(data.address_name1);
+								if (data.address_ck1 == 1) {
+									$("#adr_ck1").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								if (data.address_id1 == 0 || data.address_id1 == "") {
+									$("#adr1").html(" ");
+								}
+								$("#adr1").css("display", "block");
 							}
-							if (data.address_id1 == 0 || data.address_id1 == "") {
-								$("#adr1").html(" ");
+	
+							console.log("data.address_id1:" + data.address_id1);
+							console.log("data.address_name1:" + data.address_name1);
+							console.log("data.address_ck1:" + data.address_ck1);
+	
+							// お届け先の表示2
+							if (data.address_id2 == 0 || data.address_id2 == "" || data.address_id2 == undefined) {
+							} else {
+								$("#adr_id2").val(data.address_id2);
+								$("#adr_name2").text(data.address_name2);
+	
+								if (data.address_ck2 == 1) {
+									$("#adr_ck2").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr2").css("display", "block");
+								console.log("data.address_id2:" + data.address_id2);
+								console.log("data.address_name2:" + data.address_name2);
 							}
-							$("#adr1").css("display", "block");
-						}
-
-						console.log("data.address_id1:" + data.address_id1);
-						console.log("data.address_name1:" + data.address_name1);
-						console.log("data.address_ck1:" + data.address_ck1);
-
-						// お届け先の表示2
-						if (data.address_id2 == 0 || data.address_id2 == "" || data.address_id2 == undefined) {
-						} else {
-							$("#adr_id2").val(data.address_id2);
-							$("#adr_name2").text(data.address_name2);
-
-							if (data.address_ck2 == 1) {
-								$("#adr_ck2").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示3
+							if (data.address_id3 == 0 || data.address_id3 == "" || data.address_id3 == undefined) {
+							} else {
+								$("#adr_id3").val(data.address_id3);
+								$("#adr_name3").text(data.address_name3);
+	
+								if (data.address_ck3 == 1) {
+									$("#adr_ck3").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr3").css("display", "block");
 							}
-							$("#adr2").css("display", "block");
-							console.log("data.address_id2:" + data.address_id2);
-							console.log("data.address_name2:" + data.address_name2);
-						}
-
-						// お届け先の表示3
-						if (data.address_id3 == 0 || data.address_id3 == "" || data.address_id3 == undefined) {
-						} else {
-							$("#adr_id3").val(data.address_id3);
-							$("#adr_name3").text(data.address_name3);
-
-							if (data.address_ck3 == 1) {
-								$("#adr_ck3").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示4
+							if (data.address_id4 == 0 || data.address_id4 == "" || data.address_id4 == undefined) {
+							} else {
+								$("#adr_id4").val(data.address_id4);
+								$("#adr_name4").text(data.address_name4);
+	
+								if (data.address_ck4 == 1) {
+									$("#adr_ck4").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr4").css("display", "block");
 							}
-							$("#adr3").css("display", "block");
-						}
-
-						// お届け先の表示4
-						if (data.address_id4 == 0 || data.address_id4 == "" || data.address_id4 == undefined) {
-						} else {
-							$("#adr_id4").val(data.address_id4);
-							$("#adr_name4").text(data.address_name4);
-
-							if (data.address_ck4 == 1) {
-								$("#adr_ck4").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示5
+							if (data.address_id5 == 0 || data.address_id5 == "" || data.address_id5 == undefined) {
+							} else {
+								$("#adr_id5").val(data.address_id5);
+								$("#adr_name5").text(data.address_name5);
+								if (data.address_ck5 == 1) {
+									$("#adr_ck5").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr5").css("display", "block");
 							}
-							$("#adr4").css("display", "block");
-						}
-
-						// お届け先の表示5
-						if (data.address_id5 == 0 || data.address_id5 == "" || data.address_id5 == undefined) {
-						} else {
-							$("#adr_id5").val(data.address_id5);
-							$("#adr_name5").text(data.address_name5);
-							if (data.address_ck5 == 1) {
-								$("#adr_ck5").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示6
+							if (data.address_id6 == 0 || data.address_id6 == "" || data.address_id6 == undefined) {
+							} else {
+								$("#adr_id6").val(data.address_id6);
+								$("#adr_name6").text(data.address_name6);
+								if (data.address_ck6 == 1) {
+									$("#adr_ck6").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr6").css("display", "block");
 							}
-							$("#adr5").css("display", "block");
-						}
-
-						// お届け先の表示6
-						if (data.address_id6 == 0 || data.address_id6 == "" || data.address_id6 == undefined) {
-						} else {
-							$("#adr_id6").val(data.address_id6);
-							$("#adr_name6").text(data.address_name6);
-							if (data.address_ck6 == 1) {
-								$("#adr_ck6").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示7
+							if (data.address_id7 == 0 || data.address_id7 == "" || data.address_id7 == undefined) {
+							} else {
+								$("#adr_id7").val(data.address_id7);
+								$("#adr_name7").text(data.address_name7);
+								if (data.address_ck7 == 1) {
+									$("#adr_ck7").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr7").css("display", "block");
 							}
-							$("#adr6").css("display", "block");
-						}
-
-						// お届け先の表示7
-						if (data.address_id7 == 0 || data.address_id7 == "" || data.address_id7 == undefined) {
-						} else {
-							$("#adr_id7").val(data.address_id7);
-							$("#adr_name7").text(data.address_name7);
-							if (data.address_ck7 == 1) {
-								$("#adr_ck7").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示8
+							if (data.address_id8 == 0 || data.address_id8 == "" || data.address_id8 == undefined) {
+							} else {
+								$("#adr_id8").val(data.address_id8);
+								$("#adr_name8").text(data.address_name8);
+								if (data.address_ck8 == 1) {
+									$("#adr_ck8").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr8").css("display", "block");
 							}
-							$("#adr7").css("display", "block");
-						}
-
-						// お届け先の表示8
-						if (data.address_id8 == 0 || data.address_id8 == "" || data.address_id8 == undefined) {
-						} else {
-							$("#adr_id8").val(data.address_id8);
-							$("#adr_name8").text(data.address_name8);
-							if (data.address_ck8 == 1) {
-								$("#adr_ck8").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示9
+							if (data.address_id9 == 0 || data.address_id9 == "" || data.address_id9 == undefined) {
+							} else {
+								$("#adr_id9").val(data.address_id9);
+								$("#adr_name9").text(data.address_name9);
+								if (data.address_ck9 == 1) {
+									$("#adr_ck9").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr9").css("display", "block");
 							}
-							$("#adr8").css("display", "block");
-						}
-
-						// お届け先の表示9
-						if (data.address_id9 == 0 || data.address_id9 == "" || data.address_id9 == undefined) {
-						} else {
-							$("#adr_id9").val(data.address_id9);
-							$("#adr_name9").text(data.address_name9);
-							if (data.address_ck9 == 1) {
-								$("#adr_ck9").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+	
+							// お届け先の表示10
+							if (data.address_id10 == 0 || data.address_id10 == "" || data.address_id10 == undefined) {
+							} else {
+								$("#adress_add").css("display", "none");
+								$("#adr_id10").val(data.address_id10);
+								$("#adr_name10").text(data.address_name10);
+								if (data.address_ck10 == 1) {
+									$("#adr_ck10").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+								}
+								$("#adr10").css("display", "block");
+								// 121219 ogawa お届け先の件数チェック
+								$('#addb').css("display", "none");
 							}
-							$("#adr9").css("display", "block");
-						}
-
-						// お届け先の表示10
-						if (data.address_id10 == 0 || data.address_id10 == "" || data.address_id10 == undefined) {
-						} else {
-							$("#adress_add").css("display", "none");
-							$("#adr_id10").val(data.address_id10);
-							$("#adr_name10").text(data.address_name10);
-							if (data.address_ck10 == 1) {
-								$("#adr_ck10").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-							}
-							$("#adr10").css("display", "block");
-							// 121219 ogawa お届け先の件数チェック
-							$('#addb').css("display", "none");
 						}
 					},
 					error : function(data) {
