@@ -1193,7 +1193,7 @@ button.btn_next {
 
 
 /* ---/ 購入する /--- */
-.item_buy_1btn.ui-li {
+.item_buy_1btn {
 	background-color:#C1CEBF;
 	-webkit-box-shadow: 0 2px 2px #999 inset;
 	box-shadow: 0 2px 2px #999 inset;
@@ -1226,7 +1226,6 @@ button.btn_next {
 
 #page_shopProfile h1 {
 	font-size:16px;
-	padding:.2em 0;/* 文字サイズを小さくしたのでhesderの高さ確保 */
 }
 
 .cont_shopProfile dt {
@@ -1820,23 +1819,9 @@ button.btn_next {
 	font-size:14px;
 }
 
-/* メアド */
-.address_phone {
-}
-
-.address_phone .txt {
-	margin-bottom:5px;
-}
-
-
-
-
-
-
 
 /* ---/　メアド4つの場合
 ----------------------------------*/
-/*
 .user_mail02 {
 	margin:15px 10px 20px;
 }
@@ -1859,7 +1844,6 @@ button.btn_next {
 	margin-bottom:10px;
 
 }
-*/
 
 /* base_list */
 .base_list {
@@ -1939,21 +1923,11 @@ button.btn_next {
 /* ------------------------------------------/
 　クレジットカード
 ------------------------------------------ */
-.cont_card_edit {
-}
-
-.page_description {/* 共通 */
+.page_description {
 	padding:15px 10px 0;
 }
 
-.cont_card_edit .note {
-	color:#F30;
-	margin-bottom:5px;
-	/* 折り返しの解除 */
-	overflow:visible;
-	white-space:normal;
-	text-overflow:clip;
-}
+
 
 
 
@@ -1969,31 +1943,13 @@ button.btn_next {
 
 input#customer_mail {
 	padding:5px;
-	/*
 	width:300px;
-	*/
-	width:100%;
-	
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	box-sizing: border-box;
 }
 
 .cont_contact textarea#contact_text {
 	padding:5px;
-	/*
 	width:300px;
-	*/
-	width:100%;
-	height:240px;
-	
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	box-sizing: border-box;
-	
-	margin-bottom:10px;
+	height:200px;
 }
 
 
@@ -2032,34 +1988,15 @@ input#customer_mail {
 
 input#customer_mail {
 	padding:5px;
-	/*
 	width:300px;
-	*/
-	width:100%;
-	
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	box-sizing: border-box;
 }
 
 
 .cont_contact textarea#report {
-	padding:5px
-	/*
+	padding:5px;
 	width:300px;
-	*/
-	width:100%;
 	height:200px;
-	
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	box-sizing: border-box;
-	
-	margin-bottom:10px;
 }
-
 
 
 .check_btn {
@@ -2168,9 +2105,7 @@ input#customer_mail {
 }
 
 .pflip .ui-btn-active {
-	/*
 	border: 1px solid #2373A5;
-	*/
 	background: #5393C5;
 	font-weight: bold;
 	color: white;
@@ -2187,9 +2122,7 @@ input#customer_mail {
 }
 
 .pflip .ui-btn-down-z {
-	/*
 	border: 1px solid #BBB;
-	*/
 	background: #D6D6D6;
 	font-weight: bold;
 	color: #222;

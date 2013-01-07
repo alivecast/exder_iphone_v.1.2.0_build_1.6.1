@@ -24,42 +24,42 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
 
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
 
-			$(document).ready(function(){
+			$(document).ready(function() {
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
-			function onDeviceReady(){
-				
+			function onDeviceReady() {
+
 				$.ajaxSetup({
-					timeout: 5000
+					timeout : 5000
 				});
-				
+
 				// 設定ファイルを読み込む
 				getonOrdering(onReadyFile);
 			}
 
-			function onReadyFile(json){
-				console.log("正常にテキストを読み込みました。:cid "+json.customer_id);
-				console.log("正常にテキストを読み込みました。:key "+json.customer_key);
+			function onReadyFile(json) {
+				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
+				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
 
 				var get = new Object();
-				if(location.search.length > 1) {
+				if (location.search.length > 1) {
 					var ret = location.search.substr(1).split("&");
-					for(var i = 0; i < ret.length; i++) {
+					for (var i = 0; i < ret.length; i++) {
 						var r = ret[i].split("=");
 						get[r[0]] = r[1];
 					}
-					console.log("get:"+get['id']);
+					console.log("get:" + get['id']);
 					$("#kbn").val(get['kbn']);
-					if(get['kbn'] == "buy"){
-						$("#backb").attr("href","addressee_index.html?kbn=buy");
-						$("#tab3a").attr("href","order.html");
+					if (get['kbn'] == "buy") {
+						$("#backb").attr("href", "addressee_index.html?kbn=buy");
+						$("#tab3a").attr("href", "order.html");
 					}
 				}
 
@@ -77,7 +77,7 @@
 
 				json['address_id'] = get['id'];
 
-				if (get['id'] && get['id'] > 0){
+				if (get['id'] && get['id'] > 0) {
 					$('#titleName').html("お届け先の変更");
 					$('#address_name_box').css("display", "block");
 					// アドレスの取得
@@ -90,17 +90,17 @@
 				$('.address_edit').listview();
 			}
 
-            // ファイルがある場合は、サーバー通信を行い値を取得する。
-            function getAddress(params){
-                console.log("Start:"+params);
-                
-                var url = params.https+'json/send_address.php';
+			// ファイルがある場合は、サーバー通信を行い値を取得する。
+			function getAddress(params) {
+				console.log("Start:" + params);
+
+				var url = params.https + 'json/send_address.php';
 
 				$.ajax({
-					type: "POST",
-					url: url,
-					data:params,
-					success: function(data){
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
 						// 戻り値の保存
 						$("#address_id").val(data.address_id);
 						$("#address_name_sel").val(data.address_name).selectmenu('refresh');
@@ -111,79 +111,75 @@
 						$("#customer_address1").val(data.customer_address1);
 						$("#customer_address2").val(data.customer_address2);
 						$("#customer_phone").val(data.customer_phone);
-						if(data.address_main_flg == 1){
-							$("#address_main_flg").attr("checked",true).checkboxradio("refresh");
+						if (data.address_main_flg == 1) {
+							$("#address_main_flg").attr("checked", true).checkboxradio("refresh");
 						}
-						if(data.address_customer_flg == 1){
-							$("#address_name_main").css("display","block");
+						if (data.address_customer_flg == 1) {
+							$("#address_name_main").css("display", "block");
 						}
 						$('.address_edit').listview();
 					},
-					error: function(data) {
+					error : function(data) {
 						message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
 						title = 'サーバーと通信できませんでした';
 						button = 'OK';
 						navigator.notification.alert(message, alertCallBack(), title, button);
 					}
 				});
-            }
+			}
 
 			function checkValidate() {
-				
+
 				getFile('addressee', okGetAddressee, ngGetAddressee);
-				function okGetAddressee(json){
+				function okGetAddressee(json) {
 					validate(json);
 				}
-				function ngGetAddressee(){
+
+				function ngGetAddressee() {
 					var json = {};
 					validate(json);
 				}
+
 			}
-				
-			function validate(json){
-				
+
+			function validate(json) {
+
 				console.log(JSON.stringify(json));
-				
+
 				var i = 0;
 				var error = 0;
 				//エラーの初期化
 				$("p.error").parent().removeClass("error");
 				$("p.error").remove();
-				
+
 				// //必須項目のチェック
 				// $(":text,textarea").filter(".validate").each(function() {
-					// $(this).filter(".required").each(function() {
-						// if ($(this).val() == "") {
-							// $(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
-						// }
-					// });
+				// $(this).filter(".required").each(function() {
+				// if ($(this).val() == "") {
+				// $(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
+				// }
+				// });
 				// });
 				//お届け先件名のチェック
 				var addr = $('#address_name').val();
 				$("#address_name_sel option:selected").each(function() {
 					if ($(this).val() == '' && $('#address_name').val() == "") {
 						if (i <= 0) {
-							$("#address_name_sel").parent().append("<p class='error'>お届け先の件名を選択、または入力してください</p>");
-							$("#address_name_sel").css('background:#FFCCCC;');
+							error = 1
 							i++;
 						}
-						// if(json.address_name1 && addr == json.address_name1){error = 1;}
-						// if(json.address_name2 && addr == json.address_name2){error = 2;}
-						// if(json.address_name3 && addr == json.address_name3){error = 3;}
-						// if(json.address_name4 && addr == json.address_name4){error = 4;}
-						// if(json.address_name5 && addr == json.address_name5){error = 5;}
-						// if(json.address_name6 && addr == json.address_name6){error = 6;}
-						// if(json.address_name7 && addr == json.address_name7){error = 7;}
-						// if(json.address_name8 && addr == json.address_name8){error = 8;}
-						// if(json.address_name9 && addr == json.address_name9){error = 9;}
-						// if(json.address_name10 && addr == json.address_name10){error = 10;}
-						// if(error > 0){
-							// $("#address_name_sel").parent().append("<p class='error'>このお届先名は既に登録されてます。<br/>他のお届先名を選択、または入力してください。</p>");
-							// $("#address_name_sel").css('background:#FFCCCC;');
-							// i++;
-						// }
 					}
 				})
+				if(error < 1){
+					jsonText = JSON.stringify(json);
+					if (jsonText.match(/addr/)) {
+						error = 1;
+					}
+					if (error > 0) {
+						$("#address_name_sel").parent().append("<p class='error'>このお届先名は既に登録されてます。<br/>他のお届先名を選択、または入力してください。</p>");
+						$("#address_name_sel").css('background:#FFCCCC;');
+					}
+				}
 				//氏名のチェック
 				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/^　|^ /) || $("#customer_name").val().match(/[０-９0-9]|[!-/:-@[-`{-~]/) || !$("#customer_name").val().match(/^\w{1,30}$|^\W{1,30}$/)) {
 					$("#customer_name").parent().append("<p class='error'>氏名を入力してください。</p>");
@@ -221,73 +217,72 @@
 			}
 
 			// 新規登録
-			function saveAddress(){
+			function saveAddress() {
 
-				
 				// 入力値
 				var ordering = {};
 
-				ordering['app_ver']  = $("#app_ver").val();
+				ordering['app_ver'] = $("#app_ver").val();
 				ordering['app_code'] = $("#app_code").val();
-				ordering['url']      = $("#url").val();
-				ordering['http']     = $("#http").val();
-				ordering['https']    = $("#https").val();
+				ordering['url'] = $("#url").val();
+				ordering['http'] = $("#http").val();
+				ordering['https'] = $("#https").val();
 
-                ordering['customer_id']   = $("#customer_id").val();
-                ordering['customer_key']   = $("#customer_key").val();
-                ordering['customer_pass']   = $("#customer_pass").val();
-                
-                ordering['address_id']    = $("#address_id").val();
-				ordering['address_name']  = $("#address_name").val();
-                ordering['address_name_sel'] = $("#address_name_sel").val();
+				ordering['customer_id'] = $("#customer_id").val();
+				ordering['customer_key'] = $("#customer_key").val();
+				ordering['customer_pass'] = $("#customer_pass").val();
+
+				ordering['address_id'] = $("#address_id").val();
+				ordering['address_name'] = $("#address_name").val();
+				ordering['address_name_sel'] = $("#address_name_sel").val();
 				ordering['customer_name'] = $("#customer_name").val();
-                
-				ordering['customer_zipcode']  = $("#customer_zipcode").val();
-                ordering['customer_pref']     = $("#customer_pref").val();
+
+				ordering['customer_zipcode'] = $("#customer_zipcode").val();
+				ordering['customer_pref'] = $("#customer_pref").val();
 				ordering['customer_address1'] = $("#customer_address1").val();
 				ordering['customer_address2'] = $("#customer_address2").val();
-				ordering['customer_phone']    = $("#customer_phone").val();
-				
-                ordering['address_main_flg'] = $("#address_main_flg:checked").val();
-                
+				ordering['customer_phone'] = $("#customer_phone").val();
+
+				ordering['address_main_flg'] = $("#address_main_flg:checked").val();
+
 				// 送信
-				var url = ordering.https+'json/receive_address.php';
+				var url = ordering.https + 'json/receive_address.php';
 				var params = ordering;
 
 				$.ajax({
-					type: "POST",
-					url: url,
-					data:params,
-					success: function(data){
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
 						// 戻り値の保存
 						var customer_id = data.customer_id;
-						var address_id  = data.address_id;
+						var address_id = data.address_id;
 						console.log("customer_id: " + data.customer_id);
 						console.log("address_id: " + data.address_id);
 						console.log("customer_name=>: " + data.customer_name);
 
 						var kbn = $("#kbn").val();
-						if(kbn == "buy"){
-							location.href="order.html";
-						}else{
-							location.href="setting.html";
+						if (kbn == "buy") {
+							location.href = "order.html";
+						} else {
+							location.href = "setting.html";
 						}
 					},
-					error: function(){
-						networdERR(alertCallBack,'お届け先は登録できませんでした');
-//						return false;
+					error : function() {
+						networdERR(alertCallBack, 'お届け先は登録できませんでした');
+						//						return false;
 					}
 				});
 			}
-			
+
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
 				// window.location.href = 'barcode.html';
 				location.reload(true);
 			}
-				
+
 			// 入力値のリアルタイム取得
-			function zipKeyUp(){
+			function zipKeyUp() {
 				var zipcode = $('#customer_zipcode').val();
 				if (zipcode.match(/^\d{3}-?\d{4}$|^\d{7}$/)) {
 					onAddress();
@@ -303,21 +298,21 @@
 				$("#customer_pref").selectmenu('refresh', true);
 				return false;
 			}
-			
+
 			// 住所
-			$(document).on("touchstart",".touch_address",function(e){
+			$(document).on("touchstart", ".touch_address", function(e) {
 				// セレクトボックスをリフレッシュ
 				$("#customer_pref").selectmenu('refresh', true);
 			});
 
 			// お届け先の選択
-			$(document).on("change","#address_name_sel",function(e){
+			$(document).on("change", "#address_name_sel", function(e) {
 				// セレクトボックスをリフレッシュ
-				$("#address_name_box").css("display","block");
-				$("#address_name").val( $("#address_name_sel").val() );
+				$("#address_name_box").css("display", "block");
+				$("#address_name").val($("#address_name_sel").val());
 			});
-			
-			$(document).on("touchstart","#onAddress",function(e){
+
+			$(document).on("touchstart", "#onAddress", function(e) {
 				$("#customer_pref").selectmenu('refresh', true);
 				$("#customer_address1").val("");
 				AjaxZip3.zip2addr('customer_zipcode', '', 'customer_pref', 'customer_address1');
@@ -325,13 +320,13 @@
 				return false;
 			});
 
-			$(window).load(function(){
+			$(window).load(function() {
 				$("#form_address").validate();
 			});
 		</script>
-  </script>
+		</script>
 
-	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
 
@@ -347,7 +342,9 @@
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading" style="display: none;">
 				<div class="loading_box">
-					<p>しばらくおまちください</p>
+					<p>
+						しばらくおまちください
+					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
 						$(function() {
@@ -387,7 +384,9 @@
 					<div data-role="fieldcontain">
 						<ul class="address_edit" data-role="listview">
 							<li class="address_name_main" id="address_name_main" style="display:none;">
-								<label for="address_name_main" class="fieldLabel" style="color:red;">このお届先を変更すると次の情報も更新されます<br/>&nbsp;★&nbsp;利用者情報の「お名前・住所・電話番号」</label>
+								<label for="address_name_main" class="fieldLabel" style="color:red;">このお届先を変更すると次の情報も更新されます
+									<br/>
+									&nbsp;★&nbsp;利用者情報の「お名前・住所・電話番号」</label>
 							</li>
 							<li class="address_subject">
 								<label for="address_name_sel" class="fieldLabel">お届け先名称の設定</label>
@@ -400,7 +399,9 @@
 										<option value="その他" >その他</option>
 									</select>
 									<div id="address_name_box" class="box2">
-										<p class="txt">任意の名称も可能です。下記にご入力ください</p>
+										<p class="txt">
+											任意の名称も可能です。下記にご入力ください
+										</p>
 										<input type="text" id="address_name" name="address_name" value=""/>
 									</div>
 								</div>
@@ -414,71 +415,79 @@
 							<li class="address_pref touch_address">
 								<label for="customer_zipcode">住所</label>
 								<!--<div id="zipcode" class="box2">
-									<div class="box2_01">-->
-								<div><input type="tel" id="customer_zipcode" name="customer_zipcode" maxlength=7 value="" class="validate number" placeholder="郵便番号（ハイフンなし）" onKeyUp="zipKeyUp();"/></div>
-									<!--</div>
-									<div class="box2_02">
-										<a data-role="button" class="btn_prev"> 郵便番号から入力 </a>
-									</div>
+								<div class="box2_01">-->
+								<div>
+									<input type="tel" id="customer_zipcode" name="customer_zipcode" maxlength=7 value="" class="validate number" placeholder="郵便番号（ハイフンなし）" onKeyUp="zipKeyUp();"/>
+								</div>
+								<!--</div>
+								<div class="box2_02">
+								<a data-role="button" class="btn_prev"> 郵便番号から入力 </a>
+								</div>
 								</div>-->
-								<p class="fieldLabel txt">*郵便番号を入力すると、住所は自動で取得します</p>
+								<p class="fieldLabel txt">
+									*郵便番号を入力すると、住所は自動で取得します
+								</p>
 								<br />
-								<div><select id="customer_pref" class="validate touch_address" name="customer_pref">
-									<option value="">都道府県</option>
-									<option value="北海道">北海道</option>
-									<option value="青森県">青森県</option>
-									<option value="岩手県">岩手県</option>
-									<option value="宮城県">宮城県</option>
-									<option value="秋田県">秋田県</option>
-									<option value="山形県">山形県</option>
-									<option value="福島県">福島県</option>
-									<option value="茨城県">茨城県</option>
-									<option value="栃木県">栃木県</option>
-									<option value="群馬県">群馬県</option>
-									<option value="埼玉県">埼玉県</option>
-									<option value="千葉県">千葉県</option>
-									<option value="東京都">東京都</option>
-									<option value="神奈川県">神奈川県</option>
-									<option value="新潟県">新潟県</option>
-									<option value="富山県">富山県</option>
-									<option value="石川県">石川県</option>
-									<option value="福井県">福井県</option>
-									<option value="山梨県">山梨県</option>
-									<option value="長野県">長野県</option>
-									<option value="岐阜県">岐阜県</option>
-									<option value="静岡県">静岡県</option>
-									<option value="愛知県">愛知県</option>
-									<option value="三重県">三重県</option>
-									<option value="滋賀県">滋賀県</option>
-									<option value="京都府">京都府</option>
-									<option value="大阪府">大阪府</option>
-									<option value="兵庫県">兵庫県</option>
-									<option value="奈良県">奈良県</option>
-									<option value="和歌山県">和歌山県</option>
-									<option value="鳥取県">鳥取県</option>
-									<option value="島根県">島根県</option>
-									<option value="岡山県">岡山県</option>
-									<option value="広島県">広島県</option>
-									<option value="山口県">山口県</option>
-									<option value="徳島県">徳島県</option>
-									<option value="香川県">香川県</option>
-									<option value="愛媛県">愛媛県</option>
-									<option value="高知県">高知県</option>
-									<option value="福岡県">福岡県</option>
-									<option value="佐賀県">佐賀県</option>
-									<option value="長崎県">長崎県</option>
-									<option value="熊本県">熊本県</option>
-									<option value="大分県">大分県</option>
-									<option value="宮崎県">宮崎県</option>
-									<option value="鹿児島県">鹿児島県</option>
-									<option value="沖縄県">沖縄県</option>
-								</select></div>
+								<div>
+									<select id="customer_pref" class="validate touch_address" name="customer_pref">
+										<option value="">都道府県</option>
+										<option value="北海道">北海道</option>
+										<option value="青森県">青森県</option>
+										<option value="岩手県">岩手県</option>
+										<option value="宮城県">宮城県</option>
+										<option value="秋田県">秋田県</option>
+										<option value="山形県">山形県</option>
+										<option value="福島県">福島県</option>
+										<option value="茨城県">茨城県</option>
+										<option value="栃木県">栃木県</option>
+										<option value="群馬県">群馬県</option>
+										<option value="埼玉県">埼玉県</option>
+										<option value="千葉県">千葉県</option>
+										<option value="東京都">東京都</option>
+										<option value="神奈川県">神奈川県</option>
+										<option value="新潟県">新潟県</option>
+										<option value="富山県">富山県</option>
+										<option value="石川県">石川県</option>
+										<option value="福井県">福井県</option>
+										<option value="山梨県">山梨県</option>
+										<option value="長野県">長野県</option>
+										<option value="岐阜県">岐阜県</option>
+										<option value="静岡県">静岡県</option>
+										<option value="愛知県">愛知県</option>
+										<option value="三重県">三重県</option>
+										<option value="滋賀県">滋賀県</option>
+										<option value="京都府">京都府</option>
+										<option value="大阪府">大阪府</option>
+										<option value="兵庫県">兵庫県</option>
+										<option value="奈良県">奈良県</option>
+										<option value="和歌山県">和歌山県</option>
+										<option value="鳥取県">鳥取県</option>
+										<option value="島根県">島根県</option>
+										<option value="岡山県">岡山県</option>
+										<option value="広島県">広島県</option>
+										<option value="山口県">山口県</option>
+										<option value="徳島県">徳島県</option>
+										<option value="香川県">香川県</option>
+										<option value="愛媛県">愛媛県</option>
+										<option value="高知県">高知県</option>
+										<option value="福岡県">福岡県</option>
+										<option value="佐賀県">佐賀県</option>
+										<option value="長崎県">長崎県</option>
+										<option value="熊本県">熊本県</option>
+										<option value="大分県">大分県</option>
+										<option value="宮崎県">宮崎県</option>
+										<option value="鹿児島県">鹿児島県</option>
+										<option value="沖縄県">沖縄県</option>
+									</select>
+								</div>
 								<br />
-								<div><input type="text" id="customer_address1" name="customer_address1" class="validate touch_address" value=""  placeholder="〇〇市〇〇町" /></div>
+								<div>
+									<input type="text" id="customer_address1" name="customer_address1" class="validate touch_address" value=""  placeholder="〇〇市〇〇町" />
+								</div>
 								<br />
 								<input type="text" id="customer_address2" name="customer_address2" class="touch_address" value=""  placeholder="１-２-３　〇〇マンション101" />
 							</li>
-							
+
 							<li class="address_phone">
 								<label for="customer_phone" class="fieldLabel">電話番号</label>
 								<input type="tel" id="customer_phone" name="customer_phone"  maxlength='11' class="validate" placeholder="例）0123456789(ハイフンなし)" />
@@ -492,7 +501,9 @@
 							</li>
 
 							<li class="address_submit">
-								<div><a data-role="button" class="btn_next" onclick="checkValidate();">登録する</a></div>
+								<div>
+									<a data-role="button" class="btn_next" onclick="checkValidate();">登録する</a>
+								</div>
 							</li>
 
 						</ul>
@@ -502,7 +513,7 @@
 			</div>
 
 			<!-- nav -->
-				<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
 				<ul>
 					<li class="tab01">
 						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>

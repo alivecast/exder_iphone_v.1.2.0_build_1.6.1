@@ -8,16 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		0C046615163E37F200349A2A /* iphone.css in Resources */ = {isa = PBXBuildFile; fileRef = 0C046614163E37F200349A2A /* iphone.css */; };
+		0C17F95B1662EF4D00ED997A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2361648AFF1002D2A62 /* Default-568h@2x.png */; };
 		0C17F9681663063F00ED997A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F96A1663063F00ED997A /* Default-568h@2x.png */; };
+		0C17F96C166306D600ED997A /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2341648AFE6002D2A62 /* Default.png */; };
 		0C17F9731663237E00ED997A /* logo_320.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F9721663237E00ED997A /* logo_320.png */; };
-		0C5F449F16842AC60098FA67 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2361648AFF1002D2A62 /* Default-568h@2x.png */; };
-		0C5F44A216842F680098FA67 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B51648C2BE00861CDB /* icon57.png */; };
-		0C5F44A316842F6D0098FA67 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B71648C2C300861CDB /* icon114.png */; };
 		0CAB13B91648C3A300861CDB /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B31648C26600861CDB /* Icon.png */; };
-		0CB2F18D167AE8CE00EC860F /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2341648AFE6002D2A62 /* Default.png */; };
-		0CB2F18E167AE8DC00EC860F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2381648AFFE002D2A62 /* Default@2x.png */; };
+		0CAB13BA1648C3A900861CDB /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B71648C2C300861CDB /* icon114.png */; };
 		0CB58C7E1678CA7900E54D3C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F95E1662F03F00ED997A /* Default.png */; };
+		0CB58C7F1678CA8100E54D3C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C1BF2381648AFFE002D2A62 /* Default@2x.png */; };
 		0CBE5490167966F50016DEBC /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C17F95F1662F03F00ED997A /* Default@2x.png */; };
+		0CF23526164B8B8100628108 /* icon57.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CAB13B51648C2BE00861CDB /* icon57.png */; };
 		48967ABB15084B2800F4D66A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48967ABA15084B2800F4D66A /* Foundation.framework */; };
 		48967ABD15084B2800F4D66A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48967ABC15084B2800F4D66A /* UIKit.framework */; };
 		48967ABF15084B2800F4D66A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48967ABE15084B2800F4D66A /* CoreGraphics.framework */; };
@@ -335,16 +335,16 @@
 				48967B7515084E8A00F4D66A /* www in Resources */,
 				0C046615163E37F200349A2A /* iphone.css in Resources */,
 				0CAB13B91648C3A300861CDB /* Icon.png in Resources */,
+				0CAB13BA1648C3A900861CDB /* icon114.png in Resources */,
+				0CF23526164B8B8100628108 /* icon57.png in Resources */,
 				53613EBD1662A64E000E2CE5 /* InfoPlist.strings in Resources */,
+				0C17F95B1662EF4D00ED997A /* Default-568h@2x.png in Resources */,
 				0C17F9681663063F00ED997A /* Default-568h@2x.png in Resources */,
+				0C17F96C166306D600ED997A /* Default.png in Resources */,
 				0C17F9731663237E00ED997A /* logo_320.png in Resources */,
 				0CB58C7E1678CA7900E54D3C /* Default.png in Resources */,
+				0CB58C7F1678CA8100E54D3C /* Default@2x.png in Resources */,
 				0CBE5490167966F50016DEBC /* Default@2x.png in Resources */,
-				0CB2F18D167AE8CE00EC860F /* Default.png in Resources */,
-				0CB2F18E167AE8DC00EC860F /* Default@2x.png in Resources */,
-				0C5F449F16842AC60098FA67 /* Default-568h@2x.png in Resources */,
-				0C5F44A216842F680098FA67 /* icon57.png in Resources */,
-				0C5F44A316842F6D0098FA67 /* icon114.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,7 +430,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PROVISIONING_PROFILE = "732E7F55-A217-4C9F-89AD-494148FF0F67";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9E7303E8-5A95-4BB6-86B7-A8AC3E01B339";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "732E7F55-A217-4C9F-89AD-494148FF0F67";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -449,8 +449,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				PROVISIONING_PROFILE = "9E7303E8-5A95-4BB6-86B7-A8AC3E01B339";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9E7303E8-5A95-4BB6-86B7-A8AC3E01B339";
+				PROVISIONING_PROFILE = "732E7F55-A217-4C9F-89AD-494148FF0F67";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "732E7F55-A217-4C9F-89AD-494148FF0F67";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
