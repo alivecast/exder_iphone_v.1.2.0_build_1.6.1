@@ -24,12 +24,18 @@
 		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-
+		
 		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
-			var storage = {};
-
+		
+			var storage = {}; 
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
+		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -49,13 +55,12 @@
 			function onDeviceReady() {
 				start(onDeviceReady1);
 			}
-
 			function onDeviceReady1() {
 
 				// 通信確認
-				if (check_network() == 'none') {
+				if (check_network() == 'none'){
 					var show_orders = getLocalStorage("show_orders");
-					if (show_orders == null || show_orders == '') {
+					if(show_orders == null || show_orders == ''){
 						hrefStorageAll('netError.html', storage);
 						// window.location.href = 'netError.html';
 					} else {
@@ -68,13 +73,13 @@
 					onDeviceReady2();
 				}
 			}
-
-			function onDeviceReady2() {
+				
+			function onDeviceReady2(){
 
 				$.ajaxSetup({
 					timeout : 5000
 				});
-
+				
 				// メニューボタン設定 (fixedToolbarsの画面タップによる表示非表示を抑制）
 				$("[data-role=header]").fixedtoolbar({
 					tapToggle : false
@@ -156,12 +161,11 @@
 							}
 						});
 						function settingCallBack() {
-							// window.location.href = 'setting.html';
 							hrefStorageAll('setting.html', storage);
+							// window.location.href = 'setting.html';
 							// エラーの場合、barcode画面からのバックボタンのリンクをsetting.htmlに変更
 							setLocalStorage(storage, 'before', 'setting.html');
 						}
-
 					}
 				}
 
@@ -169,6 +173,23 @@
 
 			// 注文一覧表示
 			function show_order_index(orders) {
+
+				// 購入後のメッセージ
+				var cancelAttention = getLocalStorage('cancelAttention');
+				if (cancelAttention == 'enable') {
+					// confirmバージョン
+					var message = 'ご購入をキャンセルされる場合は、30分以内にお願いいたします。';
+					var title = 'ご注文を受付いたしました。';
+					var button = "OK,次回表示しない";
+					navigator.notification.confirm(message, function(buttonIndex) {
+						if (buttonIndex == 1) {
+							setLocalStorage(storage, 'cancelAttention', '');
+						} else {
+							setLocalStorage(storage, 'cancelAttention', 'disable');
+						}
+					}, title, button);
+				}
+
 
 				// バックボタン設定
 				$("#backb").css("display", "none");
@@ -178,16 +199,33 @@
 				var barcodeParams = getLocalStorage('barcodeParams');
 				// 戻るボタン非表示
 
-				//				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) && before == 'barcode.html') {
+// EDIT 130207
+//				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) && before == 'barcode.html') {
 				var show_item_flg = getLocalStorage('show_item_flg');
 				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) || show_item_flg == 'false') {
 					$("#backb").css("display", "none");
-					// 戻るボタン表示
+					document.addEventListener("backbutton", function() {
+						hrefStorageAll('show_order.html', storage);
+						// window.location.href = 'show_order.html';
+					}, false);
+				// 戻るボタン表示
+// EDIT 130207
+//				} else if (before == 'barcode.html') {
 				} else {
 					$("#backb").attr("href", "barcode.html");
-					$("#backbMoji").html("商品");
-					// 130207
+					$("#backbMoji").html("商品"); // 130207
 					$("#backb").css("display", "block");
+					document.addEventListener("backbutton", function() {
+						hrefStorageAll('barcode.html', storage);
+						// window.location.href = 'barcode.html';
+					}, false);
+/* DEL 130207
+				} else {
+					setLocalStorage(storage, 'show_oreder_flg', 'false');
+					document.addEventListener("backbutton", function() {
+						// window.location.href = 'show_order.html';
+					}, false);
+*/
 				}
 
 				console.log('購入一覧表示:show_order_index:');
@@ -321,20 +359,19 @@
 			// 注文詳細表示
 			function show_order_item(index) {
 				// 通信確認
-				if (check_network() == 'none') {
+				if (check_network() == 'none'){
 					var title = '通信できません';
 					var message = '操作するための情報の取得に失敗しました。しばらくしてから再度操作を行ってください。';
 					navigator.notification.alert(message, showOrderItemAlert, title, 'OK');
 					function showOrderItemAlert() {
 					}
-
 				} else {
 					// 注文詳細表示
 					show_order_item2(index);
 				}
 			}
-
-			function show_order_item2(index) {
+			
+			function show_order_item2(index){
 				// 購入商品表示 true
 				setLocalStorage(storage, 'show_order_flg', 'true');
 				// 購入商品Index保存
@@ -372,13 +409,13 @@
 					console.log('show_order_item:hash: ' + JSON.stringify(hash));
 
 					// 再購入用 商品データ格納
-					var barcodeParams = {
+					var barcodeParams2 = {
 						qr_id : hash.qr_id,
 						order_latitude : 0,
 						order_longitude : 0
 					};
 					// 商品情報へ
-					setLocalStorage(storage, 'barcodeParams', JSON.stringify(barcodeParams));
+					setLocalStorage(storage, 'barcodeParams2', JSON.stringify(barcodeParams2));
 
 					$.ajax({
 						type : "POST",
@@ -414,10 +451,13 @@
 				// 商品詳細値をセット
 				setLocalStorage(storage, 'paramsData', JSON.stringify(params));
 				// バックボタン設定
-				$("#backbMoji").html("戻る");
-				// 130207
+				$("#backbMoji").html("戻る"); // 130207
 				$("#backb").attr("href", "show_order.html").css("display", "none");
 				setLocalStorage(storage, 'show_oreder_flg', 'false');
+				document.addEventListener("backbutton", function() {
+					hrefStorageAll('show_order.html', storage);
+					// window.location.href = 'show_order.html';
+				}, false);
 
 				// キャンセル状況
 				var cancel_sts = '';
@@ -584,24 +624,60 @@
 				$("#tab03").removeClass("current");
 
 				// 紹介用QR_ID生成・保存
-				var qr_id = String(JSON.parse(getLocalStorage('barcodeParams')).qr_id);
+				var qr_id = String(JSON.parse(getLocalStorage('barcodeParams2')).qr_id);
 				new_qr_id = qr_id.substr(0, 18) + '00' + qr_id.substr(20, 2);
 				setLocalStorage(storage, "item_name", params.item_name);
 				setLocalStorage(storage, "qr_id", new_qr_id);
 
 				// 表示フラグ 購入一覧表示: false
 				setLocalStorage(storage, 'show_order_flg', 'false');
-				$("#backbMoji").html("戻る");
-				// 130207
+				// バックボタン設定
+				document.addEventListener("backbutton", function() {
+					hrefStorageAll('show_order.html', storage);
+					// window.location.href = 'show_order.html';
+				}, false);
+				$("#backbMoji").html("戻る"); // 130207
 				$("#backb").css("display", "block");
 			}
-
+/* 130207 DEL
+			// 特商ページ 130201 INS
+			function getProfile() {
+				// 購入詳細表示:true
+				setLocalStorage(storage, 'show_order_flg', 'true');
+				// バックボタン設定
+				document.addEventListener("backbutton", function() {
+					// window.location.href = 'show_order.html';
+				}, false);
+				// 特商情報取得
+				var get = JSON.parse(getLocalStorage('barcodeParams2'));
+				var filename = "http://exorder.jp/products/?page=profile&qr_id=" + String(get.qr_id);
+				// html取得
+				getIndex(filename);
+				function getIndex(filename) {
+					xmlhttp = new XMLHttpRequest();
+					if (xmlhttp) {
+						xmlhttp.onreadystatechange = check;
+						xmlhttp.open("GET", filename);
+						xmlhttp.send(null);
+					}
+				}
+				function check() {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						document.getElementById("htmlProfile").innerHTML = xmlhttp.responseText;
+						$('#loading').css('display', 'none');
+						$('#content').css('display', 'none');
+						$("#show_order_item").css("display", 'none');
+						$("#page_shopProfile").css("display", "block");
+					}
+				}
+			}
+*/
 			// 特商ページ 130207 INS Start
 			function getProfile() {
 				var chNetwork = check_network();
 				if (chNetwork != "none") {
 					// 特商情報取得
-					var get = JSON.parse(getLocalStorage('barcodeParams'));
+					var get = JSON.parse(getLocalStorage('barcodeParams2'));
 					var filename = "http://exorder.jp/products/?page=profile&qr_id=" + String(get.qr_id);
 					// html取得
 					getIndex(filename);
@@ -630,7 +706,6 @@
 
 				}
 			}
-
 			// 特商ページ 130207 INS End
 
 			// キャンセル・再購入
@@ -645,8 +720,7 @@
 					// window.location.href = 'cancel.html';
 					//// window.location.href = 'cancel.html?params=' + paramsText;
 					// 再購入処理
-				}
-				else if (operation == 'repeat') {
+				} else if (operation == 'repeat') {
 					// 商品表示 true
 					setLocalStorage(storage, 'show_item_flg', 'true');
 					// 保存した数量の初期化フラグ true:初期化
@@ -655,6 +729,9 @@
 					setLocalStorage(storage, 'show_item_params', '');
 					// 購入商品表示 true
 					setLocalStorage(storage, 'show_order_flg', 'true');
+					// 商品情報の引き渡し 130208
+					var barcodeParams = getLocalStorage('barcodeParams2');
+					setLocalStorage(storage, 'barcodeParams', barcodeParams);
 					// リダイレクト
 					hrefStorageAll('barcode.html', storage);
 					// window.location.href = 'barcode.html';
@@ -674,10 +751,9 @@
 				hrefStorageAll('show_order.html', storage);
 				// window.location.href = 'show_order.html';
 			}
-
+			
 			// 特商から購入商品へ戻る
-			function pageItem() {
-				alert('backb');
+			function pageItem(){
 				setLocalStorage(storage, 'show_order_flg', 'true');
 				hrefStorageAll('show_order.html', storage);
 				// window.location.href = 'show_order.html';

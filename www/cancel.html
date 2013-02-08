@@ -28,6 +28,11 @@
         <script type="text/javascript">
         
         	var storage = {};
+        	$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
 
 			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);
@@ -114,11 +119,9 @@
 					getLocalStorage('qr_id');
 					getLocalStorage('item_version');
 					hrefStorageAll('show_order.html', storage);
-					//window.location.href="show_order.html";
-					//networkERR = 'show_order_item.html?order_id=' + order_id + '&qr_id=' + qr_id + '&item_version=' + item_version;
 				}
 				function successCallBack() {
-					networkERR = 'show_order.html';
+					hrefStorageAll('show_order.html', storage);
 				}
 		}
 

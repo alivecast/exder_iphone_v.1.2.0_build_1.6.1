@@ -22,12 +22,15 @@
 		<script type="text/javascript" charset="utf-8" src="js/calenderPlus.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
-		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
 		
 			var storage = {};
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
 		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -71,6 +74,12 @@
 				});
 
 				$('#loading').css('display', 'block');
+
+				// INS 130208 リダイレクト先
+				var purchased_item_flg = getLocalStorage('purchased_item_flg'); // オーダー処理中かどうか
+				if (purchased_item_flg == 'ordered'){
+					$("#submMoji").text("購入する");
+				}
 
 				// 戻るURLの初期設定
 				var before = getLocalStorage('before');
@@ -118,11 +127,10 @@
 				var scdText = getLocalStorage('scd');
 				var scd = JSON.parse(scdText);
 				if(scd){
-					$('#card_company').val(scd.card_company).selectmenu('refresh', true);;
+					$('#card_company').val(scd.card_company).selectmenu('refresh', true);
 					$('#card_holder').val(scd.card_holder);
 					$('#card_number').val(scd.card_number);
-					$('#year').val(scd.year).selectmenu('refresh', true);;
-					$('#month').val(scd.month).selectmenu('refresh', true);;
+					$('#card_validity').val(scd.card_validity);
 					$('#card_security_code').val(scd.card_security_code);
 				}
 
@@ -166,14 +174,8 @@
 					$("#card_number").parent().append("<p class='error'>カード番号を正しく入力してください。</p>");
 				}
 				//有効期限のチェック
-				var year = String($("#year").val());
-				var month = String($("#month").val());
-				if(parseInt($("#month").val()) < 10){
-					month = '0' + String($("#month").val());
-				}
-				var card_validity= String($("#year").val()) + '-' + month;
-				if (card_validity != "" && String($("#year").val()) != "" && month != "") {
-					var vDate = card_validity;
+				if (!$("#card_validity").val() == "") {
+					var vDate = String($('#card_validity').val());
 					var vYear = vDate.substring(0, 4);
 					var vMonth = vDate.substring(5, 8);
 					var date = new Date(vYear, vMonth, 0);
@@ -184,10 +186,10 @@
 					var nowDate = String(today.getFullYear()) + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()) + ' 23:59:59';
 					var nowTime = Date.parse(nowDate.replace(/-/g, '/')) / 1000;
 					if (validityTime < nowTime) {
-						$("#cardValidity").parent().append("<p class='error'>カード有効期限が過ぎています</p>");
+						$("#card_validity").parent().append("<p class='error'>カード有効期限が過ぎています</p>");
 					}
 				} else {
-					$("#cardValidity").parent().append("<p class='error'>カード有効期限を入力してください</p>");
+					$("#card_validity").parent().append("<p class='error'>カード有効期限を入力してください</p>");
 				}
 
 				//セキュリティコードのチェック
@@ -232,7 +234,7 @@
 					if(parseInt($("#month").val()) < 10){
 						month = '0' + String($("#month").val());
 					}
-					ordering['card_validity'] = String($("#year").val()) + '-' + month;
+					ordering['card_validity'] = $("#card_validity").val();
 					ordering['card_holder']   = $("#card_holder").val();
 					ordering['card_security_code'] = $("#card_security_code").val();
 
@@ -279,8 +281,7 @@
 					card_company: $('#card_company').val(),
 					card_holder: $('#card_holder').val(),
 					card_number: $('#card_number').val(),
-					year: $('#year').val(),
-					month: $('#month').val(),
+					card_validity: $('#card_validity').val(),
 					card_security_code: $('#card_security_code').val()
 				}
 				setLocalStorage(storage, 'scd', JSON.stringify(scd));
@@ -373,7 +374,6 @@
 					<input type="hidden" id="customer_id" name="customer_id" value=""/>
 					<input type="hidden" id="customer_key" name="customer_key" />
 					<input type="hidden" id="customer_pass" name="customer_pass" />
-					<input type="hidden" id="card_validity" name="card_validity" value	="" placeholder="例）2016-10" />
 					<input type="hidden" id="iv" name="iv" />
 
 					<input type="hidden" id="kbn" name="kbn" />
@@ -420,23 +420,8 @@
 							</li>
 
 							<li class="card_limit">
-								<!--
-									<label for="card_validity" class="fieldLabel">有効期限(年月)</label>
-									<input style="width:100px;" type="month" id="card_validity" name="card_validity" value	="" placeholder="例）2016-10" />
-								-->
-								<fieldset id="cardValidity" data-role="controlgroup" data-type="horizontal">
-									<legend>有効期限(年月)</legend>
-									<label for="year">年</label>
-									<select name="year" id="year">
-										<option value="">年</option>
-										<option value=""></option>
-									</select>
-									<label for="month">月</label>
-									<select name="month" id="month">
-										<option value="">月</option>
-										<option value=""></option>
-									</select>
-								</fieldset>
+								<label for="card_validity" class="fieldLabel">有効期限(年月)</label>
+								<input style="width:100px;" type="month" id="card_validity" name="card_validity" value="" placeholder="例）2016-10" />
 							</li>
 
 							<li class="card_sCode">
@@ -453,7 +438,7 @@
 
 							<li class="item_buy_1btn btn_txt_ow">
 								<div>
-								<a class="btn_next" data-role="button" onClick="checkValidate();">登録する</a>
+								<a class="btn_next" data-role="button" onClick="checkValidate();"><span id="submMoji">登録する</span></a>
 								</div>
 								<!-- <input type="submit" class="btn_next" value="登録する"/> -->
 							</li>

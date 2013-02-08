@@ -13,6 +13,7 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/android.css" type="text/css" />
 		<link rel="stylesheet" href="css/validate.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
@@ -25,12 +26,15 @@
 		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
-		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
 		
 			var storage = {};
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
 		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -74,6 +78,7 @@
 				// 戻るURLの初期設定
 				var before = getLocalStorage('before');
 				$("#backb").attr("href", 'addressee_index.html');
+
 				// メニューボタン設定
 				$("[data-role=header]").fixedtoolbar({ tapToggle: false });
 				$("[data-role=footer]").fixedtoolbar({ tapToggle: false });
@@ -332,9 +337,18 @@
 							var address_id = data.address_id;
 							// passTime更新
 							setLocalStorage(storage, 'passTime', parseInt(new Date() / 1000));
+
+							// INS 130208 リダイレクト先
+							var show_item_flg      = getLocalStorage('show_item_flg');  // 商品情報があるかどうか
+							var purchased_item_flg = getLocalStorage('purchased_item_flg'); // オーダー処理中かどうか
 							// リダイレクト
-							hrefStorageAll('addressee_index.html', storage);
-							// window.location.href = "addressee_index.html";
+							if (show_item_flg == 'true' && purchased_item_flg != 'ordered'){
+								hrefStorageAll('barcode.html', storage);
+								// window.location.href = "barcode.html";
+							}else{
+								hrefStorageAll('addressee_index.html', storage);
+								// window.location.href = "addressee_index.html";
+							}
 						},
 						error : function() {
 							networkERR(alertCallBack, 'お届け先は登録できませんでした');
@@ -346,7 +360,6 @@
 
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
-				hrefStorageAll('barcode.html', storage);
 				// // window.location.href = 'barcode.html';
 				location.reload(true);
 			}

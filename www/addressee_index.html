@@ -13,6 +13,8 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/android.css" type="text/css" />
+		<link rel="stylesheet" href="css/validate.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
@@ -24,12 +26,15 @@
 		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
-		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
 		
 			var storage = {};
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
 		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -53,11 +58,11 @@
 					var chSetting = getLocalStorage('chSetting');
 					if(chSetting == null || chSetting == ''){
 						hrefStorageAll('netError.html', storage);
-						// window.location.href = 'netError.html';
+						// window.// location.href = 'netError.html';
 					} else {
 						// とりあえず表示だけする
 						hrefStorageAll('setting.html', storage);
-						// window.location.href = 'setting.html';
+						// window.// location.href = 'setting.html';
 					}
 				} else {
 					// 通信出来る
@@ -97,10 +102,17 @@
 					$("#kbn").val(get['kbn']);
 					if (get['kbn'] == "buy") {
 						setLocalStorage(storage, 'kbn', 'buy');
-			//			$("#backb").attr("href", "ordering_new.html");
-			//			$("#tab3a").attr("href", "order.html");
 					}
 				}
+
+				// INS 130208 リダイレクト先
+				var show_item_flg      = getLocalStorage('show_item_flg');  // 商品情報があるかどうか
+				var purchased_item_flg = getLocalStorage('purchased_item_flg'); // オーダー処理中かどうか
+				if (show_item_flg == 'true' && purchased_item_flg != 'ordered'){
+					$("#backb").attr("href", "barcode.html");
+				}
+
+
 				onReadyFile();
 			}
 
@@ -117,7 +129,8 @@
 
 			function onGetOrderingNG() {
 				console.log("err : ordering NO");
-				location.href = "index.html";
+				hrefStorageAll('index.html', storage);
+				// window.// location.href = "index.html";
 				return false;
 			}
 
@@ -292,49 +305,60 @@
 
 				if (area == 1) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id1").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id1").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id1").val()+rekbn;
 				} else if (area == 2) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id2").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id2").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id2").val()+rekbn;
 				} else if (area == 3) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id3").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id3").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id3").val()+rekbn;
 				} else if (area == 4) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id4").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id4").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id4").val()+rekbn;
 				} else if (area == 5) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id5").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id5").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id5").val()+rekbn;
 				} else if (area == 6) {
 					setLocalStorage(storage, 'id', $("#adr_id6").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id6").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id6").val()+rekbn;
 				} else if (area == 7) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id7").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id7").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id7").val()+rekbn;
 				} else if (area == 8) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id8").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id8").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id8").val()+rekbn;
 				} else if (area == 9) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id9").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id9").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id9").val()+rekbn;
 				} else if (area == 10) {
 					setLocalStorage(storage, 'adr_id', $("#adr_id10").val());
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id="+$("#adr_id10").val()+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id="+$("#adr_id10").val()+rekbn;
 
 				} else {
 					setLocalStorage(storage, 'adr_id', 0);
-					location.href = "addressee_new.html";
-					//location.href="addressee_new.html?id=0"+rekbn;
+					hrefStorageAll('addressee_new.html', storage);
+					// location.href = "addressee_new.html";
+					//// location.href="addressee_new.html?id=0"+rekbn;
 				}
 			}
 			
@@ -342,14 +366,14 @@
 			function chShowItemFlg() {
 				setLocalStorage(storage, 'show_item_flg', 'false');
 				hrefStorageAll('barcode.html', storage);
-				// window.location.href = 'barcode.html';
+				// window.// location.href = 'barcode.html';
 			}
 
 			// navバーの購入履歴選択で画面表示フラグを切り替え
 			function chShowOrderFlg() {
 				setLocalStorage(storage, 'show_order_flg', 'false');
 				hrefStorageAll('show_order.html', storage);
-				// window.location.href = 'show_order.html';
+				// window.// location.href = 'show_order.html';
 			}
 
 		</script>

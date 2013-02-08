@@ -25,13 +25,16 @@
 		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
-		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
 		
-			var storage = {}; 
-		
+			var storage = {};
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
+			
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -51,11 +54,11 @@
 				if (check_network() == 'none'){
 					var chSetting = getLocalStorage('chSetting');
 					if(chSetting == null || chSetting == ''){
-						hrefStorageAll('netError.html', storage); 
+						hrefStorageAll('netError.html', storage);
 						// window.location.href = 'netError.html';
 					} else {
 						// とりあえず表示だけする
-						hrefStorageAll('setting.html', storage); 
+						hrefStorageAll('setting.html', storage);
 						// window.location.href = 'setting.html';
 					}
 				} else {
@@ -69,28 +72,17 @@
 				// バックボタン設定
 				setLocalStorage(storage, 'before', 'contact.html');
 				$('backb').attr('href', 'barcode.html');
-				document.addEventListener("backbutton", function() {
-					hrefStorageAll('barcode.html', storage); 
-					// window.location.href = 'barcode.html';
-				}, false);
 				
 				// メニューボタン設定 (fixedToolbarsの画面タップによる表示非表示を抑制）
 				$("[data-role=header]").fixedtoolbar({ tapToggle: false });
 				$("[data-role=footer]").fixedtoolbar({ tapToggle: false });
 				$('#nav').css('display', 'block');
-				document.addEventListener("menubutton", function(){
-					if ($('#nav').is(':visible')) {
-						$('#nav').css('display', 'none');
-					} else {
-						$('#nav').css('display', 'block');
-					}
-				}, false);
 
 				// 設定ファイルの読み込み
 				getFile('ordering', getonOrderingOK, getonOrderingNG);
 
 				function getonOrderingNG() {
-					hrefStorageAll('index.html', storage); 
+					hrefStorageAll('index.html', storage);
 					// window.location.href = "index.html";
 				}
 				function getonOrderingOK(ordering) {
@@ -223,21 +215,21 @@
 
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
-				hrefStorageAll('show_order.html', storage); 
-				// window.location.href = 'show_order.html';
+				hrefStorageAll('barcode.html', storage);
+				// window.location.href = 'barcode.html';
 			}
 			
 			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
 			function chShowItemFlg() {
 				setLocalStorage(storage, 'show_item_flg', 'false');
-				hrefStorageAll('barcode.html', storage); 
+				hrefStorageAll('barcode.html', storage);
 				// window.location.href = 'barcode.html';
 			}
 			
 			// navバーの購入履歴選択で画面表示フラグを切り替え
 			function chShowOrderFlg() {
 				setLocalStorage(storage, 'show_order_flg', 'false');
-				hrefStorageAll('show_order.html', storage); 
+				hrefStorageAll('show_order.html', storage);
 				// window.location.href = 'show_order.html';
 			}
 			

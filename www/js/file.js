@@ -74,16 +74,9 @@ function getLocalStorage(fname) {
 }
 
 function setLocalStorage(obj, fname, value) {
+    obj[fname] = value;
 	window.localStorage.removeItem(fname);
 	window.localStorage.setItem(fname, value);
-	obj[fname] = value;
-	// setFile('storage', obj, setStorageOK, setStorageNG);
-	// function setStorageOK(){
-		// console.log('setStorageAll OK');
-	// }
-	// function setStorageNG(){
-		// console.log('setStorageAll NG');
-	// }
 }
 
 function remLocalStorage(fname) {

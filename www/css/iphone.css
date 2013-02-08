@@ -1219,43 +1219,6 @@ button.btn_next {
 
 
 
-
-/* ---/　販売者概要
-----------------------------------*/
-#page_shopProfile {
-}
-
-#page_shopProfile h1 {
-	font-size:16px;
-	padding:.2em 0;/* 文字サイズを小さくしたのでhesderの高さ確保 */
-}
-
-.cont_shopProfile dt {
-	background-color:#E5EBE3;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#DADADE), color-stop(90%, #E4E4E7), to(#E5E5E8));
-	background-image: -webkit-linear-gradient(top, #DADADE 0%, #E4E4E7 90%, #E5E5E8 100%);
-	background-image: -moz-linear-gradient(top, #DADADE 0%, #E4E4E7 90%, #E5E5E8 100%);
-	background-image: -ms-linear-gradient(top, #DADADE 0%, #E4E4E7 90%, #E5E5E8 100%);
-	background-image: linear-gradient(top, #DADADE 0%, #E4E4E7 90%, #E5E5E8 100%);
-	
-	border-top:#B2B2BB 1px solid;
-	border-bottom:#B2B2BB 1px solid;
-	
-	color:#31412F;
-	padding:3px 10px;
-	text-shadow: 1px 1px 0 #FFF;
-	
-	-webkit-box-shadow: 0 1px 1px #FFF inset;
-	box-shadow: 0 1px 1px #FFF inset;
-}
-
-
-.cont_shopProfile dd {
-	padding:5px 10px;
-	font-size:14px;
-}
-
-
 /* ---/　販売者への問い合わせ
 ----------------------------------*/
 .shop_contact .txt {
@@ -2218,7 +2181,22 @@ input#customer_mail {
 	background-image: linear-gradient(#F6F6F6,#E0E0E0);
 }
 
+/*ローディング画像を中央に寄せる*/
+.square {
+	width:1px;
+	height:1px;
+	margin:55px auto 0;
+}
 
+/*特定商取引*/
+#page_shopProfile {
+	padding:56px 0 64px;
+}
+
+/*送料*/
+#page_shopShipping {
+	padding:56px 0 64px;
+}
 
 /* ------------------------------------------/
 　

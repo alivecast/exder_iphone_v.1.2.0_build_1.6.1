@@ -13,6 +13,7 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/android.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
@@ -28,8 +29,13 @@
 
 		<script type="text/javascript">
 		
-			var storage = {};
-		
+			var storage = {}; 
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
+			
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -58,25 +64,46 @@
 				// 商品情報の有無で戻るボタンを表示・非表示
 				var barcodeParams = getLocalStorage('barcodeParams');
 				// 戻るボタン非表示
+// EDIT 130207 
+//				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) && before == 'barcode.html') {
 				var show_item_flg = getLocalStorage('show_item_flg');
 				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) || show_item_flg == 'false') {
+					// 商品ない場合は、購入フラグも削除 130208 INS
+					setLocalStorage(storage, 'purchased_item_flg', '');
 					$("#backb").css("display", "none");
+					document.addEventListener("backbutton", function() {
+						hrefStorageAll('setting.html', storage);
+						// window.location.href = 'setting.html';
+					}, false);
 				// 戻るボタン表示
+// EDIT 130207 
+//				} else if (before == 'barcode.html') {
 				} else {
 					$("#backb").attr("href", "barcode.html");
 					$("#backb").css("display", "block");
+/* DEL 130207 
+				} else {
+					$("#backb").attr("href", "setting.html");
+					$("#backb").css("display", "none");
+					document.addEventListener("backbutton", function() {
+						// window.location.href = 'setting.html';
+					}, false);
+*/
 				}
 
 				$.ajaxSetup({
 					timeout : 3000
 				});
 
+
 				// 時間経過の判定
 				console.log('passTime:judge');
 				var passTime = parseInt(getLocalStorage('passTime'));
 				var nowTime = parseInt(new Date() / 1000);
 				var overTime = 60 * 60;
-
+// EDIT 130206 EDIT 
+//				if (nowTime - passTime > overTime && inputedPass == 'false') {
+//				if (nowTime - passTime > overTime) {
 				// オーダーがあるときのみ、チェック 130207 EDIT
 				var purchased_item_flg = getLocalStorage('purchased_item_flg');
 				if (purchased_item_flg == 'ordered' && nowTime - passTime > overTime) {
@@ -236,6 +263,10 @@
 						});
 					}
 				}
+
+//  130208 INS Start
+				$("#header").css("display", "block");
+
 			}
 
 			// 設定画面表示
@@ -246,6 +277,13 @@
 					tapToggle : false
 				});
 				$('#nav').css('display', 'block');
+				document.addEventListener("menubutton", function() {
+					if ($('#nav').is(':visible')) {
+						$('#nav').css('display', 'none');
+					} else {
+						$('#nav').css('display', 'block');
+					}
+				}, false);
 
 				// 個人情報の設定
 				if (data.password_ck == 1) {
@@ -300,22 +338,48 @@
 				var passTime = parseInt(getLocalStorage('passTime'));
 				var nowTime = parseInt(new Date() / 1000);
 				var overTime = 60 * 60;
-
+/* EDIT 130206 DEL
+				// 判定
+				if (nowTime - passTime > overTime && inputPasscode == 'true' && inputedPass == 'false') {
+					// 暗証番号入力する
+					$("#popupForm").trigger('click');
+				} else {
+					// 暗証番号入力しない inputPasscode:false
+					if (nowTime - passTime > overTime && inputedPass == 'false') {
+						// 前回操作から時間が経過 + 暗証番号入力していない
+						// 暗証番号入力する
+						$("#popupForm").trigger('click');
+					} else {
+						// 前回操作から時間が経過していない || 前回操作から時間が経過 + 暗証番号入力済み
+						var purchased_item_flg = getLocalStorage('purchased_item_flg');
+						if (purchased_item_flg == 'ordered') {
+							order2();
+						}
+					}
+				}
+*/
+// EDIT 130207 INS Start 丸ごと入れ替えで オーダーの時しか、この処理に来ない為
 				// 判定
 				if (inputPasscode == 'true') {
 					// 暗証番号入力する
 					if (nowTime - passTime > overTime) {
 						// 前回操作から時間が経過 + 暗証番号入力していない
 						// 暗証番号入力する
+
 						$("#popupForm").trigger('click');
+						$("#customer_pass").focus();
 					} else {
 						// 前回操作から時間が経過していない || 前回操作から時間が経過 + 暗証番号入力済み
-						order2();
+							order2();
 					}
 				} else {
 					// 暗証番号入力しない inputPasscode:false
-					order2();
+						order2();
 				}
+// EDIT 130207 INS End
+
+				// 設定画面表示
+			//	showSettingMenu(data);
 			}
 
 			// 注文処理
@@ -347,6 +411,7 @@
 					// 注文情報をサーバに送信
 					setOrder(order_params);
 				}
+
 			}// order2
 
 			// サーバー通信を行い値を設定を行なう
@@ -407,36 +472,60 @@
 			// 注文完了メッセージ
 			function okOrder() {
 				var cancelAttention = getLocalStorage('cancelAttention');
+				if (cancelAttention == '') {
+					setLocalStorage(storage, 'cancelAttention', 'enable');
+				}
+					// 購入ボタンのクリックフラグをリセット
+					setLocalStorage(storage, 'purchased_item_flg', '');
+					setLocalStorage(storage, 'kbn', '');
+					// 購入履歴表示
+					setLocalStorage(storage, 'show_order_flg', 'false');
+					delFile('barcodeParams');
+					setLocalStorage(storage, 'show_item_flg', 'false');
+
+					// 注文情報の初期化
+					initOrderInfo();
+					
+					hrefStorageAll('show_order.html', storage);
+			}
+/*
+			// 注文完了メッセージ
+			function okOrder() {
+				var cancelAttention = getLocalStorage('cancelAttention');
 				if (cancelAttention == 'enable') {
 					// confirmバージョン
 					var message = 'ご購入をキャンセルされる場合は、30分以内にお願いいたします。';
-					var title   = 'ご注文を受付いたしました。';
-					var button  = "OK,次回表示しない";
+					var title = 'ご注文を受付いたしました。';
+					var button = "OK,次回表示しない";
 					navigator.notification.confirm(message, function(buttonIndex) {
 						if (buttonIndex == 1) {
 							setLocalStorage(storage, 'cancelAttention', 'enable');
+							afterConfirm();
 						} else {
 							setLocalStorage(storage, 'cancelAttention', 'disable');
+							afterConfirm();
 						}
 					}, title, button);
+				} else {
+					afterConfirm();
 				}
-				// 購入ボタンのクリックフラグをリセット
-				setLocalStorage(storage, 'purchased_item_flg', '');
-				setLocalStorage(storage, 'kbn', '');
-				// 注文情報の初期化
-				initOrderInfo();
-				// 購入履歴表示
-				setLocalStorage(storage, 'show_order_flg', 'false');
-
-				// 130207 INS Start 商品情報削除
-				delFile('barcodeParams');
-				setLocalStorage(storage, 'show_item_flg', 'false');
-				// 130207 INS END
-
-				// window.location.href = 'show_order.html';
-				hrefStorageAll('show_order.html', storage);
+				function afterConfirm(){
+					// 購入ボタンのクリックフラグをリセット
+					setLocalStorage(storage, 'purchased_item_flg', '');
+					setLocalStorage(storage, 'kbn', '');
+					// 注文情報の初期化
+					initOrderInfo();
+					// 購入履歴表示
+					setLocalStorage(storage, 'show_order_flg', 'false');
+					// 130207 INS Start 商品情報削除
+					delFile('barcodeParams');
+					setLocalStorage(storage, 'show_item_flg', 'false');
+					// 130207 INS END
+					hrefStorageAll('show_order.html', storage);
+					// window.location.href = 'show_order.html';
+				}
 			}
-
+*/
 			// 暗証番号のチェック
 			function eqPass() {
 				// 設定の読み込み
@@ -459,6 +548,7 @@
 							$("#customer_pass").val('');
 						}, title, button);
 						return false;
+
 						// 入力値が合っている
 					} else {
 						// passTime更新
@@ -466,21 +556,25 @@
 						// 商品情報の有無 ordered:商品詳細画面で購入ボタンが押された
 						var purchased_item_flg = getLocalStorage('purchased_item_flg');
 						if (purchased_item_flg == 'ordered') {
+							$('.ui-dialog').dialog('close');  // ダイアログを閉じる
 							// 注文処理へ
 							order2();
 						} else {
 							// 飛び先の読出し 130207 INS
+							$('.ui-dialog').dialog('close');  // ダイアログを閉じる
 							var settingHref = getLocalStorage('settingHref');
-							if( settingHref != Null && settingHref != '' ){
-								hrefStorageAll(settingHref, storage);
-								// window.location.href = settingHref;
+							if( settingHref != null && settingHref != '' && settingHref == 'addressee_index'){
+								hrefStorageAll('addressee_index.html', storage);
+									// window.location.href = 'addressee_index.html';
 							}else{
-								hrefStorageAll('setting.html', storage);
-								// window.location.href = 'setting.html';
+								hrefStorageAll('ordering_new.html', storage);
+									// window.location.href = 'ordering_new.html';
 							}
+
 						}
 					}
 				}
+
 			}//eqPass
 
 			// カード情報エラー
@@ -503,7 +597,9 @@
 					function initBackAmount() {
 						console.log('finish initOrderInfo');
 					}
+
 				}
+
 			}
 
 			// setting.htmlへ
@@ -540,17 +636,16 @@
 					if (nowTime - passTime > overTime) {
 						// 前回操作から時間が経過 + 暗証番号入力していない
 						// 暗証番号入力する
-						// 飛び先設定
-						setLocalStorage(storage, 'settingHref', 'ordering_new.html');
-						$("#btnOrder").text('ＯＫ');
+						setLocalStorage(storage, 'settingHref', 'ordering_new'); // 飛び先設定
+						$("#btnOrderMoji").text('　ＯＫ　');
 						$("#popupForm").trigger('click');
-					} else {
+					}else{
 						hrefStorageAll('ordering_new.html', storage);
 						// window.location.href = 'ordering_new.html';
 					}
-				} else {
+				}else{
 					hrefStorageAll('ordering_new.html', storage);
-					// window.location.href = 'ordering_new.html';
+						// window.location.href = 'ordering_new.html';
 				}
 			}
 
@@ -568,21 +663,20 @@
 					if (nowTime - passTime > overTime) {
 						// 前回操作から時間が経過 + 暗証番号入力していない
 						// 暗証番号入力する
-						// 飛び先設定
-						setLocalStorage(storage, 'settingHref', 'addressee_index.html');
-						$("#btnOrder").text('ＯＫ');
+						setLocalStorage(storage, 'settingHref', 'addressee_index'); // 飛び先設定
+						$("#btnOrderMoji").text('　ＯＫ　');
 						$("#popupForm").trigger('click');
-					} else {
+					}else{
 						hrefStorageAll('addressee_index.html', storage);
 						// window.location.href = 'addressee_index.html';
 					}
-				} else {
+				}else{
 					hrefStorageAll('addressee_index.html', storage);
-					// window.location.href = 'addressee_index.html';
+						// window.location.href = 'addressee_index.html';
 				}
 			}
 
-			//setLocalStorage(storage, 'page', 'tr_android.html');
+			setLocalStorage(storage, 'page', 'tr_android.html');
 		</script>
 	</head>
 
@@ -590,7 +684,7 @@
 
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
 
-			<div data-role="header" id="header" data-position="fixed">
+			<div data-role="header" id="header" data-position="fixed" style="display:none;">
 				<h1>設定</h1>
 				<a id="backb" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false" style="display: none;">商品</a>
 				<a href="website.html" class="ui-btn-right" data-icon="info" data-ajax="false">使い方</a>
@@ -652,7 +746,7 @@
 
 					<li id="ordering_ok" style="display:none;">
 <!-- 130207 DEL
-						<a data-ajax="false" href="#" onClick="location.href='ordering_new.html'"> <span class="ico_check"><img id="ico1" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;"/></span> <span class="tl"> 利用者情報 </span> </a>
+						<a data-ajax="false" href="#" onClick="// location.href='ordering_new.html'"> <span class="ico_check"><img id="ico1" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;"/></span> <span class="tl"> 利用者情報 </span> </a>
  130207 INS -->
 						<a data-ajax="false" href="#" onClick="onClickOrdring();"> <span class="ico_check"><img id="ico1" src="images/speedorder/ico_check_r.png" width="16" height="15" alt="" style="display:none;"/></span> <span class="tl"> 利用者情報 </span> </a>
 					</li>
@@ -683,7 +777,10 @@
 
 					<!-- 暗証番号入力 -->
 					<li style="display: none;">
+						<a id="popupForm" href="#popupLogin" data-rel="dialog" data-transition="pop">　</a>
+<!-- DEL 130208
 						<a id="popupForm" href="#popupLogin" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop">a</a>
+
 						<div data-role="popup" data-overlay-theme="a" data-theme="a" id="popupLogin" class="ui-corner-all" style="max-width:480px;">
 							<div class="page_description">
 								<div class="txt">
@@ -694,24 +791,22 @@
 								<input type="hidden" id="customer_passT" name="customer_passT" value=""/>
 
 								<div data-role="fieldcontain" style="padding: 10px;">
+
 									<label for="customer_pass" class="fieldLabel">暗証番号<span class="form_note">(数字4～16桁)</span></label>
 									<input type="password" autocomplete="off" id="customer_pass" name="customer_pass" value="" maxlength=16 placeholder="数字4～16桁" />
-
 									<div data-role="content" data-theme="a" class="ui-corner-bottom ui-content" style="margin-top: 10px;">
-										<a href="#" data-role="button" data-inline="true" data-transition="flow" data-theme="b" id="btnOrder" class="btn_next" onclick="eqPass();">購入する</a>
-<!-- 130208 DEL
+										<a href="#" data-role="button" data-inline="true" data-transition="flow" data-theme="b" id="btnOrder" class="btn_next" onclick="eqPass();"><span id="btnOrderMoji">購入する</span></a>
 										<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c" id="popupClose">閉じる</a>
- 130218 INS -->
-										<a href="#" data-ajax="false" data-role="button" data-inline="true" data-theme="c" id="popupClose">閉じる</a>
+
 									</div>
 
-									<div class="txt" style="margin-top: 40px;">
+									<div class="txt" style="margin-top: 30px;">
 										<a href="passcode_hint.html" data-ajax="false">暗証番号を忘れた方はコチラ</a>
 									</div>
-
 								</div>
 							</div>
 						</div>
+-->
 					</li>
 
 				</ul>
@@ -732,7 +827,20 @@
 					</li>
 				</ul>
 			</div><!-- /dr-footer -->
+		</div>
 
+		<!-- 暗証番号 130208 TEST -->
+		<div id="popupLogin" data-role="page" data-theme="b">
+			<!-- コンテンツここから-->
+			<div data-role="content">
+				<p>操作を続けるには、暗証番号を入力してください</p>
+				<input type="password" autocomplete="off" id="customer_pass" name="customer_pass" value="" maxlength=16 placeholder="暗証番号を入力" autofocus="autofocus" />
+				<a href="#" data-role="button" data-inline="true" data-transition="flow" data-theme="b" id="btnOrder" class="btn_next" onclick="eqPass();"><span id="btnOrderMoji">購入する</span></a>
+				<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c" id="popupClose" onclick="javascript:setLocalStorage(storage, 'purchased_item_flg', '');">閉じる</a>
+				<div class="txt" style="margin-top: 30px;">
+					<p><a href="passcode_hint.html" data-ajax="false">暗証番号を忘れた方はコチラ</a><p>
+				</div>
+			</div>
 		</div>
 
 	</body>

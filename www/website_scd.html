@@ -29,6 +29,11 @@
 		<script type="text/javascript">
 		
 			storage = {};
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
             
 			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);

@@ -29,6 +29,11 @@
 		<script type="text/javascript">
 		
 			var storage = {};
+			$(function(){
+				$("a").on("click", function(){
+					setStorageAll(storage);
+				});
+			});
             
 			$(document).ready(function() {
 				console.log('documentReady');
