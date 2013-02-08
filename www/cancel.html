@@ -3,7 +3,7 @@
 	<head>
 		<title></title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta charset="utf-8">
 
 		<!-- iPad/iPhone specific css below, add after your main css >
@@ -13,34 +13,46 @@
 		
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
-		
+		<link rel="stylesheet" href="css/android.css" type="text/css" />
+
         <script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-		<script src="js/jquery.activity-indicator-1.0.0.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-        <script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-        
+        <script type="text/javascript" charset="utf-8" src="js/file.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
+        <script type="text/javascript" src="js/spin.min.js" ></script>
         <script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
         
         <script type="text/javascript">
+        
+        	var storage = {};
 
 			$(document).ready(function(){
-				
-				$.ajaxSetup({
-					timeout: 5000
-				});
-				
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			// 設定ファイルの読み込み
 			function onDeviceReady() {
+				start(onDeviceReady1);
+			}
+			function onDeviceReady1() {
+				
+				$.ajaxSetup({
+					timeout: 5000
+				});
+				
 				console.log("Cansel Start");
 				getonOrdering(cancelMain);
 
 				function cancelMain(ordering){
 					// GETでJSON取得
-					var get = getQuery();
+					//var get = getQuery();
+					var params = getLocalStorage('params');
+					var get = {
+						params: params
+					}
 					console.log("Cansel params: " + JSON.stringify(get.params));
 					
 					var hash = JSON.parse(get.params);
@@ -60,7 +72,6 @@
 						url: ordering.url,
 						http: ordering.http,
 						https: ordering.https
-
 					};
                     console.log("Cansel POST Start");
 					$.ajax({
@@ -84,27 +95,30 @@
 									var button = 'OK';
 									navigator.notification.alert(message, successCallBack(), title, button);
 								}else{
-									networdERR(successCallBack,'キャンセル出来ませんでした');
+									networkERR(successCallBack,'キャンセル出来ませんでした');
 								}
 							}
-
 						},
 						error: function(){
                            console.log("Cansel POST ERR");
-							networdERR(successCallBack,'キャンセル出来ませんでした');
+							networkERR(successCallBack,'キャンセル出来ませんでした');
 //							return false;
-						},
-						timeout: 5000
+						}
 					});
 				}
 
 
 				// alertCallBack -----------------------------------------------------------------------
 				function alertCallBack() {
-					window.location.href = 'show_order_item.html?order_id=' + order_id + '&qr_id=' + qr_id + '&item_version=' + item_version;
+					getLocalStorage('order_id');
+					getLocalStorage('qr_id');
+					getLocalStorage('item_version');
+					hrefStorageAll('show_order.html', storage);
+					//window.location.href="show_order.html";
+					//networkERR = 'show_order_item.html?order_id=' + order_id + '&qr_id=' + qr_id + '&item_version=' + item_version;
 				}
 				function successCallBack() {
-					window.location.href = 'show_order.html';
+					networkERR = 'show_order.html';
 				}
 		}
 
@@ -118,6 +132,7 @@
 				<h1></h1>
 			</div>
 			<!-- loading -->
+
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
 					<p>
@@ -125,22 +140,30 @@
 					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
-						$(function() {
-							$('#loadingImg').activity({
-								segments : 12,
-								width : 6,
-								space : 3,
-								length : 20,
-								color : '#FFFFFF',
-								speed : 1.5,
-								align : 'center',
-								valign : 'center'
-							});
-						});
+						// spin setting
+						var opts = {
+							ines : 11, // The number of lines to draw
+							length : 6, // The length of each line
+							width : 3, // The line thickness
+							radius : 8, // The radius of the inner circle
+							corners : 0.9, // Corner roundness (0..1)
+							rotate : 0, // The rotation offset
+							color : '#666', // #rgb or #rrggbb
+							speed : 0.7, // Rounds per second
+							trail : 33, // Afterglow percentage
+							shadow : false, // Whether to render a shadow
+							hwaccel : true, // Whether to use hardware acceleration
+							className : 'spinner', // The CSS class to assign to the spinner
+							zIndex : 2e9, // The z-index (defaults to 2000000000)
+							top : 'auto', // Top position relative to parent in px
+							left : 'auto' // Left position relative to parent in px
+						};
+						var target = document.getElementById('loadingImg');
+						var spinner = new Spinner(opts).spin(target);
 					</script>
 				</div>
 			</div>
+
 		</div>
 	</body>
 </html>
-

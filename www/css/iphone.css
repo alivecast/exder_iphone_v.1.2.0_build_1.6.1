@@ -1209,6 +1209,7 @@ button.btn_next {
 }
 
 
+
 /* ---/　商品画像（拡大表示）
 ----------------------------------*/
 .cont_itemImg {
@@ -2096,7 +2097,7 @@ input#customer_mail {
 	width: 70%;
 	height: 160px;
 	margin:0 auto;
-	background: rgba(0,0,0,0.2);
+	background: rgba(255,255,255,0);
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
 	-ms-border-radius: 6px;

@@ -11,23 +11,33 @@
 		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
 		-->
 
-        <link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/file.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		
+		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
+		
+			storage = {};
             
 			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
+				 start(onDeviceReady2);
+			}
+			function onDeviceReady2() {
 				// 通信確認
 				if (check_network() == 'none'){
 					var chSetting = getLocalStorage('chSetting');
@@ -39,11 +49,11 @@
 					}
 				} else {
 					// 通信出来る
-					onDeviceReady2();
+					onDeviceReady3();
 				}
 			}
 				
-			function onDeviceReady2(){
+			function onDeviceReady3(){
 				
 				$.ajaxSetup({
 					timeout: 5000
@@ -51,7 +61,7 @@
 				
 				// 戻るURLの初期設定
 				var before = getLocalStorage('before');
-				setLocalStorage('before', 'website.html');
+				setLocalStorage(storage, 'before', 'website.html');
 				$("#backb").attr("href", before);
 				// バックボタン設定
 				document.addEventListener("backbutton", function(){
@@ -93,17 +103,22 @@
 					}
 				}
 				
+				// localStorage の保存
+				setStorageAll(storage);
+				
 			}
 			
 			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
 			function chShowItemFlg() {
-				setLocalStorage('show_item_flg', 'false');
+				setLocalStorage(storage, 'show_item_flg', 'false');
+				setStorageAll(storage);
 				window.location.href = 'barcode.html';
 			}
 			
 			// navバーの購入履歴選択で画面表示フラグを切り替え
 			function chShowOrderFlg() {
-				setLocalStorage('show_order_flg', 'false');
+				setLocalStorage(storage, 'show_order_flg', 'false');
+				setStorageAll(storage);
 				window.location.href = 'show_order.html';
 			}
 

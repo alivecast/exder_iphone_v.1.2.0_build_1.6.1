@@ -3,7 +3,7 @@
 	<head>
 		<title></title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta charset="utf-8">
 
 		<!-- iPad/iPhone specific css below, add after your main css >
@@ -13,66 +13,109 @@
 
 		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/android.css" type="text/css" />
 		<link rel="stylesheet" href="css/validate.css" type="text/css" />
-	
-		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-		
+		<script type="text/javascript" charset="utf-8" src="js/file.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
+		<script src="js/spin.min.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 		
+		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
+
 		<script type="text/javascript">
-            $( document ).bind( "mobileinit", function() {
-                // jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-                $.support.cors = true;
-                $.mobile.allowCrossDomainPages = true;
-            });
 		
-			$(document).ready(function(){
+			var storage = {}; 
+		
+			$(document).bind("mobileinit", function() {
+				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+				$.support.cors = true;
+				$.mobile.allowCrossDomainPages = true;
+			});
+
+			$(document).ready(function() {
+				$('#loading').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
-			function onDeviceReady(){
-				
-				$.ajaxSetup({
-					timeout: 5000
-				});
-				// 設定ファイルの読み込み
-				getonOrdering(onReadFile);
+			function onDeviceReady() {
+				start(onDeviceReady1);
 			}
-
-			function onReadFile(ordering){
-				$('#loading').css('display', 'none');
-				
-				if(ordering.customer_mail_1){
-					$("#mail1").css("display","none");
-					$("#customer_mail").val(ordering.customer_mail_1);
-				}else{
-					$("#mail1").css("display", "block");
-					$("#Tyuui").css("display", "block");
+			function onDeviceReady1() {
+				// 通信確認
+				if (check_network() == 'none'){
+					var chSetting = getLocalStorage('chSetting');
+					if(chSetting == null || chSetting == ''){
+						hrefStorageAll('netError.html', storage); 
+						// window.location.href = 'netError.html';
+					} else {
+						// とりあえず表示だけする
+						hrefStorageAll('setting.html', storage); 
+						// window.location.href = 'setting.html';
+					}
+				} else {
+					// 通信出来る
+					onDeviceReady2();
 				}
-
-				$("#customer_id").val(ordering.customer_id);
-				$("#customer_key").val(ordering.customer_key);
-
-				$("#app_ver").val(ordering.app_ver);
-				$("#app_code").val(ordering.app_code);
-				$("#url").val(ordering.url);
-				$("#http").val(ordering.http);
-				$("#https").val(ordering.https);
-				
-				var get = getQuery();                
-                if(get && get.qr_id){
-	                // 販売者・商品 情報：qr_id, item_version
-	                $("#qr_id").val(get.qr_id);
-                }
-				
 			}
+				
+			function onDeviceReady2(){
 
+				// バックボタン設定
+				setLocalStorage(storage, 'before', 'contact.html');
+				$('backb').attr('href', 'barcode.html');
+				document.addEventListener("backbutton", function() {
+					hrefStorageAll('barcode.html', storage); 
+					// window.location.href = 'barcode.html';
+				}, false);
+				
+				// メニューボタン設定 (fixedToolbarsの画面タップによる表示非表示を抑制）
+				$("[data-role=header]").fixedtoolbar({ tapToggle: false });
+				$("[data-role=footer]").fixedtoolbar({ tapToggle: false });
+				$('#nav').css('display', 'block');
+				document.addEventListener("menubutton", function(){
+					if ($('#nav').is(':visible')) {
+						$('#nav').css('display', 'none');
+					} else {
+						$('#nav').css('display', 'block');
+					}
+				}, false);
+
+				// 設定ファイルの読み込み
+				getFile('ordering', getonOrderingOK, getonOrderingNG);
+
+				function getonOrderingNG() {
+					hrefStorageAll('index.html', storage); 
+					// window.location.href = "index.html";
+				}
+				function getonOrderingOK(ordering) {
+					
+					console.log("contact:ordering: " + JSON.stringify(ordering));
+					
+					// メールアドレスの登録があればフォームに表示
+					if (ordering.customer_mail_1) {
+						$("#mail1").css("display", "none");
+						$("#customer_mail").val(ordering.customer_mail_1);
+					}else{
+						$("#mail1").css("display", "block");
+					}
+					
+					$("#customer_id").val(ordering.customer_id);
+					$("#customer_key").val(ordering.customer_key);
+	
+					$("#app_ver").val(ordering.app_ver);
+					$("#app_code").val(ordering.app_code);
+					$("#url").val(ordering.url);
+					$("#http").val(ordering.http);
+					$("#https").val(ordering.https);
+				}
+			}
+			
 			function checkValidate() {
 				var i = 0;
 				//エラーの初期化
@@ -90,33 +133,47 @@
 				//後処理
 				if ($("p.error").size() > 0) {
 					$("p.error").parent().addClass("error");
-					errorFocus($("p.error:first"));
+					$(".error:first").focus();
 					return false;
 				} else {
 					onClickButton();
 				}
 			}
 
-			function onClickButton(){
-				// Alert -----------------------------------------------------------------------
-				// navigator.notification.alert("contact_order.html");
+			function onClickButton() {
 
-                var get = getQuery();
-                console.log("-- get--"+JSON.stringify(get));
-                
-	            var qr_id        = "";
-	            var item_version = "";
-	            var order_id     = "";
-	                
-                if(get){
-	                // 販売者・商品 情報：qr_id, item_version
-	                qr_id = get['qr_id'];
-	                item_version = get['item_version'];
-	                if(get['order_id']){
-	                	order_id = get['order_id'];
-	                }
-                }
-                
+				//loading呼び出し
+				$('#content').css('display', 'none');
+				$('#loading').css('display', 'block');
+				
+				var qr_id = "";
+				var item_version = "";
+				var order_id = "";
+
+				// 情報取得
+// DEL 130207
+//				var order_id = getLocalStorage('order_id');
+				var contactParams = JSON.parse(getLocalStorage('contactParams'));
+				console.log('contanct:contactParams: ' + JSON.stringify(contactParams));
+				var get = {};
+				get.qr_id = contactParams.qr_id;
+				get.item_version = contactParams.item_version;
+				get.customer_id = contactParams.customer_id;
+				console.log('contanct:get: ' + JSON.stringify(get));
+// DEL 130207
+//				get.order_id = order_id;
+
+				if (get) {
+					// 販売者・商品 情報：qr_id, item_version
+					qr_id = get['qr_id'];
+					item_version = get['item_version'];
+/* DEL 130207
+					if (get['order_id']) {
+						order_id = get['order_id'];
+					}
+*/
+				}
+
 				// 内容の取得
 				var body = $('#contact_text').val();
 				// 送信者情報：customer_id
@@ -124,59 +181,67 @@
 				var customer_key = $("#customer_key").val();
 				var customer_mail = $("#customer_mail").val();
 
-				console.log("-- customer_id--"+customer_id);
-				console.log("-- qr_id--"+qr_id);
-				
 				// 送信処理
-				var url = $("#https").val()+'json/receive_contact.php';
+				var url = $("#https").val() + 'json/receive_contact.php';
 				var params = {
-						body: body,
-						customer_id: customer_id,
-						customer_key: customer_key,
-						customer_mail: customer_mail,
-                        qr_id: qr_id,
-                        item_version: item_version,
-                        order_id: order_id
+					body : body,
+					customer_id : customer_id,
+					customer_key : customer_key,
+					customer_mail : customer_mail,
+					qr_id : qr_id,
+					item_version : item_version,
+					order_id : order_id
 				}
-				params['app_ver']  = $("#app_ver").val();
+				params['app_ver'] = $("#app_ver").val();
 				params['app_code'] = $("#app_code").val();
-				params['url']      = $("#url").val();
-				params['http']     = $("#http").val();
-				params['https']    = $("#https").val();
+				params['url'] = $("#url").val();
+				params['http'] = $("#http").val();
+				params['https'] = $("#https").val();
+				
+				console.log('contanct:params: ' + JSON.stringify(params));
 
 				$.ajax({
-					type: "POST",
-					url: url,
-					data:params,
-					success: function(data){
+					type : "POST",
+					url : url,
+					data : params,
+					success : function(data) {
+						
+						console.log('contanct:data: ' + JSON.stringify(data));
+						
 						var message = 'お問い合わせ内容を送信しました';
 						var title = '送信完了';
 						var button = 'OK';
 						navigator.notification.alert(message, alertCallBack(), title, button);
-						alertCallBack();
 					},
-					error: function(){
-						networdERR(alertCallBack,'お問合せ出来ませんでした。');
+					error : function() {
+						console.log('contanct:error');
+						networkERR(alertCallBack, 'お問合せ出来ませんでした。');
 					}
 				});
 
 			}
 
 			// alertCallBack -----------------------------------------------------------------------
-			function alertCallBack() {			
-				var qr_id = $("#qr_id").val();                
-                if(qr_id){
-	                // 販売者・商品 情報：qr_id, item_version
-	                location.href = "show_item.html?qr_id="+qr_id;
-                }else{
-					location.href = "setting.html";
-                }
-				return false;
+			function alertCallBack() {
+				hrefStorageAll('show_order.html', storage); 
+				// window.location.href = 'show_order.html';
 			}
-
-	</script>
-
-	<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+			
+			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
+			function chShowItemFlg() {
+				setLocalStorage(storage, 'show_item_flg', 'false');
+				hrefStorageAll('barcode.html', storage); 
+				// window.location.href = 'barcode.html';
+			}
+			
+			// navバーの購入履歴選択で画面表示フラグを切り替え
+			function chShowOrderFlg() {
+				setLocalStorage(storage, 'show_order_flg', 'false');
+				hrefStorageAll('show_order.html', storage); 
+				// window.location.href = 'show_order.html';
+			}
+			
+		</script>
 		
 	</head>
 
@@ -186,31 +251,37 @@
 
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>お問い合わせ</h1>
-				<a id="backb" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false" onclick="alertCallBack();">戻る</a>
+				<a id="backb" href="barcode.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">戻る</a>
 			</div>
-
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
 					<p>しばらくおまちください</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
-						$(function() {
-							$('#loadingImg').activity({
-								segments : 12,
-								width : 6,
-								space : 3,
-								length : 20,
-								color : '#FFFFFF',
-								speed : 1.5,
-								align : 'center',
-								valign : 'center'
-							});
-						});
+						// spin setting
+						var opts = {
+							ines : 11, // The number of lines to draw
+							length : 6, // The length of each line
+							width : 3, // The line thickness
+							radius : 8, // The radius of the inner circle
+							corners : 0.9, // Corner roundness (0..1)
+							rotate : 0, // The rotation offset
+							color : '#666', // #rgb or #rrggbb
+							speed : 0.7, // Rounds per second
+							trail : 33, // Afterglow percentage
+							shadow : false, // Whether to render a shadow
+							hwaccel : true, // Whether to use hardware acceleration
+							className : 'spinner', // The CSS class to assign to the spinner
+							zIndex : 2e9, // The z-index (defaults to 2000000000)
+							top : 'auto', // Top position relative to parent in px
+							left : 'auto' // Left position relative to parent in px
+						};
+						var target = document.getElementById('loadingImg');
+						var spinner = new Spinner(opts).spin(target);
 					</script>
 				</div>
 			</div>
-
 			<!-- content -->
 			<div id="content" class="cont_contact" data-role="content">
 
@@ -218,9 +289,7 @@
 					<div class="txt">
 						商品や送料など、販売者へのお問い合わせはこちらから行えます。
 						<br />
-						<span sytle="color:red;" id="Tyuui" style="display:none;">また、お名前や電話番号などの個人情報は店舗側には公開されません。
-							<br />
-							必要な場合は、「お問い合わせ内容」にご記入ください。</span>
+						<span style="color:red;">また、お名前や電話番号などの個人情報は店舗側には公開されません。必要な場合は、「お問い合わせ内容」にご記入ください。</span>
 					</div>
 				</div>
 
@@ -235,8 +304,6 @@
 						<input type="hidden" id="url" name="url" value=""/>
 						<input type="hidden" id="http" name="http" value=""/>
 						<input type="hidden" id="https" name="https" value=""/>
-						
-						<input type="hidden" id="qr_id" name="qr_id" value=""/>
 
 						<ul class="contact_list" data-role="listview" id="mail1" style="display:none;">
 							<li>
@@ -253,7 +320,8 @@
 						</ul>
 
 						<div class="check_btn btn_txt_ow">
-							<a class="btn_next"  data-role="button" onclick="checkValidate();">送信する</a>
+							<!--<input class="btn_next" type="submit" value="送信する"/>-->
+							<a class="btn_next"  data-role="button" onClick="checkValidate();">送信する</a>
 						</div>
 
 					</div>
@@ -262,22 +330,22 @@
 			</div>
 
 			<!-- nav -->
-			<div class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false"> <span>注文履歴</span> </a>
+						<a href="#" data-ajax="false"  onclick="chShowOrderFlg();"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
+						<a href="#" data-ajax="false" onclick="chShowItemFlg();"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03">
 						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
-				<!-- /dr-footer -->
 			</div>
 
 		</div>
 
 	</body>
 </html>
+

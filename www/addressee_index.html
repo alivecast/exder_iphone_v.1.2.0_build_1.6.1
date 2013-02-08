@@ -3,7 +3,7 @@
 	<head>
 		<title></title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta charset="utf-8">
 
 		<!-- iPad/iPhone specific css below, add after your main css >
@@ -15,18 +15,22 @@
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-
+		<script type="text/javascript" charset="utf-8" src="js/file.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-
+		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
-		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+		<script src="js/spin.min.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		
+		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
+		
+			var storage = {};
+		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -34,25 +38,67 @@
 			});
 
 			$(document).ready(function() {
+				// loading開始
+				$('#loading').css('display', 'block');
+				$('#content').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
-
+				start(onDeviceReady1);
+			}
+			function onDeviceReady1() {
+				// 通信確認
+				if (check_network() == 'none'){
+					var chSetting = getLocalStorage('chSetting');
+					if(chSetting == null || chSetting == ''){
+						hrefStorageAll('netError.html', storage);
+						// window.location.href = 'netError.html';
+					} else {
+						// とりあえず表示だけする
+						hrefStorageAll('setting.html', storage);
+						// window.location.href = 'setting.html';
+					}
+				} else {
+					// 通信出来る
+					onDeviceReady2();
+				}
+			}
+				
+			function onDeviceReady2(){
+				
 				$.ajaxSetup({
-					timeout : 5000
+					timeout: 5000
 				});
 
-				// 121219 ogawa お届け先の件数チェック前
-				$('#addb').css("display", "block");
+				// 戻るURLの初期設定
+				var before = getLocalStorage('before');
+				setLocalStorage(storage, 'before', 'addressee_index.html');
+				$('#backb').attr('href', before);
+				if(before != 'barcode.html'){
+					before = 'setting.html';
+					$('#backb').attr('href', 'setting.html');
+				}
 
-				$('#loading').css('display', 'none');
-				if (location.search.length > 1) {
-					var get = new Object();
+				// メニューボタン設定
+				$("[data-role=header]").fixedtoolbar({
+					tapToggle : false
+				});
+				$("[data-role=footer]").fixedtoolbar({
+					tapToggle : false
+				});
+				$('#nav').css('display', 'block');
+
+				var get = new Object();
+				var kbn = getLocalStorage('kbn');
+				if (kbn != '' && kbn != null) {
+					get['kbn'] = kbn;
+					console.log("get:" + get['kbn']);
 					$("#kbn").val(get['kbn']);
 					if (get['kbn'] == "buy") {
-						$("#backb").attr("href", "ordering_new.html?kbn=buy");
-						$("#tab3a").attr("href", "order.html");
+						setLocalStorage(storage, 'kbn', 'buy');
+			//			$("#backb").attr("href", "ordering_new.html");
+			//			$("#tab3a").attr("href", "order.html");
 					}
 				}
 				onReadyFile();
@@ -60,7 +106,6 @@
 
 			function onReadyFile() {
 				// ファイルの読み込み
-				console.log("Start ordering");
 				var fname = 'ordering';
 				getFile(fname, onGetOrderingOK, onGetOrderingNG);
 			}
@@ -79,208 +124,235 @@
 			// ファイルがある場合は、サーバー通信を行い値を取得する。
 			function getCustomers(params) {
 				console.log("Start:" + params['customer_id']);
-
 				var url = params.https + 'json/send_address_index.php';
-
 				$.ajax({
 					type : "POST",
 					url : url,
 					data : params,
 					success : function(data) {
 						
-						// お届け先件名の保存
-						dataText = JSON.stringify(data);
-						setFile('addressee', dataText, okSetAddressee, okSetAddressee);
-						
-						function okSetAddressee(){
-						
-							// お届け先の表示1
-							if (data.address_id1 == 0 || data.address_id1 == "" || data.address_id1 == undefined) {
-							} else {
-								$("#adr_id1").val(data.address_id1);
-								$("#adr_name1").text(data.address_name1);
-								if (data.address_ck1 == 1) {
-									$("#adr_ck1").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								if (data.address_id1 == 0 || data.address_id1 == "") {
-									$("#adr1").html(" ");
-								}
-								$("#adr1").css("display", "block");
-							}
-	
-							console.log("data.address_id1:" + data.address_id1);
-							console.log("data.address_name1:" + data.address_name1);
-							console.log("data.address_ck1:" + data.address_ck1);
-	
-							// お届け先の表示2
-							if (data.address_id2 == 0 || data.address_id2 == "" || data.address_id2 == undefined) {
-							} else {
-								$("#adr_id2").val(data.address_id2);
-								$("#adr_name2").text(data.address_name2);
-	
-								if (data.address_ck2 == 1) {
-									$("#adr_ck2").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr2").css("display", "block");
-								console.log("data.address_id2:" + data.address_id2);
-								console.log("data.address_name2:" + data.address_name2);
-							}
-	
-							// お届け先の表示3
-							if (data.address_id3 == 0 || data.address_id3 == "" || data.address_id3 == undefined) {
-							} else {
-								$("#adr_id3").val(data.address_id3);
-								$("#adr_name3").text(data.address_name3);
-	
-								if (data.address_ck3 == 1) {
-									$("#adr_ck3").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr3").css("display", "block");
-							}
-	
-							// お届け先の表示4
-							if (data.address_id4 == 0 || data.address_id4 == "" || data.address_id4 == undefined) {
-							} else {
-								$("#adr_id4").val(data.address_id4);
-								$("#adr_name4").text(data.address_name4);
-	
-								if (data.address_ck4 == 1) {
-									$("#adr_ck4").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr4").css("display", "block");
-							}
-	
-							// お届け先の表示5
-							if (data.address_id5 == 0 || data.address_id5 == "" || data.address_id5 == undefined) {
-							} else {
-								$("#adr_id5").val(data.address_id5);
-								$("#adr_name5").text(data.address_name5);
-								if (data.address_ck5 == 1) {
-									$("#adr_ck5").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr5").css("display", "block");
-							}
-	
-							// お届け先の表示6
-							if (data.address_id6 == 0 || data.address_id6 == "" || data.address_id6 == undefined) {
-							} else {
-								$("#adr_id6").val(data.address_id6);
-								$("#adr_name6").text(data.address_name6);
-								if (data.address_ck6 == 1) {
-									$("#adr_ck6").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr6").css("display", "block");
-							}
-	
-							// お届け先の表示7
-							if (data.address_id7 == 0 || data.address_id7 == "" || data.address_id7 == undefined) {
-							} else {
-								$("#adr_id7").val(data.address_id7);
-								$("#adr_name7").text(data.address_name7);
-								if (data.address_ck7 == 1) {
-									$("#adr_ck7").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr7").css("display", "block");
-							}
-	
-							// お届け先の表示8
-							if (data.address_id8 == 0 || data.address_id8 == "" || data.address_id8 == undefined) {
-							} else {
-								$("#adr_id8").val(data.address_id8);
-								$("#adr_name8").text(data.address_name8);
-								if (data.address_ck8 == 1) {
-									$("#adr_ck8").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr8").css("display", "block");
-							}
-	
-							// お届け先の表示9
-							if (data.address_id9 == 0 || data.address_id9 == "" || data.address_id9 == undefined) {
-							} else {
-								$("#adr_id9").val(data.address_id9);
-								$("#adr_name9").text(data.address_name9);
-								if (data.address_ck9 == 1) {
-									$("#adr_ck9").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr9").css("display", "block");
-							}
-	
-							// お届け先の表示10
-							if (data.address_id10 == 0 || data.address_id10 == "" || data.address_id10 == undefined) {
-							} else {
-								$("#adress_add").css("display", "none");
-								$("#adr_id10").val(data.address_id10);
-								$("#adr_name10").text(data.address_name10);
-								if (data.address_ck10 == 1) {
-									$("#adr_ck10").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
-								}
-								$("#adr10").css("display", "block");
-								// 121219 ogawa お届け先の件数チェック
-								$('#addb').css("display", "none");
-							}
+						var count = 0;
+
+						// お届け先の表示1
+						$("#adr_id1").val(data.address_id1);
+						$("#adr_name1").text(data.address_name1);
+						if (data.address_ck1 == 1) {
+							$("#adr_ck1").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
 						}
+						if (data.address_id1 != 0 && data.address_id1 != "" && data.address_id1 != undefined) {
+							$("#adr1").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示2
+						if (data.address_id2 == 0 || data.address_id2 == "" || data.address_id2 == undefined) {
+						} else {
+							$("#adr_id2").val(data.address_id2);
+							$("#adr_name2").text(data.address_name2);
+
+							if (data.address_ck2 == 1) {
+								$("#adr_ck2").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr2").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示3
+						if (data.address_id3 == 0 || data.address_id3 == "" || data.address_id3 == undefined) {
+						} else {
+							$("#adr_id3").val(data.address_id3);
+							$("#adr_name3").text(data.address_name3);
+
+							if (data.address_ck3 == 1) {
+								$("#adr_ck3").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr3").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示4
+						if (data.address_id4 == 0 || data.address_id4 == "" || data.address_id4 == undefined) {
+						} else {
+							$("#adr_id4").val(data.address_id4);
+							$("#adr_name4").text(data.address_name4);
+
+							if (data.address_ck4 == 1) {
+								$("#adr_ck4").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr4").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示5
+						if (data.address_id5 == 0 || data.address_id5 == "" || data.address_id5 == undefined) {
+						} else {
+							$("#adr_id5").val(data.address_id5);
+							$("#adr_name5").text(data.address_name5);
+							if (data.address_ck5 == 1) {
+								$("#adr_ck5").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr5").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示6
+						if (data.address_id6 == 0 || data.address_id6 == "" || data.address_id6 == undefined) {
+						} else {
+							$("#adr_id6").val(data.address_id6);
+							$("#adr_name6").text(data.address_name6);
+							if (data.address_ck6 == 1) {
+								$("#adr_ck6").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr6").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示7
+						if (data.address_id7 == 0 || data.address_id7 == "" || data.address_id7 == undefined) {
+						} else {
+							$("#adr_id7").val(data.address_id7);
+							$("#adr_name7").text(data.address_name7);
+							if (data.address_ck7 == 1) {
+								$("#adr_ck7").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr7").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示8
+						if (data.address_id8 == 0 || data.address_id8 == "" || data.address_id8 == undefined) {
+						} else {
+							$("#adr_id8").val(data.address_id8);
+							$("#adr_name8").text(data.address_name8);
+							if (data.address_ck8 == 1) {
+								$("#adr_ck8").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr8").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示9
+						if (data.address_id9 == 0 || data.address_id9 == "" || data.address_id9 == undefined) {
+						} else {
+							$("#adr_id9").val(data.address_id9);
+							$("#adr_name9").text(data.address_name9);
+							if (data.address_ck9 == 1) {
+								$("#adr_ck9").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr9").css("display", "block");
+							count += 1;
+						}
+
+						// お届け先の表示10
+						if (data.address_id10 == 0 || data.address_id10 == "" || data.address_id10 == undefined) {
+						} else {
+							$("#adress_add").css("display", "none");
+							$("#adr_id10").val(data.address_id10);
+							$("#adr_name10").text(data.address_name10);
+							if (data.address_ck10 == 1) {
+								$("#adr_ck10").html('<img src="images/speedorder/ico_check_r.png" width="16" height="15" alt="この住所を通常のお届先にする：" />');
+							}
+							$("#adr10").css("display", "block");
+							count += 1;
+						}
+						$('#loading').css('display', 'none');
+						$('#content').css('display', 'block');
+						// 121219 ogawa お届け先の件数チェック
+						if (count < 10){
+							$('#addb').css("display", "block");
+						} else {
+							$('#addb').css("display", "none");
+						}
+
 					},
-					error : function(data) {
+					error : function() {
+						console.log('ajax:error');
 						message = '通信が混み合っているか、通信環境がよくないため、もうしばらくお待ちしてから、接続しなおしてください。';
 						title = 'サーバーと通信できませんでした';
 						button = 'OK';
 						navigator.notification.alert(message, alertCallBack(), title, button);
-					},
-					timeout : 5000
+					}
 				});
-				
-				setBackb();
 			}
 
 			function goEdit(area) {
+
+				//loading呼び出し
+				$('#content').css('display', 'none');
+				$('#loading').css('display', 'block');
+
 				var kbn = $("#kbn").val();
 				if (kbn == "buy") {
-					rekbn = "&kbn=buy";
+					//rekbn= "&kbn=buy";
+					setLocalStorage(storage, 'kbn', "buy");
 				} else {
-					rekbn = "";
+					//rekbn= "";
+					setLocalStorage(storage, 'kbn', "");
 				}
 
 				if (area == 1) {
-					location.href = "addressee_new.html?id=" + $("#adr_id1").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id1").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id1").val()+rekbn;
 				} else if (area == 2) {
-					location.href = "addressee_new.html?id=" + $("#adr_id2").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id2").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id2").val()+rekbn;
 				} else if (area == 3) {
-					location.href = "addressee_new.html?id=" + $("#adr_id3").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id3").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id3").val()+rekbn;
 				} else if (area == 4) {
-					location.href = "addressee_new.html?id=" + $("#adr_id4").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id4").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id4").val()+rekbn;
 				} else if (area == 5) {
-					location.href = "addressee_new.html?id=" + $("#adr_id5").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id5").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id5").val()+rekbn;
 				} else if (area == 6) {
-					location.href = "addressee_new.html?id=" + $("#adr_id6").val() + rekbn;
+					setLocalStorage(storage, 'id', $("#adr_id6").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id6").val()+rekbn;
 				} else if (area == 7) {
-					location.href = "addressee_new.html?id=" + $("#adr_id7").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id7").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id7").val()+rekbn;
 				} else if (area == 8) {
-					location.href = "addressee_new.html?id=" + $("#adr_id8").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id8").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id8").val()+rekbn;
 				} else if (area == 9) {
-					location.href = "addressee_new.html?id=" + $("#adr_id9").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id9").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id9").val()+rekbn;
 				} else if (area == 10) {
-					location.href = "addressee_new.html?id=" + $("#adr_id10").val() + rekbn;
+					setLocalStorage(storage, 'adr_id', $("#adr_id10").val());
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id="+$("#adr_id10").val()+rekbn;
 
 				} else {
-					location.href = "addressee_new.html?id=0" + rekbn;
+					setLocalStorage(storage, 'adr_id', 0);
+					location.href = "addressee_new.html";
+					//location.href="addressee_new.html?id=0"+rekbn;
 				}
-				
-				setBackb();
 			}
 			
-			function setBackb(){
-				getFile('backb', okGetFile, ngGetFile);
-				function okGetFile(json){
-					$("#backb").attr("href", json.url);
-				}
-				function ngGetFile(){
-					$("#backb").attr("href", 'setting.html');
-				}
+			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
+			function chShowItemFlg() {
+				setLocalStorage(storage, 'show_item_flg', 'false');
+				hrefStorageAll('barcode.html', storage);
+				// window.location.href = 'barcode.html';
+			}
+
+			// navバーの購入履歴選択で画面表示フラグを切り替え
+			function chShowOrderFlg() {
+				setLocalStorage(storage, 'show_order_flg', 'false');
+				hrefStorageAll('show_order.html', storage);
+				// window.location.href = 'show_order.html';
 			}
 
 		</script>
-
-		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
 
@@ -290,10 +362,9 @@
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>お届け先一覧</h1>
 				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-ajax="false"> 戻る </a>
-				<a id="addb" href="" class="ui-btn-right" data-icon="plus" data-ajax="false" onClick="goEdit(0);" > 追加 </a>
+				<a id="addb" href="" class="ui-btn-right" data-icon="plus" data-ajax="false" onClick="goEdit(0);" style="display:none;"> 追加 </a>
 			</div>
 			<input type="hidden" id="kbn" name="kbn" />
-			
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
@@ -302,56 +373,54 @@
 					</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
-						$(function() {
-							$('#loadingImg').activity({
-								segments : 12,
-								width : 6,
-								space : 3,
-								length : 20,
-								color : '#FFFFFF',
-								speed : 1.5,
-								align : 'center',
-								valign : 'center'
-							});
-						});
+						// spin setting
+						var opts = {
+							ines : 11, // The number of lines to draw
+							length : 6, // The length of each line
+							width : 3, // The line thickness
+							radius : 8, // The radius of the inner circle
+							corners : 0.9, // Corner roundness (0..1)
+							rotate : 0, // The rotation offset
+							color : '#666', // #rgb or #rrggbb
+							speed : 0.7, // Rounds per second
+							trail : 33, // Afterglow percentage
+							shadow : false, // Whether to render a shadow
+							hwaccel : true, // Whether to use hardware acceleration
+							className : 'spinner', // The CSS class to assign to the spinner
+							zIndex : 2e9, // The z-index (defaults to 2000000000)
+							top : 'auto', // Top position relative to parent in px
+							left : 'auto' // Left position relative to parent in px
+						};
+						var target = document.getElementById('loadingImg');
+						var spinner = new Spinner(opts).spin(target);
 					</script>
 				</div>
 			</div>
-			
-			
 			<!-- content -->
 			<div id="content" class="cont_addressIndex" data-role="content">
-				
+
 				<ul class="address_list" data-role="listview">
 					<li class="address_list_txt">
 						<div class="txt">
 							<img src="images/ico_check_r.png" width="16" height="15" alt="" />マークのあるお届先へ配送手配いたします。
 						</div>
-						<p class="note" style="margin-top:4px;">お届け先は最大10件まで登録できます。</p>
+						<p class="note" style="margin-top:4px;">
+							お届け先は最大10件まで登録できます。
+						</p>
 						<!-- /item_name -->
 					</li>
-					
+
 					<li id="adr1" class="item_img_price" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href1" data-ajax="false" onClick="goEdit(1);">
-							<span class="ico_check">
-								<span id="adr_ck1"></span>
-							</span>
-							
-							<span class="tl">
-								<span id="adr_name1"></span>
-							</span>
+						<a href="#" data-icon="arrow-l" id="adr_href1" data-ajax="false" onClick="goEdit(1);"> <span class="ico_check"> <span  id="adr_ck1"></span> </span> <span class="tl"> <span id="adr_name1"></span> </span>
 						<input type="hidden" id="adr_id1" name="adr_id1" value="" />
 						</a>
 					</li>
-					
+
 					<li id="adr2" class="item_img_price" style="display:none;">
-						<a href="#" data-icon="arrow-l" id="adr_href2" data-ajax="false" onClick="goEdit(2);">
-							<span class="ico_check"> <span  id="adr_ck2"></span> </span>
-							<span class="tl"> <span id="adr_name2"></span> </span>
+						<a href="#" data-icon="arrow-l" id="adr_href2" data-ajax="false" onClick="goEdit(2);"> <span class="ico_check"> <span  id="adr_ck2"></span> </span> <span class="tl"> <span id="adr_name2"></span> </span>
 						<input type="hidden" id="adr_id2" name="adr_id2" value="" />
 						</a>
-					</li>				
-					
+					</li>
 
 					<li id="adr3" class="item_img_price" style="display:none;">
 						<a href="#" data-icon="arrow-l" id="adr_href3" data-ajax="false" onClick="goEdit(3);"> <span class="ico_check"> <span  id="adr_ck3"></span> </span> <span class="tl"> <span id="adr_name3"></span> </span>
@@ -402,33 +471,45 @@
 					</li>
 
 				</ul>
-				
-				<!-- 追加についての注意書き
-				<div class="address_list_description">
-					右上の追加ボタンより、お届け先を10件までご登録いただけます。<br />
-					内容の確認、および変更は各お届け先をタップしてください。
+				<!--
+				<br />
+				<br />
+				<div class="check_btn" id="adress_add">
+				<a href="#" class="btn_next" data-role="button" onclick="goEdit(0);">お届け先の追加</a>
+				<span class="txt" style="color:red;">※お届け先は最大10件まで登録できます。</span>
 				</div>
 				-->
-				
-				
-				<!-- /dl-content -->
+
 			</div>
 
 			<!-- nav -->
-			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber" style="display:none;">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>
+						<a href="#" data-ajax="false"  onclick="chShowOrderFlg();"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
+						<a href="#" data-ajax="false" onclick="chShowItemFlg();"> <span>読み取り</span> </a>
 					</li>
-					<li class="tab03 current">
-						<a id="tab3a" href="setting.html" data-ajax="false"> <span>設定</span> </a>
+					<li class="tab03">
+						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
-				<!-- /dr-footer -->
 			</div>
+
+			<!-- ポップアップメニュー -->
+			<!--
+			<a id="popup" data-role="actionsheet"  data-sheet="menu"></a>
+			<div id="menu">
+			<ul>
+			<li><a href="show_order.html" data-theme="c" data-role="button" data-ajax="false">注文履歴</a></li>
+			<li><a href="barcode.html" data-theme="c" data-role="button" data-ajax="false">読み取り</a></li>
+			<li><a href="setting.html" data-theme="c" data-role="button" data-ajax="false">設定</a></li>
+			<li><a href="#" data-rel="close" data-role="button">Cancel</a></li>
+			</ul>
+			</div>
+			-->
+
 		</div>
 
 	</body>

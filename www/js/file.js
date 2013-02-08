@@ -73,9 +73,17 @@ function getLocalStorage(fname) {
 	return value;
 }
 
-function setLocalStorage(fname, value) {
+function setLocalStorage(obj, fname, value) {
 	window.localStorage.removeItem(fname);
 	window.localStorage.setItem(fname, value);
+	obj[fname] = value;
+	// setFile('storage', obj, setStorageOK, setStorageNG);
+	// function setStorageOK(){
+		// console.log('setStorageAll OK');
+	// }
+	// function setStorageNG(){
+		// console.log('setStorageAll NG');
+	// }
 }
 
 function remLocalStorage(fname) {
@@ -97,7 +105,7 @@ function setFile(fname, jsonObj, okfn, errfn) {
 		}, function(fileEntry) {
 			fileEntry.createWriter(function(writer) {
 				writer.onwrite = function(evt) {
-					console.log("書き込み成功");
+					console.log("書き込み成功 " + fname);
 				};
 				writer.onerror = function(evt) {
 				//	console.log('書き込みに失敗' + evt.toString());
@@ -120,7 +128,7 @@ function setFile(fname, jsonObj, okfn, errfn) {
 	}
 
 	function setNG(error) {
-		console.log("ファイルを書き込めませんでした。");
+		console.log("書き込み失敗" + fname);
 		callback = $FN(errfn);
 		return callback()
 	}
@@ -139,13 +147,13 @@ function getFile(fname, okfn, errfn) {
 					// ここに読み込み完了後の処理を書く
 					text = evt.target.result;
 					if (text) {
-						console.log("getFile::正常にファイルを読み込みました。");
+						console.log("読み込み成功: " + fname);
 						var encText = text;
 						var obj = decAesObj(encText);
 						callback = $FN(okfn);
 						return callback(obj);
 					} else {
-						console.log("getFile::正常にファイルを読み込みましたが、データがありません。");
+						console.log("読み込み成功: NO DATA");
 						noFile();
 					}
 
@@ -154,9 +162,8 @@ function getFile(fname, okfn, errfn) {
 			}, noFile)
 		}, noFile);
 	}
-
 	function noFile(error) {
-		console.log("ファイルを読み込めませんでした。");
+		console.log("読み込み失敗: " + fname);
 		callback = $FN(errfn);
 		return callback()
 	}
@@ -178,7 +185,7 @@ function delFile(fname) {
 
 // ファイル操作　error処理
 function fail(error) {
-	console.log("ファイル処理失敗: " + error.code);
+	console.log("削除失敗: " + fname + ":" + error.code);
 }
 
 // 設定ファイルの読み込み

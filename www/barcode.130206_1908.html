@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta charset="utf-8">
+
+		<!-- iPad/iPhone specific css below, add after your main css >
+		<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+		-->
+		
+		<link rel="stylesheet" href="js/jquery.mobile-1.2.0.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
+		<link rel="stylesheet" href="css/android.css" type="text/css" />
+
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/barcodescanner.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/initFlg.js"></script>
+		<script src="js/spin.min.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				document.addEventListener("deviceready", onDeviceReady, false);
+			});
+
+			function onDeviceReady() {
+				/* initFlg: localStorageに取得 */
+				getFile('initFlg', initFlg, getInitFlg, getInitFlg);
+				function getInitFlg(initFlg){
+					// localStorageに取得
+					getInitFlg(initFlg);
+				}
+			}
+			
+			function onDeviceReady2() {
+				
+				// 通信確認
+				if (check_network() == 'none') {
+					var chSetting = getLocalStorage('chSetting');
+					if (chSetting == null || chSetting == '') {
+						//window.location.href = 'netError.html';
+						// ひとまずbarcode画面へ
+						onDeviceReady3();
+					} else {
+						// とりあえず表示だけする
+						window.location.href = 'setting.html';
+					}
+				} else {
+					// 通信出来る
+					onDeviceReady3();
+				}
+			}
+
+			function onDeviceReady3() {
+				
+				// ローディング開始
+				$('#loading').css('display', 'block');
+				
+				// 表示フラグの取得
+				var show_item_flg = getQuery().show_item_flg;
+				console.log('show_item_flg: ' + show_item_flg);
+				// 表示画面の判定
+				if (show_item_flg == 'false') {
+					// barcode画面の表示
+					startBarcode();
+				} else {
+					// 商品情報の表示
+					showItem();
+				}
+
+				$.ajaxSetup({
+					timeout : 5000
+				});
+				
+				function startBarcode(){
+					
+					// qr_id,位置情報の初期化
+					var barcodeParams = {
+						qr_id : '',
+						order_latitude : 0,
+						order_longitude : 0
+					}
+
+					// 位置情報の初期化
+					var latitude = 0;
+					var longitude = 0;
+
+					// barcode読み取り
+					window.plugins.barcodeScanner.scan(function(result) {
+						// キャンセル
+						if (result.cancelled) {
+							window.location.href = 'setting.html';
+							// 読み取り成功
+						} else {
+							// 計測用
+							setLocalStorage('time', parseInt(new Date().getTime()));
+							// exorderを含むか判定
+							if (result.text.match(/exorder.jp|www.exorder.jp/i)) {
+								// 読み取り成功メッソド
+								scannerSuccess(result.text);
+							} else {
+								var message = result.text;
+								var title = 'ExOrder でお使いいただけないQRコードです';
+								var button = "OK";
+								navigator.notification.alert(message, function() {
+									window.location.href = 'setting.html?before=barcode.html&show_item_flg=false';
+								}, title, button);
+							}
+						}
+					}, function(error) {
+						// 読み取り失敗メソッド
+						scannerFailure(error);
+					});
+
+					// 位置情報をアプリで使えるか判定
+					if (navigator.geolocation) {
+						var option = {
+							// 出来るだけ良い精度で取得する：時間はかかる
+							enableHighAccuracy : false,
+							// 取得するまでのタイムアウト時間
+							timeout : 500,
+							// 位置情報をキャッシュする時間
+							maximumAge : 0
+						};
+						// 位置情報取得メソッド
+						navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError, option);
+					} else {
+						// 位置情報取得に失敗メソッド
+						onGeoError();
+					}
+					// 位置情報取得に失敗メソッド
+					function onGeoError(error) {
+						// 位置情報の格納
+						barcodeParams['order_latitude'] = 0;
+						barcodeParams['order_longitude'] = 0;
+						console.log('位置情報:失敗: ' + JSON.stringify(barcodeParams));
+					}
+
+					// 位置情報取得に成功メソッド
+					function onGeoSuccess(position) {
+						// 位置情報の格納
+						barcodeParams['order_latitude'] = position.coords.latitude;
+						barcodeParams['order_longitude'] = position.coords.longitude;
+						console.log('位置情報:成功: ' + JSON.stringify(barcodeParams));
+					}
+
+			}
+
+			// Barcode 読み込み成功　-------------------------------------------------------------
+			function scannerSuccess(result) {
+				
+				// 計測
+				var showTime = parseInt(new Date().getTime()) - parseInt(getLocalStorage('time'));
+				console.log('QRコード読み取りから成功メッソド: ' + showTime);
+
+				// 通信確認
+				if (check_network() == 'none') {
+					console.log('check_network OK');
+					var chSetting = getLocalStorage('chSetting');
+					if (chSetting == null || chSetting == '') {
+						window.location.href = 'netError.html?before=barcode.html&show_item_flg=false';
+					} else {
+						// とりあえず表示だけする
+						window.location.href = 'setting.html?before=barcode.html&show_item_flg=false';
+					}
+				} else {
+					console.log('check_network NG');
+					// 通信出来る
+					scannerSuccess2(result)
+				}
+			}
+
+			function scannerSuccess2(result) {
+
+				// 数量変更ファイルの削除
+				delFile('backAmount');
+
+				// オーディオ再生
+				var src = 'mp3/decide.mp3';
+				var audio = new Media(src, null, null);
+				audio.play();
+
+				// qr_id抽出
+				cutProtocole = result.replace(/http:\/\/|https:\/\//, "");
+				var qr_id = cutProtocole.replace(/exorder.jp\/|www.exorder.jp\//, "");
+				console.log("scannerSuccess: qr_id: " + qr_id);
+
+				// Geolocation -------------------------------------------------------------
+				var watchId = null;
+				var latitude = 0;
+				var longitude = 0;
+				if (navigator.geolocation) {
+					console.log('navigator::geolocation');
+					navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError);
+				} else {
+					console.log('Could not navigator::geolocation');
+					onGeoError();
+				}
+				function onGeoError(error) {
+					console.log('位置情報の取得に失敗しました');
+					window.location.href = 'show_item.html?qr_id=' + String(qr_id) + '&order_latitude=' + null + '&order_longitude=' + null;
+				}
+
+				function onGeoSuccess(position) {
+					var latitude = position.coords.latitude;
+					var longitude = position.coords.longitude;
+					console.log('緯度: ' + latitude + ', 経度:' + longitude);
+					window.location.href = 'show_item.html?qr_id=' + String(qr_id) + '&order_latitude=' + String(latitude) + '&order_longitude=' + String(longitude);
+				}
+
+				// GeoLocation -----------------------------------------------------------
+				function send_show_item(qr_id, latitude, longitude) {
+					window.location.href = 'show_item.html?qr_id=' + String(qr_id) + '&order_latitude=' + String(latitude) + '&order_longitude=' + String(longitude);
+				}
+
+			}
+
+			// Barcode 読み込み失敗　---------------------------------------------------------------
+			function scannerFailure(message) {
+				// オーディオ再生
+				var src = 'mp3/cancel.mp3';
+				audio = new Media(src, null, null);
+				audio.play();
+
+				var message = 'もう一度QRコードを撮影してください';
+				var title = 'QRコードの読み取りに失敗しました';
+				var button = 'OK';
+				navigator.notification.alert(message, function() {
+				}, title, button);
+			}
+			
+			// 商品情報表示
+			showItem(){
+				
+			}
+
+			// alertCallBack -----------------------------------------------------------------------
+			function alertCallBack() {
+				window.location.href = 'barcode.html';
+			}
+			} /* startBarcode end */
+
+			// }
+		</script>
+	</head>
+
+	<body>
+
+	</body>
+</html>

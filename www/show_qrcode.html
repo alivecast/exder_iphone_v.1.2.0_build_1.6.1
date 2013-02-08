@@ -3,7 +3,7 @@
 	<head>
 		<title></title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta charset="utf-8">
 
 		<!-- iPad/iPhone specific css below, add after your main css >
@@ -15,116 +15,167 @@
 		<link rel="stylesheet" href="css/iphone.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/file.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-
+		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/spin.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		
+		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
+		
 		<script type="text/javascript">
-			$(document).bind("mobileinit", function() {
-				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
-				$.support.cors = true;
-				$.mobile.allowCrossDomainPages = true;
-			});
+		
+			var storage = {};
+		
+			$( document ).bind( "mobileinit", function() {
+            	// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
+            	$.support.cors = true;
+            	$.mobile.allowCrossDomainPages = true;
+            });
 
-			$(document).ready(function() {
+			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
-
+				 start(onDeviceReady1);
+			}
+			function onDeviceReady1() {
+				// 通信確認
+				if (check_network() == 'none'){
+					var chSetting = getLocalStorage('chSetting');
+					if(chSetting == null || chSetting == ''){
+						hrefStorageAll('netError.html', storage);
+						// window.location.href = 'netError.html';
+					} else {
+						// とりあえず表示だけする
+						hrefStorageAll('setting.html', storage);
+						// window.location.href = 'setting.html';
+					}
+				} else {
+					// 通信出来る
+					onDeviceReady2();
+				}
+			}
+				
+			function onDeviceReady2(){
+				
+				// 購入商品表示 true
+				setLocalStorage(storage, 'show_order_flg', 'true');
+				
 				$.ajaxSetup({
-					timeout : 5000
+					timeout: 5000
 				});
-
+				
 				$('#loading').css('display', 'none');
-
+				
+				// バックキー・設定
+				setLocalStorage(storage, 'show_order_flg', 'true');
+				$("#backb").attr('href', 'show_order.html');
+				
+				// メニューボタン設定 (fixedToolbarsの画面タップによる表示非表示を抑制）
+				$("[data-role=header]").fixedtoolbar({ tapToggle: false });
+				$('#nav').css('display', 'block');
+				
 				// GETでJSON取得
-				var get = getQuery();
+				//var get = getQuery();
+				var item_name = getLocalStorage("item_name");
+				var qr_id = getLocalStorage("qr_id");
+				var item_price = getLocalStorage("item_price");
+				var order_carriage = getLocalStorage("order_carriage");
+				var item_image = getLocalStorage("item_image");
+				var get = {
+					item_name: item_name,
+					qr_id: qr_id,
+					item_price: item_price,
+					order_carriage: order_carriage,
+					item_image: item_image
+				}
 				var params = get;
 				console.log("params: " + JSON.stringify(params));
-
+				
 				// 商品名
-				// $("#item_name").text(params.item_name);
-				document.getElementById("item_name").innerText = params['item_name'];
-
-				// 商品画像
-				var item_image = '';
-				item_image += '<img src="' + params.item_image + '" width="100" height="100" alt="商品画像" />';
-				$("#item_image").html(item_image);
-				// qrcode
+                // $("#item_name").text(params.item_name);
+                document.getElementById("item_name").innerText = params['item_name'];
+                
+                // 商品画像
+               	var item_image = '';
+               	item_image += '<img src="' + params.item_image + '" width="100" height="100" alt="商品画像" />';
+               	$("#item_image").html(item_image);
+                // qrcode
 				var qrcode = '';
 				var qrurl = 'http://chart.apis.google.com/chart?chs=250x250&cht=qr&chl=http://exorder.jp/' + params.qr_id;
 				qrcode += '<img src="' + qrurl + '" alt="qrcode" width="250" height="250" />';
 				$("#qrcode").html(qrcode);
-
+				
 				// 価格
 				var price = '';
 				price += currency(params.item_price) + '<span>円</span>';
 				$("#price").html(price);
-
+				
 				//戻るボタン
 				var qr_back = '';
-				//qr_back += '<a href="show_order_item.html?';
-				//qr_back += 'item_name=' + params.item_name  + 'order_id=' + params.order_id + '&qr_id=' + params.qr_id + '&item_version=' + params.item_version + '" target="_blank" ';
-				//qr_back += 'class="ui-btn-left" data-icon="arrow-l" data-direction="reverse"> 戻る </a>';
-
-				// qr_back += '<a href="show_order.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse">一覧</a>';
-				// $("#qr_back").html(qr_back);
-
-				// // 送料
-				// var order_carriage = '';
-				// if (parseInt(params.order_carriage) > 0 ){
-				// order_carriage += currency(params.order_carriage) + '<span>円</span>';
-				// } else {
-				// order_carriage += 	'無料';
-				// }
-				// $("#order_carriage").html(order_carriage);
-
 			}
-
+			
+			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
+			function chShowItemFlg() {
+				setLocalStorage(storage, 'show_item_flg', 'false');
+				hrefStorageAll('barcode.html', storage);
+				// window.location.href = 'barcode.html';
+			}
+			
+			// navバーの購入履歴選択で画面表示フラグを切り替え
+			function chShowOrderFlg() {
+				setLocalStorage(storage, 'show_order_flg', 'false');
+				hrefStorageAll('show_order.html', storage);
+				// window.location.href = 'show_order.html';
+			}
+			
 		</script>
+
 	</head>
 
 	<body>
-
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
-
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>商品を紹介する</h1>
-				<a data-rel="back" href="show_order_item.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false"> 戻る </a>
+				<a id="backb" href="show_order.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
+					戻る
+				</a>
 			</div>
-
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
-					<p>
-						しばらくおまちください
-					</p>
+					<p>しばらくおまちください</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
-						$(function() {
-							$('#loadingImg').activity({
-								segments : 12,
-								width : 6,
-								space : 3,
-								length : 20,
-								color : '#FFFFFF',
-								speed : 1.5,
-								align : 'center',
-								valign : 'center'
-							});
-						});
+						// spin setting
+						var opts = {
+							ines : 11, // The number of lines to draw
+							length : 6, // The length of each line
+							width : 3, // The line thickness
+							radius : 8, // The radius of the inner circle
+							corners : 0.9, // Corner roundness (0..1)
+							rotate : 0, // The rotation offset
+							color : '#666', // #rgb or #rrggbb
+							speed : 0.7, // Rounds per second
+							trail : 33, // Afterglow percentage
+							shadow : false, // Whether to render a shadow
+							hwaccel : true, // Whether to use hardware acceleration
+							className : 'spinner', // The CSS class to assign to the spinner
+							zIndex : 2e9, // The z-index (defaults to 2000000000)
+							top : 'auto', // Top position relative to parent in px
+							left : 'auto' // Left position relative to parent in px
+						};
+						var target = document.getElementById('loadingImg');
+						var spinner = new Spinner(opts).spin(target);
 					</script>
 				</div>
 			</div>
-
 			<div id="content" class="cont_itemDetail" data-role="content">
-
 				<ul class="item_summary" data-role="listview">
 
 					<li class="item_name">
@@ -142,24 +193,22 @@
 					</li>
 
 				</ul>
-
 			</div>
+			<!-- nav -->
 			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber">
 				<ul>
-					<li class="tab01 current">
-						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>
+					<li class="tab01">
+						<a href="#" data-ajax="false"  onclick="chShowOrderFlg();"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
+						<a href="#" data-ajax="false" onclick="chShowItemFlg();"> <span>読み取り</span> </a>
 					</li>
 					<li class="tab03">
 						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
-			</div><!-- /dr-footer -->
-
+			</div>
 		</div>
-
 	</body>
 </html>
 

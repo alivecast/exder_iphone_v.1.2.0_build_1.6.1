@@ -3,7 +3,7 @@
 	<head>
 		<title></title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta charset="utf-8">
 
 		<!-- iPad/iPhone specific css below, add after your main css >
@@ -16,17 +16,22 @@
 		<link rel="stylesheet" href="css/validate.css" type="text/css" />
 
 		<script type="text/javascript" charset="utf-8" src="js/jquery-1.8.2.min.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/base64.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/aes.js"></script>
-
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
-
+		<script type="text/javascript" charset="utf-8" src="js/file.js"></script>
 		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
-
-		<script type="text/javascript" charset="utf-8" src="js/jquery.activity-indicator-1.0.0.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
+		<script src="js/spin.min.js" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
+		
+		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
+		
+			var storage = {};
+			
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -34,35 +39,62 @@
 			});
 
 			$(document).ready(function() {
+				$('#loading').css('display', 'block');
+				$('#content').css('display', 'none');
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
 
 			function onDeviceReady() {
-
-				$('#loading').css('display', 'none');
-
-				if (location.search.length > 1) {
-					var get = new Object();
-					var ret = location.search.substr(1).split("&");
-					for (var i = 0; i < ret.length; i++) {
-						var r = ret[i].split("=");
-						get[r[0]] = r[1];
+				 start(onDeviceReady1);
+			}
+			function onDeviceReady1() {
+				// 通信確認
+				if (check_network() == 'none'){
+					var chSetting = getLocalStorage('chSetting');
+					if(chSetting == null || chSetting == ''){
+						hrefStorageAll('netError.html', storage);
+						// window.location.href = 'netError.html';
+					} else {
+						// とりあえず表示だけする
+						hrefStorageAll('setting.html', storage);
+						// window.location.href = 'setting.html';
 					}
-					console.log("get:" + get['kbn']);
+				} else {
+					// 通信出来る
+					onDeviceReady2();
 				}
-				//                onReadyFile();
+			}
+				
+			function onDeviceReady2(){
 				
 				$.ajaxSetup({
 					timeout: 5000
 				});
+
+				// 戻るURLの初期設定
+				var before = getLocalStorage('before');
+				setLocalStorage(storage, 'before', 'passcode_hint.html');
+				$("#backb").attr("href", before);
+
+				// メニューボタン設定
+				$("[data-role=header]").fixedtoolbar({ tapToggle: false });
+				$("[data-role=footer]").fixedtoolbar({ tapToggle: false });
+				$('#nav').css('display', 'block');
+
+				//if(location.search.length > 1) {
+
+				var get = new Object();
+				var kbn = getLocalStorage('kbn');
+				if (kbn != '' && kbn != null) {
+					get['kbn'] = kbn;
+					console.log("get:" + get['kbn']);
+				}
+				//                onReadyFile();
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
 			}
 
 			function onReadyFile(json) {
-				
-//alert('json: ' + JSON.stringify(json));
-				
 				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
 				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
 				console.log("正常にテキストを読み込みました。:pas " + json.customer_pass);
@@ -70,8 +102,7 @@
 				$("#customer_id").val(json.customer_id);
 				$("#customer_key").val(json.customer_key);
 				$("#customer_email_1").val(json.customer_email_1);
-				$("#customer_passT").val(json.customer_pass);
-				$("#customer_hint_ansT").val(json.customer_ans);
+				$("#customer_hint_passT").val(json.customer_pass);
 				$("#iv").val(json.iv);
 
 				$("#app_ver").val(json.app_ver);
@@ -85,8 +116,7 @@
 
 			// ファイルがある場合は、サーバー通信を行い値を取得する。
 			function getPass(params) {
-				console.log("Start:" + params);
-
+				//   console.log("Start:"+params);
 				var url = params.https + 'json/send_pass.php';
 
 				$.ajax({
@@ -95,17 +125,24 @@
 					data : params,
 					success : function(data) {
 						$("#customer_qes").text(data.customer_qes);
-						setLocalStorage('customer_ans', data.customer_ans);
-						console.log("正常にsqlを読み込みました。:qes " + data.customer_qes);
-						console.log("正常にsqlを読み込みました。:qns " + data.customer_ans);
+						$("#customer_hint_ansT").val(data.customer_ans);
+						
+						// 暗証番号入力必須の反映
+						var inputPasscode = getLocalStorage('inputPasscode');
+						console.log('inputPasscode: ' + inputPasscode);
+						$("#passFlip").val(inputPasscode);
+						$("#passFlip").slider('refresh');
+						
+						$('#loading').css('display', 'none');
+						$('#content').css('display', 'block');
 					},
 					error : function() {
-						networdERR(alertCallBack, '情報の取得が出来ませんでした');
+						networkERR(alertCallBack, '情報の取得が出来ませんでした');
 						//						return false;
 					}
 				});
 			}
-
+			
 			function checkValidate() {
 				var i = 0;
 				//エラーの初期化
@@ -136,115 +173,116 @@
 
 			// 新規登録
 			function savePass() {
+				
+				// 暗証番号あり・なしフラグのセット
+				var passFlip = $('#passFlip').val();
+				if(passFlip == 'false'){
+					setLocalStorage(storage, 'inputPasscode', 'false');
+				} else {
+					setLocalStorage(storage, 'inputPasscode', 'true');
+				}
+				
 				//loading呼び出し
 				$('#content').css('display', 'none');
 				$('#loading').css('display', 'block');
 
-				// 暗証番号あり・なしフラグのセット
-				var inputPasscode = 'true';
-				var passFlip = $('#passFlip').val();
-				if(passFlip == 'false'){
-					inputPasscode = 'false';
-				}
-				getFile('initFlg', okGetFnc, ngGetFnc);
-				function okGetFnc(json){
-					var inputedPass = json.inputedPass
-					initFlg = {
-						inputPasscode: inputPasscode,
-						inputedPass: inputedPass
-					}
-					setFile('initFlg', initFlg, okSetFnc, okSetFnc);
-					function okSetFnc(){
-						// 設定ファイルの読み込み
-						getonOrdering(savePass2);
-					}
-				}
-				function ngGetFnc(){
-					// 設定ファイルの読み込み
-					getonOrdering(savePass2);
-				}
+				setLocalStorage(storage, 'passcodeHint_customerhint_ans', $("#customer_hint_ans").val() );
+				setLocalStorage(storage, 'passcodeHint_customerhint_ansT', $("#customer_hint_ansT").val() );
+				setLocalStorage(storage, 'passcodeHint_customerhint_pass', $("#customer_hint_pass").val() );
+				setLocalStorage(storage, 'passcodeHint_customerre_hint_pass', $("#re_hint_pass").val() );
+								
+				// 設定ファイルの読み込み
+				getonOrdering(savePass2);
 			}
 
 			function savePass2(ordering) {
+				//	console.log("customer_id: "+ $("#customer_key").val());
+				$("#customer_hint_ans").val( getLocalStorage('passcodeHint_customerhint_ans') );
+				$("#customer_hint_ansT").val( getLocalStorage('passcodeHint_customerhint_ansT') );
+				$("#customer_hint_pass").val( getLocalStorage('passcodeHint_customerhint_pass') );
+				$("#re_hint_pass").val( getLocalStorage('passcodeHint_customerre_hint_pass') );
+				
+				delFile('passcodeHint_customerhint_ans');
+				delFile('passcodeHint_customerhint_ansT');
+				delFile('passcodeHint_customerhint_pass');
+				delFile('passcodeHint_customerre_hint_pass');
+				
+				
 
-				var ansT = getLocalStorage('customer_ans');
-				var ans = $("#customer_hint_ans").val();
-				var ansAC = '';
-// test 
-//var ansAC = 'alivecast世界一';
+					var ansT = $("#customer_hint_ansT").val();
+					var ans = $("#customer_hint_ans").val();
 
-				if (ansT == ans || ans == ansAC) {
-					console.log("正常処理" + ordering.https);
+					if (ansT == ans) {
+						// 	console.log("正常処理"+ordering.https);
 
-					// 送信
-					var url = ordering.https + 'json/receive_pass.php';
-					var params = ordering;
-					params['customer_pass'] = $("#customer_hint_pass").val();
+						// 送信
+						var url = ordering.https + 'json/receive_pass.php';
+						var params = ordering;
+						params['customer_hint_pass'] = $("#customer_hint_pass").val();
 
-					console.log("通信" + params.customer_hint_pass);
+						//	console.log("通信"+params.customer_hint_pass);
 
-					$.ajax({
-						type : "POST",
-						url : url,
-						data : params,
-						success : function(data) {
+						$.ajax({
+							type : "POST",
+							url : url,
+							data : params,
+							success : function(data) {
+								
+								//		console.log("保存　customer_hint_pass: " + data.customer_hint_pass);
 
-							console.log("保存　customer_pass: " + data.customer_pass);
-
-							// ファイル登録
-							var datalist = ordering;
-							datalist['customer_pass'] = data.customer_pass;
-							//	datalist['customer_pass'] = params.customer_pass;
-							//	alert('datalist: ' + JSON.stringify(datalist));
-							var fname = 'ordering';
-							setFile(fname, datalist, goSetting, goSetting);
-						},
-						error : function() {
-							console.log("保存できませんでした");
-							networdERR(alertCallBack, '保存できませんでした');
-						}
-					});
-
-				} else {
-					console.log("回答に誤りがあります");
-
-					message = 'ご登録いただいた質問の回答と「' + ans + '」は一致しませんでした。';
-					title = '回答に誤りがあります';
-					button = 'OK';
-					navigator.notification.alert(message, alertCallBack(), title, button);
-				}
+								// ファイル登録
+								var datalist = ordering;
+								datalist['customer_pass'] = data.customer_hint_pass;
+								var fname = 'ordering';
+								setFile(fname, datalist, goSetting, goSetting);
+								location.href = "setting.html";
+							},
+							error : function() {
+								//		console.log("保存できませんでした");
+								networkERR(alertCallBack, '保存できませんでした');
+							}
+						});
+						
+					} else {
+						
+						message = 'ご登録いただいた質問の回答と「' + ans + '」は一致しませんでした。';
+						title = '回答に誤りがあります';
+						button = 'OK';
+						navigator.notification.alert(message, alertCallBack(), title, button);
+					}
 			}
 
 			function goSetting() {
-				// 暗証番号をもとめるリミット
-				console.log("fname2: " + fname2);
-				var psstime = {};
-
-				// 暗証番号あり・なしフラグのセット
-				var passFlip = $('#passFlip').val();
-				if (passFlip == 'false') {
-					// 暗証番号確認なし：設定時間を未来にする
-					psstime['pass_time'] = parseInt(new Date(2035, 11, 31, 23, 59, 59) / 1000);
-				} else {
-					// 暗証番号確認あり：設定時間＝今　（設定時間の１時間後、暗証番号が確認されます）
-					psstime['pass_time'] = parseInt(new Date() / 1000);
-				}
-
-				var fname2 = 'passtime';
-				setFile(fname2, psstime, goHref, goHref);
-			}
-
-			function goHref() {
-				location.href = "setting.html";
+				// passTime更新
+				setLocalStorage(storage, 'passTime', parseInt(new Date() / 1000));
+				hrefStorageAll('setting.html', storage);
+				// window.location.href = "setting.html";
 			}
 
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
-				location.reload(true);
+				window.location.reload(true);
 			}
-
+			
+			$(document).on("touchstart","input",function(e){
+				$('#nav').css('display', 'none');
+			});
+			
+			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
+			function chShowItemFlg() {
+				setLocalStorage(storage, 'show_item_flg', 'false');
+				hrefStorageAll('setting.html', storage);
+				// window.location.href = 'barcode.html';
+			}
+			
+			// navバーの購入履歴選択で画面表示フラグを切り替え
+			function chShowOrderFlg() {
+				setLocalStorage(storage, 'show_order_flg', 'false');
+				hrefStorageAll('show_order.html', storage);
+				// window.location.href = 'show_order.html';
+			}
+			
 		</script>
-		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 	</head>
 
@@ -254,28 +292,36 @@
 
 			<div data-role="header" id="header" data-position="fixed">
 				<h1>暗証番号の再設定</h1>
-				<a href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false"> 戻る </a>
+				<a id="backb" href="setting.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false">
+					戻る
+				</a>
 			</div>
 			<!-- loading -->
 			<div class="loading" data-role="content" id="loading">
 				<div class="loading_box">
-					<p>
-						しばらくおまちください
-					</p>
+					<p>しばらくおまちください</p>
 					<div id="loadingImg" class="square"></div>
 					<script>
-						$(function() {
-							$('#loadingImg').activity({
-								segments : 12,
-								width : 6,
-								space : 3,
-								length : 20,
-								color : '#FFFFFF',
-								speed : 1.5,
-								align : 'center',
-								valign : 'center'
-							});
-						});
+						// spin setting
+						var opts = {
+							ines : 11, // The number of lines to draw
+							length : 6, // The length of each line
+							width : 3, // The line thickness
+							radius : 8, // The radius of the inner circle
+							corners : 0.9, // Corner roundness (0..1)
+							rotate : 0, // The rotation offset
+							color : '#666', // #rgb or #rrggbb
+							speed : 0.7, // Rounds per second
+							trail : 33, // Afterglow percentage
+							shadow : false, // Whether to render a shadow
+							hwaccel : true, // Whether to use hardware acceleration
+							className : 'spinner', // The CSS class to assign to the spinner
+							zIndex : 2e9, // The z-index (defaults to 2000000000)
+							top : 'auto', // Top position relative to parent in px
+							left : 'auto' // Left position relative to parent in px
+						};
+						var target = document.getElementById('loadingImg');
+						var spinner = new Spinner(opts).spin(target);
 					</script>
 				</div>
 			</div>
@@ -287,6 +333,9 @@
 					<input type="hidden" id="customer_key" name="customer_key" value=""/>
 					<input type="hidden" id="customer_email_1" name="customer_email_1" value=""/>
 					<input type="hidden" id="iv" name="iv" value=""/>
+
+					<input type="hidden" id="customer_hint_ansT" name="customer_hint_ansT" value=""/>
+
 					<input type="hidden" id="app_ver" name="app_ver" value=""/>
 					<input type="hidden" id="app_code" name="app_code" value=""/>
 					<input type="hidden" id="url" name="url" value=""/>
@@ -311,16 +360,16 @@
 
 							<li class="passcode">
 								<label for="customer_hint_pass" class="fieldLabel">新しい暗証番号<span class="form_note">(数字4～16桁)</span></label>
-								<input type="password" autocomplete="off" id="customer_hint_pass" name="customer_hint_pass" class="required"  value="" maxlength=16 placeholder="数字4～16桁" />
-							</li>
+								<div><input type="password" autocomplete="off" id="customer_hint_pass" name="customer_hint_pass" class="required"  value="" maxlength=16 placeholder="数字4～16桁" />
+								</div>
 
-							<li class="passcode">
 								<label for="re_hint_pass" class="fieldLabel">確認のため再入力<span class="form_note">(数字4～16桁)</span></label>
-								<input type="password" autocomplete="off" id="re_hint_pass" name="re_hint_pass" value="" class="required"  maxlength=16 placeholder="上と同じ値を入力" />
+								<div><input type="password" autocomplete="off" id="re_hint_pass" name="re_hint_pass" value="" class="required"  maxlength=16 placeholder="上と同じ値を入力" />
+								</div>
 							</li>
-
+							
 							<li class="pflip">
-								<label for="passFlip">購入時の暗証番号確認</label>
+								<label for="passFlip">購入時に暗証番号の入力設定</label>
 								<select name="passFlip" id="passFlip" data-role="slider">
 									<option value="false">オフ</option>
 									<option value="true" selected="selected">オン</option>
@@ -332,12 +381,12 @@
 									<br />
 									安全の為、上記はONにされることをおすすめ致します。
 								</div>
+								
 							</li>
 
 							<li class="item_buy_1btn btn_txt_ow">
-								<div>
-									<a data-role="button" class="btn_next" onclick="checkValidate();">回答して再設定する</a>
-								</div>
+								<div><a data-role="button" class="btn_next" onClick="checkValidate();">回答して再設定する</a></div>
+								<!-- <input type="submit" value="回答して再設定する" class="btn_next"/> -->
 							</li>
 
 						</ul>
@@ -346,22 +395,21 @@
 			</div>
 
 			<!-- nav -->
-
-			<div id="nav" class="footer" data-role="footer" data-id="tabber" data-position="fixed">
+			<div id="nav" class="footer" data-role="footer" data-position="fixed" data-id="tabber" style="display:none;">
 				<ul>
 					<li class="tab01">
-						<a href="show_order.html" data-ajax="false"> <span>購入履歴</span> </a>
+						<a href="#" data-ajax="false"  onclick="chShowOrderFlg();"> <span>購入履歴</span> </a>
 					</li>
 					<li class="tab02">
-						<a href="barcode.html" data-ajax="false"> <span>読み取り</span> </a>
+						<a href="#" data-ajax="false" onclick="chShowItemFlg();"> <span>読み取り</span> </a>
 					</li>
-					<li class="tab03 current">
+					<li class="tab03">
 						<a href="setting.html" data-ajax="false"> <span>設定</span> </a>
 					</li>
 				</ul>
-				<!-- /dr-footer -->
 			</div>
 
 		</div>
 	</body>
 </html>
+
