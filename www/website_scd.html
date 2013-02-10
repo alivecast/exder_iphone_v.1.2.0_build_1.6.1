@@ -23,18 +23,11 @@
 		<script type="text/javascript" charset="utf-8" src="js/cordova.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
-		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
 		
 			storage = {};
-			$(function(){
-				$("a").on("click", function(){
-					setStorageAll(storage);
-				});
-			});
-            
+
 			$(document).ready(function(){
 				document.addEventListener("deviceready", onDeviceReady, false);
 			});
@@ -66,12 +59,9 @@
 				
 				// 戻るURLの初期設定
 				var before = getLocalStorage('before');
-				setLocalStorage(storage, 'before', 'website.html');
+				setLocalStorage(storage, 'before', 'website_scd.html');
 				$("#backb").attr("href", before);
-				// バックボタン設定
-				document.addEventListener("backbutton", function(){
-					window.location.href = before;
-				}, false);
+
 				// メニューボタン設定
 				$('#nav').css('display', 'block');
 				document.addEventListener("menubutton", function(){

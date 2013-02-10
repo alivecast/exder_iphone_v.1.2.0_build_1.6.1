@@ -24,17 +24,10 @@
 		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
-		<script src="http://debug.phonegap.com/target/target-script-min.js#exorder"></script>
 
 		<script type="text/javascript">
 		
 			var storage = {}; 
-			$(function(){
-				$("a").on("click", function(){
-					setStorageAll(storage);
-				});
-			});
 		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -199,33 +192,13 @@
 				var barcodeParams = getLocalStorage('barcodeParams');
 				// 戻るボタン非表示
 
-// EDIT 130207
-//				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) && before == 'barcode.html') {
 				var show_item_flg = getLocalStorage('show_item_flg');
 				if ((barcodeParams == null || barcodeParams == "" || barcodeParams == {}) || show_item_flg == 'false') {
 					$("#backb").css("display", "none");
-					document.addEventListener("backbutton", function() {
-						hrefStorageAll('show_order.html', storage);
-						// window.location.href = 'show_order.html';
-					}, false);
-				// 戻るボタン表示
-// EDIT 130207
-//				} else if (before == 'barcode.html') {
 				} else {
 					$("#backb").attr("href", "barcode.html");
 					$("#backbMoji").html("商品"); // 130207
 					$("#backb").css("display", "block");
-					document.addEventListener("backbutton", function() {
-						hrefStorageAll('barcode.html', storage);
-						// window.location.href = 'barcode.html';
-					}, false);
-/* DEL 130207
-				} else {
-					setLocalStorage(storage, 'show_oreder_flg', 'false');
-					document.addEventListener("backbutton", function() {
-						// window.location.href = 'show_order.html';
-					}, false);
-*/
 				}
 
 				console.log('購入一覧表示:show_order_index:');
@@ -354,6 +327,8 @@
 				$("#order_indexs").html(order_indexs);
 				// INS 130207 リフレッシュ
 				$('.listview').listview();
+
+				setLocalStorage(storage);  //保存
 			}
 
 			// 注文詳細表示

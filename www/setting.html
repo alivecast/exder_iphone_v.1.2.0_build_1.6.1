@@ -61,12 +61,13 @@
 				// 商品情報ボタンの表示:QRコードから商品情報を取得している場合
 				if (purchased_item_flg == 'get' || purchased_item_flg == 'ordered') {
 					setLocalStorage(storage, 'show_item_flg', 'true');
+				// $("#backb").attr("href", "barcode.html");
 					$("#backb").css("display", "block");
 				// 戻るボタン非表示
 				} else {
 					// 商品ない場合は、購入フラグも削除 130208 INS
-					setLocalStorage(storage, 'purchased_item_flg', '');
-					setLocalStorage(storage, 'show_item_flg', 'false');
+				//	setLocalStorage(storage, 'purchased_item_flg', '');
+				//	setLocalStorage(storage, 'show_item_flg', 'false');
 					$("#backb").css("display", "none");
 				}
 
@@ -526,6 +527,13 @@
 				hrefStorageAll('setting.html', storage);
 				// window.location.href = 'setting.html';
 			}
+			
+			// backb
+			function backb() {
+				setLocalStorage(storage, 'show_item_flg', 'true');
+				hrefStorageAll('barcode.html', storage);
+				// window.location.href = 'barcode.html';
+			}
 
 			// navバーのbarcode選択でbarcode画面表示にフラグを切り替え
 			function chShowItemFlg() {
@@ -594,15 +602,9 @@
 						// window.location.href = 'addressee_index.html';
 				}
 			}
-			
-			// 商品表示ボタン
-			function backb(){
-				setLocalStorage(storage, 'show_item_flg', 'true');
-				hrefStorageAll('barcode.html', storage);
-			}
 
 			setLocalStorage(storage, 'page', 'tr_android.html');
-		//	setStorageAll(storage);
+			//setStorageAll(storage);
 		</script>
 	</head>
 
@@ -612,7 +614,7 @@
 
 			<div data-role="header" id="header" data-position="fixed" style="display:none;">
 				<h1>設定</h1>
-				<a id="backb" onclick="backb" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false" style="display: none;">商品</a>
+				<a id="backb" onclick="backb();" href="#" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false" style="display: none;">商品</a>
 				<a href="website.html" class="ui-btn-right" data-icon="info" data-ajax="false">使い方</a>
 			</div>
 

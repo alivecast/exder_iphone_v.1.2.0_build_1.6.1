@@ -26,16 +26,11 @@
 		<script type="text/javascript" charset="utf-8" src="js/ajaxzip3.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-
+		
 		<script type="text/javascript">
 		
 			var storage = {};
-			$(function(){
-				$("a").on("click", function(){
-					setStorageAll(storage);
-				});
-			});
-		
+			
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -78,11 +73,12 @@
 
 				// 戻るURLの初期設定
 				var before = getLocalStorage('before');
-				setLocalStorage(storage, 'before', 'addressee_index.html');
-				$('#backb').attr('href', before);
-				if(before != 'barcode.html'){
-					before = 'setting.html';
-					$('#backb').attr('href', 'setting.html');
+				$("#backb").attr("href", "setting.html");
+				// INS 130208 リダイレクト先
+				var show_item_flg      = getLocalStorage('show_item_flg');  // 商品情報があるかどうか
+				var purchased_item_flg = getLocalStorage('purchased_item_flg'); // オーダー処理中かどうか
+				if (show_item_flg == 'true' && before == 'barcode.html'){
+					$("#backb").attr("href", "barcode.html");
 				}
 
 				// メニューボタン設定
@@ -94,24 +90,13 @@
 				});
 				$('#nav').css('display', 'block');
 
-				var get = new Object();
 				var kbn = getLocalStorage('kbn');
 				if (kbn != '' && kbn != null) {
-					get['kbn'] = kbn;
-					console.log("get:" + get['kbn']);
-					$("#kbn").val(get['kbn']);
-					if (get['kbn'] == "buy") {
+					$("#kbn").val(kbn);
+					if (kbn == "buy") {
 						setLocalStorage(storage, 'kbn', 'buy');
 					}
 				}
-
-				// INS 130208 リダイレクト先
-				var show_item_flg      = getLocalStorage('show_item_flg');  // 商品情報があるかどうか
-				var purchased_item_flg = getLocalStorage('purchased_item_flg'); // オーダー処理中かどうか
-				if (show_item_flg == 'true' && purchased_item_flg != 'ordered'){
-					$("#backb").attr("href", "barcode.html");
-				}
-
 
 				onReadyFile();
 			}

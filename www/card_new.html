@@ -26,12 +26,7 @@
 		<script type="text/javascript">
 		
 			var storage = {};
-			$(function(){
-				$("a").on("click", function(){
-					setStorageAll(storage);
-				});
-			});
-		
+			
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
 				$.support.cors = true;
@@ -90,14 +85,10 @@
 				$("[data-role=footer]").fixedtoolbar({ tapToggle: false });
 				$('#nav').css('display', 'block');
 
-				var get = new Object();
 				var kbn = getLocalStorage('kbn');
 				if (kbn != '' && kbn != null) {
-					get['kbn'] = kbn;
-
-					console.log("get:" + get['kbn']);
-					$("#kbn").val(get['kbn']);
-					if (get['kbn'] == "buy") {
+					$("#kbn").val(kbn);
+					if (kbn == "buy") {
 						setLocalStorage(storage, 'kbn', 'buy');
 						$("#backb").attr("href", "addressee_index.html");
 						$("#tab3a").attr("href", "order.html");

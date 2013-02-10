@@ -24,11 +24,6 @@
 		<script type="text/javascript">
 		
 			var storage = {};
-			$(function(){
-				$("a").on("click", function(){
-					setStorageAll(storage);
-				});
-			});
 		
 			$(document).ready(function() {
 				document.addEventListener("deviceready", onDeviceReady, false);
@@ -67,17 +62,11 @@
 				console.log('show_item_flg: ' + show_item_flg);
 				// 表示画面の判定
 				if (show_item_flg == 'false') {
-
 					// barcode画面の表示
 					startBarcode();
-
 				} else {
-					// INT 130208
-					// 読み取りフラグ:購入時の住所入力などで、途中でやめ、商品に戻ってきた場合、読み取り後に変えてあげる。
-					setLocalStorage(storage, 'purchased_item_flg', 'get');
 					// 商品情報の表示
 					showItem();
-
 				}
 
 				// barcode画面
@@ -94,7 +83,7 @@
 
 					// qr_id,位置情報の初期化
 					var barcodeParams = {
-						qr_id : '',
+						qr_id: '',
 						order_latitude : 0,
 						order_longitude : 0
 					}
@@ -105,6 +94,10 @@
 
 					// barcode読み取り
 					window.plugins.barcodeScanner.scan(function(result) {
+						
+						// 商品情報フラグ初期化
+						setLocalStorage(storage, 'purchased_item_flg', '');
+						
 						// キャンセル
 						if (result.cancelled) {
 							
@@ -121,6 +114,8 @@ hrefStorageAll('setting.html', storage);
 						} else {
 							// 計測用
 							setLocalStorage(storage, 'time', parseInt(new Date().getTime()));
+							// 読み取りフラグ:購入時の住所入力などで、途中でやめ、商品に戻ってきた場合、読み取り後に変えてあげる。
+							setLocalStorage(storage, 'purchased_item_flg', 'get');
 							// exorderを含むか判定
 							if (result.text.match(/exorder.jp|www.exorder.jp/i)) {
 								// オーディオ再生
@@ -140,6 +135,8 @@ hrefStorageAll('setting.html', storage);
 							}
 						}
 					}, function(error) {
+						// 読み取りフラグ:商品なし
+						setLocalStorage(storage, 'purchased_item_flg', '');
 						// 読み取り失敗メソッド
 						scannerFailure(error);
 					});
@@ -235,6 +232,9 @@ hrefStorageAll('setting.html', storage);
 
 				// 商品情報の表示
 				function showItem() {
+					
+					setLocalStorage(storage, 'show_item_flg', 'true');
+					
 					// 計測
 					showTime = parseInt(new Date().getTime()) - parseInt(getLocalStorage('time'));
 					console.log('QRコード読み取りからshowItem: ' + showTime);
@@ -392,7 +392,7 @@ hrefStorageAll('setting.html', storage);
 						if (show_order_flg == 'false' && before == 'show_order.html') {
 							$("#backb").css("display", "none");
 							setLocalStorage(storage, 'show_item_flg', "true");
-							// 戻るボタン表示
+						// 戻るボタン表示
 						} else if (show_order_flg == 'true' && before == 'show_order.html') {
 							$("#backb").attr("href", "show_order.html");
 							$("#backb").css("display", "block");
@@ -464,8 +464,6 @@ hrefStorageAll('setting.html', storage);
 							} else {
 								// 送料０円の場合
 								// 利用者情報の有無を判定
-// EDIT 130208 判定をお届け先でする
-//								if (params['customer_id'] && params['customer_id'] > 0) {
 								if (addressee != null && addressee != '' && params.adr_flg == 1) {
 									// 利用者情報がある:enable
 									setLocalStorage(storage, 'shippingCost', 'enable');
@@ -1090,43 +1088,6 @@ hrefStorageAll('setting.html', storage);
 					}
 				});
 			}
-/*
-			// 注文完了メッセージ
-			function okOrder() {
-				var cancelAttention = getLocalStorage('cancelAttention');
-				if (cancelAttention == 'enable') {
-					// confirmバージョン
-					var message = 'ご購入をキャンセルされる場合は、30分以内にお願いいたします。';
-					var title = 'ご注文を受付いたしました。';
-					var button = "OK,次回表示しない";
-					navigator.notification.confirm(message, function(buttonIndex) {
-						if (buttonIndex == 1) {
-							setLocalStorage(storage, 'cancelAttention', 'enable');
-							afterConfirm();
-						} else {
-							setLocalStorage(storage, 'cancelAttention', 'disable');
-							afterConfirm();
-						}
-					}, title, button);
-				} else {
-					afterConfirm();
-				}
-				function afterConfirm(){
-					// 購入ボタンのクリックフラグをリセット
-					setLocalStorage(storage, 'purchased_item_flg', '');
-					setLocalStorage(storage, 'kbn', '');
-					// 購入履歴表示
-					setLocalStorage(storage, 'show_order_flg', 'false');
-					delFile('barcodeParams');
-					setLocalStorage(storage, 'show_item_flg', 'false');
-
-					// 注文情報の初期化
-					initOrderInfo();
-					
-					hrefStorageAll('show_order.html', storage);
-				}
-			}
-*/
 
 			// 注文完了メッセージ
 			function okOrder() {

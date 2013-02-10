@@ -23,12 +23,8 @@
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
 
 		<script type="text/javascript">
+		
 			var storage = {};
-			$(function() {
-				$("a").on("click", function() {
-					setStorageAll(storage);
-				});
-			});
 
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -81,23 +77,7 @@
 				$("[data-role=footer]").fixedtoolbar({
 					tapToggle : false
 				});
-				$('#nav').css('display', 'block');
-
-				// var get = new Object();
-				// var kbn = getLocalStorage('kbn');
-				// if (kbn != '' && kbn != null) {
-				// get['kbn'] = kbn;
-				//
-				// console.log("get:" + get['kbn']);
-				// $("#kbn").val(get['kbn']);
-				// var purchased_item_flg = getLocalStorage('purchased_item_flg');
-				// if (get['kbn'] == "buy" && purchased_item_flg == 'get' && purchased_item_flg == 'ordered') {
-				// setLocalStorage(storage, 'kbn', 'buy');
-				// $("#backb").attr("href", "passcode_new.html");
-				// $("#tab3a").attr("href", "order.html");
-				// }
-				// }
-				// //                    onReadyFile();
+				$('#nav').css('display', 'block');
 				// 設定ファイルの読み込み
 				getonOrdering(onReadyFile);
 			}
@@ -115,11 +95,7 @@
 					$("#url").val(json.url);
 					$("#http").val(json.http);
 					$("#https").val(json.https);
-				}
-
-				$('#loading').css('display', 'none');
-				$('#content').css('display', 'block');
-
+				}
 				getCustomers(json);
 			}
 
@@ -371,7 +347,6 @@
 
 			// alertCallBack -----------------------------------------------------------------------
 			function alertCallBack() {
-				// // window.location.href = 'barcode.html';
 				location.reload(true);
 			}
 
@@ -412,14 +387,12 @@
 			function chShowItemFlg() {
 				setLocalStorage(storage, 'show_item_flg', 'false');
 				hrefStorageAll('barcode.html', storage);
-				// window.location.href = 'barcode.html';
 			}
 
 			// navバーの購入履歴選択で画面表示フラグを切り替え
 			function chShowOrderFlg() {
 				setLocalStorage(storage, 'show_order_flg', 'false');
 				hrefStorageAll('show_order.html', storage);
-				// window.location.href = 'show_order.html';
 			}
 
 		</script>

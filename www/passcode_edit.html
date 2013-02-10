@@ -24,7 +24,7 @@
 		<script type="text/javascript" charset="utf-8" src="js/init.js"></script>
 		<script src="js/spin.min.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="js/jquery.mobile-1.2.0.min.js"></script>
-		
+
 		<script type="text/javascript">
 		
 			var storage = {};
@@ -72,23 +72,10 @@
 				// 戻るURLの初期設定
 				var before = getLocalStorage('before');
 				setLocalStorage(storage, 'before', 'passcode_edit.html');
-				// バックボタン設定
-				document.addEventListener("backbutton", function() {
-					// // window.location.href = before;
-					hrefStorageAll('setting.html', storage);
-					// window.location.href = "setting.html";
-				}, false);
 				// メニューボタン設定
 				$("[data-role=header]").fixedtoolbar({ tapToggle: false });
 				$("[data-role=footer]").fixedtoolbar({ tapToggle: false });
 				$('#nav').css('display', 'block');
-				document.addEventListener("menubutton", function() {
-					if ($('#nav').is(':visible')) {
-						$('#nav').css('display', 'none');
-					} else {
-						$('#nav').css('display', 'block');
-					}
-				}, false);
 
 				var get = new Object();
 				var kbn = getLocalStorage('kbn');

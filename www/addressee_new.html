@@ -30,11 +30,6 @@
 		<script type="text/javascript">
 		
 			var storage = {};
-			$(function(){
-				$("a").on("click", function(){
-					setStorageAll(storage);
-				});
-			});
 		
 			$(document).bind("mobileinit", function() {
 				// jQuery Mobile フレームワークの設定変更は、ここで行なってください！
@@ -92,30 +87,6 @@
 				console.log("正常にテキストを読み込みました。:cid " + json.customer_id);
 				console.log("正常にテキストを読み込みました。:key " + json.customer_key);
 
-				var get = new Object();
-				var kbn = getLocalStorage('kbn');
-				if (kbn != '' && kbn != null) {
-					var id = getLocalStorage('id');
-					get['kbn'] = kbn;
-					get['id'] = id;
-
-					console.log('::addressee_new:get ' + JSON.stringify(get));
-					console.log('::addressee_new:json ' + JSON.stringify(json));
-
-					console.log("get:" + get['id']);
-					$("#kbn").val(get['kbn']);
-					if (get['kbn'] == "buy") {
-						setLocalStorage(storage, 'kbn', 'buy');
-						$("#backb").attr("href", "addressee_index.html");
-						// バックボタン設定
-						document.addEventListener("backbutton", function() {
-							hrefStorageAll('addressee_index.html', storage);
-							// window.location.href = "addressee_index.html";
-						}, false);
-						$("#tab3a").attr("href", "order.html");
-					}
-				}
-
 				$("#customer_id").val(json.customer_id);
 				$("#customer_mail_1").val(json.customer_mail_1);
 				$("#customer_key").val(json.customer_key);
@@ -129,29 +100,18 @@
 				$("#https").val(json.https);
 
 				var id = getLocalStorage('adr_id');
-				get['id'] = id;
-
-				json['address_id'] = get['id'];
+				json['address_id'] = id
 				console.log("正常にテキストを読み込みました。:aid " + json.address_id);
-				
-			//	alert('id: ' + id);
 				
 				if (id != 0){
 					// アドレスの取得
 					getAddress(json);
 				} else {
-					$('#titleName').html("お届け先の追加");
+					$('#titleName').html("お届け先追加");
 					$('#address_name1').css("display", "block");
-					$("#backb").attr("href", "addressee_index.html");
-// INS 130207
+				//	$("#backb").attr("href", "addressee_index.html");
 					$('#loading').css('display', 'none');
 					$('#content').css('display', 'block');
-
-					// バックボタン設定
-					document.addEventListener("backbutton", function() {
-						hrefStorageAll('addressee_index.html', storage);
-						// window.location.href = "addressee_index.html";
-					}, false);
 				}
 
 			}
@@ -223,35 +183,18 @@
 				//エラーの初期化
 				$("p.error").parent().removeClass("error");
 				$("p.error").remove();
-
-				// //必須項目のチェック
-				// $(":text,textarea").filter(".validate").each(function() {
-				// $(this).filter(".required").each(function() {
-				// if ($(this).val() == "") {
-				// $(this).parent().append("<p class='error'>必須項目ですので、ご入力をお願いします</p>");
-				// }
-				// });
-				// });
+				
 				//お届け先件名のチェック
 				var addr = $('#address_name').val();
 				$("#address_name_sel option:selected").each(function() {
 					if ($(this).val() == '' && $('#address_name').val() == "") {
-						if (i <= 0) {
-							error = 1
+						if (i < 1) {
+							error = i
 							i++;
 						}
 					}
 				})
-				if(error < 1){
-					jsonText = JSON.stringify(json);
-					if (jsonText.match(/addr/)) {
-						error = 1;
-					}
-					if (error > 0) {
-						$("#address_name_sel").parent().append("<p class='error'>このお届先名は既に登録されてます。<br/>他のお届先名を選択、または入力してください。</p>");
-						$("#address_name_sel").css('background:#FFCCCC;');
-					}
-				}
+
 				//氏名のチェック
 				if ($("#customer_name").val() == "" || $("#customer_name").val().match(/^　|^ /) || $("#customer_name").val().match(/[０-９0-9]|[!-/:-@[-`{-~]/) || !$("#customer_name").val().match(/^\w{1,30}$|^\W{1,30}$/)) {
 					$("#customer_name").parent().append("<p class='error'>氏名を入力してください。</p>");
@@ -419,7 +362,7 @@
 		<div data-role="page" data-add-back-btn="false" data-theme="z">
 
 			<div data-role="header" id="header" data-position="fixed">
-				<h1>お届け先</h1>
+				<h1 id="titleName">お届け先</h1>
 				<a id="backb" href="addressee_index.html" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse" data-ajax="false"> 戻る </a>
 			</div>
 			<!-- loading -->
