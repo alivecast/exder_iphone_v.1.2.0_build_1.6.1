@@ -101,7 +101,8 @@
 
 			// ファイルがある場合は、サーバー通信を行い値を取得する。
 			function getCustomers(params) {
-				console.log("Start:" + params['customer_id'] + params['customer_key']);
+				console.log('getCustomers');
+				console.log(JSON.stringify(params));
 
 				var url = params['https'] + 'json/send_customer.php';
 
@@ -111,19 +112,23 @@
 					url : url,
 					data : params,
 					success : function(data) {
-						// 戻り値の保存
-						$("#customer_name").val(data.customer_name);
-						$("input[name='customer_sex']").val([data.customer_sex]).checkboxradio('refresh');
-						$("#customer_birthday").val(data.customer_birthday);
-						$("#customer_zipcode").val(data.customer_zipcode);
-						$("#customer_pref").val(data.customer_pref).selectmenu('refresh');
-						$("#customer_address1").val(data.customer_address1);
-						$("#customer_address2").val(data.customer_address2);
-						$("#customer_phone").val(data.customer_phone);
-						$("#customer_mail_1").val(data.customer_mail_1);
-						$("#customer_mail_2").val(data.customer_mail_2);
-						$("#customer_mail_3").val(data.customer_mail_3);
-						$("#customer_mail_4").val(data.customer_mail_4);
+						console.log('success: ' + JSON.stringify(data));
+						
+						if(data != null){
+							// 戻り値の保存
+							$("#customer_name").val(data.customer_name);
+							$("input[name='customer_sex']").val([data.customer_sex]).checkboxradio('refresh');
+							$("#customer_birthday").val(data.customer_birthday);
+							$("#customer_zipcode").val(data.customer_zipcode);
+							$("#customer_pref").val(data.customer_pref).selectmenu('refresh');
+							$("#customer_address1").val(data.customer_address1);
+							$("#customer_address2").val(data.customer_address2);
+							$("#customer_phone").val(data.customer_phone);
+							$("#customer_mail_1").val(data.customer_mail_1);
+							$("#customer_mail_2").val(data.customer_mail_2);
+							$("#customer_mail_3").val(data.customer_mail_3);
+							$("#customer_mail_4").val(data.customer_mail_4);
+						}
 
 						//loading停止
 						$('#loading').css('display', 'none');
@@ -131,6 +136,7 @@
 
 					},
 					error : function() {
+						console.log('error:');
 						networkERR(alertCallBack, '情報を読み込めません');
 						//						return false;
 					}

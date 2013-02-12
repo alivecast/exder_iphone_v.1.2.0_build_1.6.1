@@ -114,8 +114,7 @@ hrefStorageAll('setting.html', storage);
 						} else {
 							// 計測用
 							setLocalStorage(storage, 'time', parseInt(new Date().getTime()));
-							// 読み取りフラグ:購入時の住所入力などで、途中でやめ、商品に戻ってきた場合、読み取り後に変えてあげる。
-							setLocalStorage(storage, 'purchased_item_flg', 'get');
+							
 							// exorderを含むか判定
 							if (result.text.match(/exorder.jp|www.exorder.jp/i)) {
 								// オーディオ再生
@@ -178,6 +177,9 @@ hrefStorageAll('setting.html', storage);
 						// 計測
 						var showTime = parseInt(new Date().getTime()) - parseInt(getLocalStorage('time'));
 						console.log('QRコード読み取りから成功メッソド: ' + showTime);
+						
+						// 読み取りフラグ:購入時の住所入力などで、途中でやめ、商品に戻ってきた場合、読み取り後に変えてあげる。
+						setLocalStorage(storage, 'purchased_item_flg', 'get');
 
 						// 通信確認
 						if (check_network() == 'none') {
@@ -223,7 +225,7 @@ hrefStorageAll('setting.html', storage);
 						var title = 'QRコードの読み取りに失敗しました';
 						var button = 'OK';
 						navigator.notification.alert(message, function() {
-							hrefStorageAll('barcode.html', storage);
+							hrefStorageAll('setting.html', storage);
 							// window.location.href = 'barcode.html';
 						}, title, button);
 					}
@@ -374,7 +376,7 @@ hrefStorageAll('setting.html', storage);
 							// window.location.href = 'barcode.html';
 							// エラーの場合、barcode画面からのバックボタンのリンクをsetting.htmlに変更
 							setLocalStorage(storage, 'before', 'setting.html');
-							hrefStorageAll('barcode.html', storage);
+							hrefStorageAll('setting.html', storage);
 						}
 
 					}
